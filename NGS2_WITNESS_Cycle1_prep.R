@@ -84,6 +84,17 @@ relabel_values <- function(d, regex, dict) {
     }))
 }
 
+reverse_code <- function(var, max) {
+    # reverse-codes a numeric value, given a scale maximum (max)
+    return(abs(var - max) + 1)
+}
+
+tipi_scale <- function(var1, var2) {
+    # takes two variables and calculates the row mean
+    return(apply(cbind(var1, var2), 1, mean))
+}
+
+
 ### Install packages that are required for this file
 #################################
 list.of.packages <- c("pacman", "dplyr")
@@ -286,6 +297,92 @@ empanel[, EMPANEL_YESNO_VARS] <- apply(empanel[, EMPANEL_YESNO_VARS], 2,
 )
 # note to self (mh): could turn Q27 variables into numeric - need input on
 # scheme though
+
+# create scales
+# tipi
+# http://gosling.psy.utexas.edu/scales-weve-developed/ten-item-personality-measure-tipi/
+# directions:
+#   1. Reverse-code items (2, 4, 6, 8, 10)
+#   2. Take average of item pairs ('R' reverse-scored):
+#       A. Extraversion: [1, 6R]
+#       B. Agreeableness: [2R, 7]
+#       C. Conscientiousness: [3, 8R]
+#       D. Emotional Stability: [4R, 9]
+#       E. Openness to Experiences: [5, 10R]
+empanel$Q1_2_critical_REV <- reverse_code(empanel$Q1_2_critical, 7)
+empanel$Q1_4_anxious_REV <- reverse_code(empanel$Q1_4_anxious, 7)
+empanel$Q1_6_reserved_REV <- reverse_code(empanel$Q1_6_reserved, 7)
+empanel$Q1_8_disorganized_REV <- reverse_code(empanel$Q1_8_disorganized, 7)
+empanel$Q1_10_conventional_REV <- reverse_code(empanel$Q1_10_conventional, 7)
+empanel$tipi_extraversion <- rowMeans(
+    empanel[, c('Q1_1_extravert', 'Q1_6_reserved_REV')]
+)
+empanel$tipi_agreeableness <- rowMeans(
+    empanel[, c('Q1_7_sympathetic', 'Q1_2_critical_REV')]
+)
+empanel$tipi_conscientiousness <- rowMeans(
+    empanel[, c('Q1_3_dependable', 'Q1_8_disorganized_REV')]
+)
+empanel$tipi_emot_stability <- rowMeans(
+    empanel[, c('Q1_9_calm', 'Q1_4_anxious_REV')]
+)
+empanel$tipi_open_experiences <- rowMeans(
+    empanel[, c('Q1_5_open', 'Q1_10_conventional_REV')]
+)
+
+# social dominance orientation
+# https://dash.harvard.edu/bitstream/handle/1/3207711/Sidanius_SocialDominanceOrientation.pdf
+# directions
+#   1. Reverse-code items (9 through 16)
+#   2. Take average
+empanel$Q2_9_equal_REV <- reverse_code(empanel$Q2_9_equal, 7)
+empanel$Q2_10_equality_ideal_REV <- reverse_code(empanel$Q2_10_equality_ideal, 7)
+empanel$Q2_11_equal_chance_REV <- reverse_code(empanel$Q2_11_equal_chance, 7)
+empanel$Q2_12_equalize_conditions_REV <- reverse_code(empanel$Q2_12_equalize_conditions, 7)
+empanel$Q2_13_social_equality_REV <- reverse_code(empanel$Q2_13_social_equality, 7)
+empanel$Q2_14_fewer_problems_REV <- reverse_code(empanel$Q2_14_fewer_problems, 7)
+empanel$Q2_15_incomes_equal_REV <- reverse_code(empanel$Q2_15_incomes_equal, 7)
+empanel$Q2_16_no_dominate_REV <- reverse_code(empanel$Q2_16_no_dominate, 7)
+empanel$soc_dom_orient <- rowMeans(
+    empanel[, grep('Q2_[1-8]_|Q2_.*REV$', names(empanel))]
+)
+
+# communal orientation scale
+# http://fetzer.org/sites/default/files/images/stories/pdf/selfmeasures/CollectiveOrientation.pdf
+# directions
+#   1. Reverse-code items (3, 4, 6, 9, 10, 12, 13)
+#   2. Take average
+empanel$Q3_3_sensitive_feelings_REV <- reverse_code(empanel$Q3_3_sensitive_feelings, 7)
+empanel$Q3_4_not_helpful_REV <- reverse_code(empanel$Q3_4_not_helpful, 7)
+empanel$Q3_6_no_aid_REV <- reverse_code(empanel$Q3_6_no_aid, 7)
+empanel$Q3_9_no_involvement_REV <- reverse_code(empanel$Q3_9_no_involvement, 7)
+empanel$Q3_10_no_help_others_REV <- reverse_code(empanel$Q3_10_no_help_others, 7)
+empanel$Q3_12_emotion_avoid_REV <- reverse_code(empanel$Q3_12_emotion_avoid, 7)
+empanel$Q3_13_trouble_themselves_REV <- reverse_code(empanel$Q3_13_trouble_themselves, 7)
+empanel$comm_orient_scale <- rowMeans(
+    empanel[, grep('^Q3_[12578]([14]|_)|Q3_.*_REV$', names(empanel))]
+)
+
+# cultural orientation scales
+# http://fetzer.org/sites/default/files/images/stories/pdf/selfmeasures/CollectiveOrientation.pdf
+# directions
+#   1. Sum scores:
+#       A. Horizontal individualism: [1, 2, 3, 4]
+#       B. Vertical individualism: [5, 6, 7, 8]
+#       C. Horizontal collectivism: [9, 10, 11, 12]
+#       D. Vertical collectivism: [13, 14, 15, 16]
+empanel$horiz_indiv <- rowSums(
+    empanel[, grep('Q4_[1234]_', names(empanel))]
+)
+empanel$vert_indiv <- rowSums(
+    empanel[, grep('Q4_[5678]_', names(empanel))]
+)
+empanel$horiz_collect <- rowSums(
+    empanel[, grep('Q4_(9|1[012])_', names(empanel))]
+)
+empanel$vert_collect <- rowSums(
+    empanel[, grep('Q4_1[3456]_', names(empanel))]
+)
 
 # write data to disk
 write.csv(empanel, file = 'empanelment_cleaned.csv', row.names = FALSE)

@@ -16,87 +16,7 @@ rm(list=ls())
 CYCLE <- 1
 EXPERIMENTS <- 1:2
 
-# Define renaming dictionaries
-Q1_ANSWERS <- list(
-    'Disagree strongly' = 1,
-    'Disagree moderately' = 2,
-    'Disagree a little' = 3,
-    'Neither agree nor disagree' = 4,
-    'Agree a little' = 5,
-    'Agree moderately' = 6,
-    'Agree strongly' = 7
-)
-Q2_ANSWERS <- list(
-    'Very negative' = 1,
-    'Negative' = 2,
-    'Slightly negative' = 3,
-    'Neither positive nor negative' = 4,
-    'Slightly positive' = 5,
-    'Positive' = 6,
-    'Very positive' = 7
-)
-Q3_ANSWERS <- list(
-    'Extremely uncharacteristic of me (1)' = 1,
-    '2' = 2,
-    '3' = 3,
-    '4' = 4,
-    '5' = 5,
-    '6' = 6,
-    'Extremely characteristic of me (7)' = 7
-)
-Q4_ANSWERS <- list(
-    'Never or definitely no (1)' = 1,
-    '2' = 2,
-    '3' = 3,
-    '4' = 4,
-    '5' = 5,
-    '6' = 6,
-    '7' = 7,
-    '8' = 8,
-    'Always of definitely yes (9)' = 9
-)
-EMPANEL_NUMERIC_VARS <- c(
-    'Q11_age',
-    'Q15_total_hours',
-    'Q22_adult_hh_num',
-    'Q23_child_hh_num',
-    'Q25_friends_num',
-    'Q29_internet_hours_day',
-    'Q31_social_media_people_num',
-    'Q32_social_media_hours_day'
-)
-EMPANEL_YESNO_VARS <- c(
-    'Q14_job',
-    'Q26_born_in_country',
-    'Q30_social_networks',
-    'Q31_social_media_people_num',
-    'Q33_online_research',
-    'Q35_send_survey_invites'
-)
-
-# Define functions
-relabel_values <- function(d, regex, dict) {
-    # takes a data frame (d) and uses a regular expression (regex) to identify
-    # relevant variables to apply a value-redefining dictionary (dict) to make
-    # variable values numeric
-    return(apply(d[, grep(regex, names(d))], 2, function(x) {
-        do.call(c, ifelse(x %in% names(dict), dict[x], NA))
-    }))
-}
-
-reverse_code <- function(var, max) {
-    # reverse-codes a numeric value, given a scale maximum (max)
-    return(abs(var - max) + 1)
-}
-
-tipi_scale <- function(var1, var2) {
-    # takes two variables and calculates the row mean
-    return(apply(cbind(var1, var2), 1, mean))
-}
-
-
-### Install packages that are required for this file
-#################################
+# Install packages that are required for this file
 list.of.packages <- c("pacman", "dplyr")
 new.packages <- list.of.packages[!(list.of.packages %in%
                                    installed.packages()[,"Package"])]
@@ -105,7 +25,7 @@ lapply(list.of.packages, require, character.only = TRUE)
 
 pacman::p_load(multiwayvcov, lmtest)
 
-#Load raw breadboard data
+# Load raw breadboard data
 FILES <- c()
 FILENAMES <- c()
 for(i in EXPERIMENTS) {
@@ -117,6 +37,8 @@ for(i in EXPERIMENTS) {
 }
 bb <- lapply(FILES, read.csv, header = TRUE, sep = ',', stringsAsFactors = FALSE)
 names(bb) <- FILENAMES
+
+# Experiment 1
 
 
 # Experiment 2
@@ -260,129 +182,3 @@ rewire$identities <- ifelse(rewire$condition=="Biased-4" | rewire$condition=="Un
 write.csv(rewire, file = "NGS2-Cycle1-Experiment2/rewire.csv", row.names = FALSE)
 
 
-###############################################################################
-# Prepare empanelment data
-###############################################################################
-empanel <- read.csv('data/empanelment_demo_24may2017.csv', header = TRUE,
-                    sep = ',', stringsAsFactors = FALSE)
-empanel_dict <- read.csv('data/empanelment_dictionary.csv', header = TRUE,
-                         sep = ',', stringsAsFactors = FALSE)
-
-# rename variables
-for(i in 1:length(names(empanel))) {
-    names(empanel)[i] <- ifelse(names(empanel)[i] %in% empanel_dict$label,
-        empanel_dict$verbose[which(names(empanel)[i] == empanel_dict$label)],
-        names(empanel)[i])
-}
-
-# drop extraneous rows of redundant information
-extra_rows <- apply(empanel, 2, function(x) {grep('^\\{', x)})
-stopifnot(length(unique(extra_rows)) == 1)
-empanel <- empanel[-(1:unique(extra_rows)), ]
-
-# make answer values numerics
-empanel[, grep('^Q1_', names(empanel))] <- relabel_values(empanel, '^Q1_',
-                                                          Q1_ANSWERS)
-empanel[, grep('^Q2_', names(empanel))] <- relabel_values(empanel, '^Q2_',
-                                                          Q2_ANSWERS)
-empanel[, grep('^Q3_', names(empanel))] <- relabel_values(empanel, '^Q3_',
-                                                          Q3_ANSWERS)
-empanel[, grep('^Q4_', names(empanel))] <- relabel_values(empanel, '^Q4_',
-                                                          Q4_ANSWERS)
-empanel[, EMPANEL_NUMERIC_VARS] <- apply(empanel[, EMPANEL_NUMERIC_VARS], 2,
-    function(x) {as.numeric(x)}
-)
-empanel[, EMPANEL_YESNO_VARS] <- apply(empanel[, EMPANEL_YESNO_VARS], 2,
-    function(x) {ifelse(x == '', NA, ifelse(grepl('Yes', x), 1, 0))}
-)
-# note to self (mh): could turn Q27 variables into numeric - need input on
-# scheme though
-
-# create scales
-# tipi
-# http://gosling.psy.utexas.edu/scales-weve-developed/ten-item-personality-measure-tipi/
-# directions:
-#   1. Reverse-code items (2, 4, 6, 8, 10)
-#   2. Take average of item pairs ('R' reverse-scored):
-#       A. Extraversion: [1, 6R]
-#       B. Agreeableness: [2R, 7]
-#       C. Conscientiousness: [3, 8R]
-#       D. Emotional Stability: [4R, 9]
-#       E. Openness to Experiences: [5, 10R]
-empanel$Q1_2_critical_REV <- reverse_code(empanel$Q1_2_critical, 7)
-empanel$Q1_4_anxious_REV <- reverse_code(empanel$Q1_4_anxious, 7)
-empanel$Q1_6_reserved_REV <- reverse_code(empanel$Q1_6_reserved, 7)
-empanel$Q1_8_disorganized_REV <- reverse_code(empanel$Q1_8_disorganized, 7)
-empanel$Q1_10_conventional_REV <- reverse_code(empanel$Q1_10_conventional, 7)
-empanel$tipi_extraversion <- rowMeans(
-    empanel[, c('Q1_1_extravert', 'Q1_6_reserved_REV')]
-)
-empanel$tipi_agreeableness <- rowMeans(
-    empanel[, c('Q1_7_sympathetic', 'Q1_2_critical_REV')]
-)
-empanel$tipi_conscientiousness <- rowMeans(
-    empanel[, c('Q1_3_dependable', 'Q1_8_disorganized_REV')]
-)
-empanel$tipi_emot_stability <- rowMeans(
-    empanel[, c('Q1_9_calm', 'Q1_4_anxious_REV')]
-)
-empanel$tipi_open_experiences <- rowMeans(
-    empanel[, c('Q1_5_open', 'Q1_10_conventional_REV')]
-)
-
-# social dominance orientation
-# https://dash.harvard.edu/bitstream/handle/1/3207711/Sidanius_SocialDominanceOrientation.pdf
-# directions
-#   1. Reverse-code items (9 through 16)
-#   2. Take average
-empanel$Q2_9_equal_REV <- reverse_code(empanel$Q2_9_equal, 7)
-empanel$Q2_10_equality_ideal_REV <- reverse_code(empanel$Q2_10_equality_ideal, 7)
-empanel$Q2_11_equal_chance_REV <- reverse_code(empanel$Q2_11_equal_chance, 7)
-empanel$Q2_12_equalize_conditions_REV <- reverse_code(empanel$Q2_12_equalize_conditions, 7)
-empanel$Q2_13_social_equality_REV <- reverse_code(empanel$Q2_13_social_equality, 7)
-empanel$Q2_14_fewer_problems_REV <- reverse_code(empanel$Q2_14_fewer_problems, 7)
-empanel$Q2_15_incomes_equal_REV <- reverse_code(empanel$Q2_15_incomes_equal, 7)
-empanel$Q2_16_no_dominate_REV <- reverse_code(empanel$Q2_16_no_dominate, 7)
-empanel$soc_dom_orient <- rowMeans(
-    empanel[, grep('Q2_[1-8]_|Q2_.*REV$', names(empanel))]
-)
-
-# communal orientation scale
-# http://fetzer.org/sites/default/files/images/stories/pdf/selfmeasures/CollectiveOrientation.pdf
-# directions
-#   1. Reverse-code items (3, 4, 6, 9, 10, 12, 13)
-#   2. Take average
-empanel$Q3_3_sensitive_feelings_REV <- reverse_code(empanel$Q3_3_sensitive_feelings, 7)
-empanel$Q3_4_not_helpful_REV <- reverse_code(empanel$Q3_4_not_helpful, 7)
-empanel$Q3_6_no_aid_REV <- reverse_code(empanel$Q3_6_no_aid, 7)
-empanel$Q3_9_no_involvement_REV <- reverse_code(empanel$Q3_9_no_involvement, 7)
-empanel$Q3_10_no_help_others_REV <- reverse_code(empanel$Q3_10_no_help_others, 7)
-empanel$Q3_12_emotion_avoid_REV <- reverse_code(empanel$Q3_12_emotion_avoid, 7)
-empanel$Q3_13_trouble_themselves_REV <- reverse_code(empanel$Q3_13_trouble_themselves, 7)
-empanel$comm_orient_scale <- rowMeans(
-    empanel[, grep('^Q3_[12578]([14]|_)|Q3_.*_REV$', names(empanel))]
-)
-
-# cultural orientation scales
-# http://fetzer.org/sites/default/files/images/stories/pdf/selfmeasures/CollectiveOrientation.pdf
-# directions
-#   1. Sum scores:
-#       A. Horizontal individualism: [1, 2, 3, 4]
-#       B. Vertical individualism: [5, 6, 7, 8]
-#       C. Horizontal collectivism: [9, 10, 11, 12]
-#       D. Vertical collectivism: [13, 14, 15, 16]
-empanel$horiz_indiv <- rowSums(
-    empanel[, grep('Q4_[1234]_', names(empanel))]
-)
-empanel$vert_indiv <- rowSums(
-    empanel[, grep('Q4_[5678]_', names(empanel))]
-)
-empanel$horiz_collect <- rowSums(
-    empanel[, grep('Q4_(9|1[012])_', names(empanel))]
-)
-empanel$vert_collect <- rowSums(
-    empanel[, grep('Q4_1[3456]_', names(empanel))]
-)
-
-# write data to disk
-write.csv(empanel, file = 'empanelment_cleaned.csv', row.names = FALSE)

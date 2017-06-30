@@ -1,0 +1,11 @@
+# data files
+data/
+*.csv
+NGS2-Cycle1-Experiment1/*.csv
+NGS2-Cycle1-Experiment1/data/
+NGS2-Cycle1-Experiment2/*.csv
+NGS2-Cycle1-Experiment2/data/
+NGS2-Cycle1-Experiment2/documentation/
+
+# python bytecode files
+*.pyc

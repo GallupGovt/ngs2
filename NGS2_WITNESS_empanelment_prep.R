@@ -95,6 +95,7 @@ empanel <- read.csv('data/empanelment_demo_08jun2017.csv', header = TRUE,
                     sep = ',', stringsAsFactors = FALSE)
 empanel_dict <- read.csv('data/empanelment_dictionary.csv', header = TRUE,
                          sep = ',', stringsAsFactors = FALSE)
+names(empanel_dict) <- c('label', 'verbose')
 
 # rename variables
 for(i in 1:length(names(empanel))) {

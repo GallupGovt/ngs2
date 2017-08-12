@@ -1,25 +1,4 @@
 #Created by Pablo Diego Rosell, PhD, for Gallup inc. in March 2017
-a = Sys.info()
-if(a['sysname'] == "Windows") {
-    setwd(paste0('C:/Users/pablo_diego-rosell/Desktop/Projects/DARPA/Cycle 1/',
-                 'Research Protocols/Registration/Experiment 2/Mock data'))
-} else {
-    if(a['user'] == 'matt_hoover') {
-        setwd('~/git/NGS2')
-    } else {
-        setwd("~/Research/Gallup/GallupAnalytics/RandD/NGS2/NGS2-Experiment")
-    }
-}
-rm(list=ls())
-
-# Install packages that are required for this file
-list.of.packages <- c("dplyr", "pacman", "reshape2")
-new.packages <- list.of.packages[!(list.of.packages %in%
-                                   installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
-lapply(list.of.packages, require, character.only = TRUE)
-
-pacman::p_load(multiwayvcov, lmtest)
 
 # Define functions
 add_actions <- function(data, actions, focus = c('player', 'alter')) {
@@ -191,6 +170,16 @@ create_subsets <- function(data, action, scrubs) {
     return(tmp[complete.cases(tmp), ])
 }
 
+identify_condition <- function(data, condition) {
+    # takes a specified initial starting condition and returns its values
+    tmp <- data$data.value[data$data.name == condition]
+    if(length(grep('^[A-Za-z]', tmp)) == 0) {
+        return(as.numeric(tmp))
+    } else {
+        return(as.logical(toupper(tmp)))
+    }
+}
+
 strip_chars <- function(d) {
     return(
         data.frame(apply(d, 2, function(x) {
@@ -204,9 +193,9 @@ strip_chars <- function(d) {
 }
 
 # Load raw breadboard data
-exp1 <- read.csv('NGS2-Cycle1-Experiment1/data/experiment-1_test_2017-03-17.csv',
+exp1 <- read.csv('NGS2-Cycle1-Experiment1/data/ngs2_e1_pilot_2017-07-12-01_9222.csv',
                  header = TRUE, sep = ',', stringsAsFactors = FALSE)
-exp2 <- read.csv('NGS2-Cycle1-Experiment2/data/experiment-2_test_2017-03-17.csv',
+exp2 <- read.csv('NGS2-Cycle1-Experiment2/data/ngs2_e2_pilot_2017-07-12-01_10381.csv',
                  header = TRUE, sep = ',', stringsAsFactors = FALSE)
 
 # EXPERIMENT 1
@@ -228,6 +217,18 @@ nbr_connections_round <- calculate_connections(round_changes)
 # finish off the `cooperation` dataset
 coop <- merge(coop, nbr_connections_round, by = c('round', 'pid'))
 
+# add in static parameters from dataset for completeness
+# MAH: placeholder for now -- haven't received a file with multiple sessions
+#      in it, so difficult to programmatically determine how to identify
+#      session... but will update as soon as we do know how
+coop$session <- 1
+coop$condition <- ifelse(
+    identify_condition(exp1, 'connectivity') == .1, 'Viscous',
+    ifelse(identify_condition(exp1, 'connectivity') == .3, 'Fluid',
+    # MAH: need to check this is a valid way to identify the random/static
+    #      conditions
+    ifelse(identify_condition(exp1, 'k') > 0, 'Random', 'Static')))
+
 # output dataset to disk
 write.csv(coop[order(coop$round, coop$pid), ],
           file = 'NGS2-Cycle1-Experiment1/cooperation_exp1.csv',
@@ -246,9 +247,16 @@ rewire$state <- apply(rewire[, grep('action$', names(rewire))], 1, function(x) {
 })
 rewire$CC <- ifelse(rewire$state == 'CC', 1, 0)
 rewire$DD <- ifelse(rewire$state == 'DD', 1, 0)
+rewire$other_d <- ifelse(rewire$alteraction == 'D', 1, 0)
 
 # add in previous and current ties
 rewire <- add_ties(rewire, conn, round_changes)
+
+# add in static parameters from dataset for completeness
+# MAH: placeholder for now -- haven't received a file with multiple sessions
+#      in it, so difficult to programmatically determine how to identify
+#      session... but will update as soon as we do know how
+rewire$session <- 1
 
 # output dataset to disk
 var_order <- c(
@@ -260,7 +268,7 @@ var_order <- c(
     'nowtie',
     'playeraction',
     'alteraction',
-    'otherD',
+    'other_d',
     'action_num',
     'break_tie',
     'make_tie',
@@ -268,8 +276,6 @@ var_order <- c(
     'CC',
     'DD'
 )
-rewire$session <- 1
-
 
 write.csv(rewire[order(rewire$round, rewire$playerid), var_order],
           file = 'NGS2-Cycle1-Experiment1/rewire_exp1.csv',

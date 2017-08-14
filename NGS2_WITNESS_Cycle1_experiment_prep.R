@@ -1,4 +1,17 @@
 #Created by Pablo Diego Rosell, PhD, for Gallup inc. in March 2017
+# determine system environment
+if(Sys.info()['sysname'] == 'Darwin') {
+    rm(list=ls())
+
+    # Install packages that are required for this file
+    list.of.packages <- c("dplyr", "pacman", "reshape2")
+    new.packages <- list.of.packages[!(list.of.packages %in%
+                                       installed.packages()[,"Package"])]
+    if(length(new.packages)) install.packages(new.packages)
+    lapply(list.of.packages, require, character.only = TRUE)
+
+    pacman::p_load(multiwayvcov, lmtest)
+}
 
 # Define functions
 add_actions <- function(data, actions, focus = c('player', 'alter')) {
@@ -180,6 +193,27 @@ identify_condition <- function(data, condition) {
     }
 }
 
+match_empanelment_bb_ids <- function(emp, id_dict) {
+    # reads in files to match up empanelment and breadboard ids
+    comps <- read.csv(paste('data', emp, sep = '/'), header = TRUE,
+                      sep = ',', stringsAsFactors = FALSE)
+    bb_ids <- read.csv(paste('data', id_dict, sep = '/'), header = TRUE,
+                       sep = ',', stringsAsFactors = FALSE)
+    emp_bb_ids <- merge(
+        comps[, c('RecipientLastName', 'RecipientFirstName', 'ExternalReference')],
+        bb_ids[, c('LastName', 'FirstName', 'USERID')],
+        by.x = c('RecipientLastName', 'RecipientFirstName'),
+        by.y = c('LastName', 'FirstName')
+    )
+    names(emp_bb_ids)[3:4] <- c('empanel_id', 'bb_id')
+    if(nrow(emp_bb_ids) == nrow(bb_ids)) {
+        return(emp_bb_ids[, c('empanel_id', 'bb_id')])
+    } else {
+        stop(paste('There is a problem -- some BreadBoard IDs do not have an',
+                   'empanelment match. Please fix...'))
+    }
+}
+
 strip_chars <- function(d) {
     return(
         data.frame(apply(d, 2, function(x) {
@@ -197,6 +231,12 @@ exp1 <- read.csv('NGS2-Cycle1-Experiment1/data/ngs2_e1_pilot_2017-07-12-01_9222.
                  header = TRUE, sep = ',', stringsAsFactors = FALSE)
 exp2 <- read.csv('NGS2-Cycle1-Experiment2/data/ngs2_e2_pilot_2017-07-12-01_10381.csv',
                  header = TRUE, sep = ',', stringsAsFactors = FALSE)
+
+# gather empanelment information to add in ids for experiments below
+emp_bb_id_matches <- match_empanelment_bb_ids(
+    'ngs2_empanelment_pilot_completes.csv',
+    'empanelment_breadboard_ids.csv'
+)
 
 # EXPERIMENT 1
 # cooperation dataset
@@ -229,8 +269,23 @@ coop$condition <- ifelse(
     #      conditions
     ifelse(identify_condition(exp1, 'k') > 0, 'Random', 'Static')))
 
+# add in empanelment id for non-bots
+coop <- merge(coop, emp_bb_id_matches, by.x = 'pid', by.y = 'bb_id',
+              all.x = TRUE)
+
 # output dataset to disk
-write.csv(coop[order(coop$round, coop$pid), ],
+var_order <- c(
+    'round',
+    'pid',
+    'action',
+    'group_size',
+    'previous_decision',
+    'num_neighbors',
+    'session',
+    'condition',
+    'empanel_id'
+)
+write.csv(coop[order(coop$round, coop$pid), var_order],
           file = 'NGS2-Cycle1-Experiment1/cooperation_exp1.csv',
           row.names = FALSE, na='')
 
@@ -258,6 +313,14 @@ rewire <- add_ties(rewire, conn, round_changes)
 #      session... but will update as soon as we do know how
 rewire$session <- 1
 
+# add in empanelment id for non-bots
+rewire <- merge(rewire, emp_bb_id_matches, by.x = 'playerid', by.y = 'bb_id',
+                all.x = TRUE)
+names(rewire)[names(rewire) == 'empanel_id'] <- 'player_empanel_id'
+rewire <- merge(rewire, emp_bb_id_matches, by.x = 'alterid', by.y = 'bb_id',
+                all.x = TRUE)
+names(rewire)[names(rewire) == 'empanel_id'] <- 'alter_empanel_id'
+
 # output dataset to disk
 var_order <- c(
     'session',
@@ -274,7 +337,9 @@ var_order <- c(
     'make_tie',
     'state',
     'CC',
-    'DD'
+    'DD',
+    'player_empanel_id',
+    'alter_empanel_id'
 )
 
 write.csv(rewire[order(rewire$round, rewire$playerid), var_order],
@@ -373,8 +438,16 @@ cooperation$ingroup <- ifelse(cooperation$group_coop==cooperation$group, 1, 0)
 cooperation$biased <- ifelse(cooperation$condition=="Biased-2" | cooperation$condition=="Biased-4", 1, 0)
 cooperation$identities <- ifelse(cooperation$condition=="Biased-4" | cooperation$condition=="Unbiased-4", 1, 0)
 
-write.csv(cooperation, file = "NGS2-Cycle1-Experiment2/cooperation_exp2.csv",
-          row.names = FALSE)
+# add in empanelment id for non-bots
+cooperation <- merge(cooperation, emp_bb_id_matches, by.x = 'playerid',
+                     by.y = 'bb_id', all.x = TRUE)
+
+write.csv(
+    cooperation[order(cooperation$round_num, cooperation$playerid), ],
+    file = "NGS2-Cycle1-Experiment2/cooperation_exp2.csv",
+    row.names = FALSE,
+    na = ''
+)
 
 ########################################################################################################################
 #Restructure raw data output from Breadboard into 'rewire' dataset
@@ -431,4 +504,13 @@ rewire$ingroup <- ifelse(rewire$group_connect==rewire$group, 1, 0)
 rewire$biased <- ifelse(rewire$condition=="Biased-2" | rewire$condition=="Biased-4", 1, 0)
 rewire$identities <- ifelse(rewire$condition=="Biased-4" | rewire$condition=="Unbiased-4", 1, 0)
 
-write.csv(rewire, file = "NGS2-Cycle1-Experiment2/rewire_exp2.csv", row.names = FALSE)
+# add in empanelment id for non-bots
+rewire <- merge(rewire, emp_bb_id_matches, by.x = 'playerid', by.y = 'bb_id',
+                all.x = TRUE)
+
+write.csv(
+    rewire[order(rewire$round_num, rewire$playerid), ],
+    file = "NGS2-Cycle1-Experiment2/rewire_exp2.csv",
+    row.names = FALSE,
+    na = ''
+)

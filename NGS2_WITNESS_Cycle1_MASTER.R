@@ -9,7 +9,9 @@ print(a)
 
 ### Set base directory
 
-setwd(X:/DARPA_NGS2/CONSULTING/Analytics/Cycle1)
+a = Sys.info()[1]
+if( a == "Windows") { setwd("X:/DARPA_NGS2/CONSULTING/Analytics/Cycle1")}
+if( a != "Windows") { setwd("/Volumes/Clients/DARPA_NGS2/CONSULTING/Analytics/Cycle1")}
 rm(list=ls())
 
 ### Load all required packages

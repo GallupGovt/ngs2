@@ -29,31 +29,31 @@ source ("NGS2_WITNESS_Cycle1_experiment_prep.R")
 
 ### Process coloring game data
 
-source ("NGS2_WITNESS_Cycle1_coloring_prep.R") ### TO BE ADDED (Pablo)
+# source ("NGS2_WITNESS_Cycle1_coloring_prep.R") ### TO BE ADDED (Pablo)
 
 ### Response funnel 
 
-source ("NGS2_WITNESS_Cycle1_response.R") ### TO BE ADDED (Matt)
+# source ("NGS2_WITNESS_Cycle1_response.R") ### TO BE ADDED (Matt)
 
 
 ### EXPERIMENT 1
 ### Analyze experiment 1
 
 source ("NGS2_WITNESS_Cycle1_exploratory_exp1.R")
-source ("NGS2_WITNESS_Cycle1_machine_exp1.R")  ### TO BE ADDED (Anu)
+# source ("NGS2_WITNESS_Cycle1_machine_exp1.R")  ### TO BE ADDED (Anu)
 source ("NGS2_WITNESS_Cycle1_confirmatory_exp1.R")
 source ("NGS2_WITNESS_Cycle1_bayesian_exp1.R")
 
 ### Analyze coloring game
 
-source ("NGS2_WITNESS_Cycle1_coloring.R")  ### TO BE ADDED (Pablo)
+# source ("NGS2_WITNESS_Cycle1_coloring.R")  ### TO BE ADDED (Pablo)
 
 
 ### EXPERIMENT 2
 ### Analyze experiment 2 
 
 source ("NGS2_WITNESS_Cycle1_exploratory_exp1.R")
-source ("NGS2_WITNESS_Cycle1_machine_exp2.R")  ### TO BE ADDED (Anu)
+# source ("NGS2_WITNESS_Cycle1_machine_exp2.R")  ### TO BE ADDED (Anu)
 source ("NGS2_WITNESS_Cycle1_confirmatory_exp1.R")
-source ("NGS2_WITNESS_Cycle1_bayesian_exp2.R")  ### TO BE ADDED (Pablo)
+# source ("NGS2_WITNESS_Cycle1_bayesian_exp2.R")  ### TO BE ADDED (Pablo)
 

@@ -91,7 +91,7 @@ tipi_scale <- function(var1, var2) {
 }
 
 # read in empanelment data
-empanel <- read.csv('data/empanelment_demo_08jun2017.csv', header = TRUE,
+empanel <- read.csv('data/ngs2_empanelment_pilot_completes.csv', header = TRUE,
                     sep = ',', stringsAsFactors = FALSE)
 empanel_dict <- read.csv('data/empanelment_dictionary.csv', header = TRUE,
                          sep = ',', stringsAsFactors = FALSE)

@@ -127,6 +127,32 @@ empanel[, EMPANEL_YESNO_VARS] <- apply(empanel[, EMPANEL_YESNO_VARS], 2,
 # note to self (mh): could turn Q27 variables into numeric - need input on
 # scheme though
 
+# Recode religion variable into fewer categories
+
+empanel$religion[empanel$Q23_religion=="Protestant"] <- "Christian"
+empanel$religion[empanel$Q23_religion=="Roman Catholic"] <- "Christian"
+empanel$religion[empanel$Q23_religion=="Mormon/Latter-Day Saints"] <- "Christian"
+empanel$religion[empanel$Q23_religion=="Other Christian Religion"] <- "Christian"
+
+empanel$religion[empanel$Q23_religion=="Islam/Muslim (Shiite)"] <- "Muslim"
+empanel$religion[empanel$Q23_religion=="Islam/Muslim (Sunni)"] <- "Muslim"
+empanel$religion[empanel$Q23_religion=="Muslim/Islam"] <- "Muslim"
+
+empanel$religion[empanel$Q23_religion=="Other Non-Christian Religion"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Spiritism"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Buddhism"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Jewish"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Primal-indigenous/African Traditional and Diasporic/Animist/Nature Worship/Paganism"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Chinese Traditional Religion/Confucianism"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Sikhism"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Hinduism"] <- "Other religion"
+empanel$religion[empanel$Q23_religion=="Other (Write in:)"] <- "Other religion"
+
+empanel$religion[empanel$Q23_religion=="No Religion/Atheist/Agnostic"] <- "No Religion/Atheist/Agnostic"
+
+empanel$religion[is.na(empanel$religion)]<- "DK"
+empanel$religion<-as.factor(empanel$religion)
+
 # create scales
 # tipi
 # http://gosling.psy.utexas.edu/scales-weve-developed/ten-item-personality-measure-tipi/

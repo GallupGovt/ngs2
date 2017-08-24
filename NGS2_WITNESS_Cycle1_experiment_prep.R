@@ -1,5 +1,9 @@
 #Created by Pablo Diego Rosell, PhD, for Gallup inc. in March 2017
 
+# Define constants for use in programmatically working through new data
+CYCLE <- 1 # should be numeric; the cycle number being processed
+EXP3 <- FALSE # boolean; change to TRUE if there is experiment 3 data
+
 # Define functions
 add_actions <- function(data, actions, focus = c('player', 'alter')) {
     # add respondent actions to `rewire` dataset
@@ -201,6 +205,19 @@ match_empanelment_bb_ids <- function(emp, id_dict) {
     }
 }
 
+read_input_files <- function(dir) {
+    # identifies all csv files in a directory, reads then into r, and appends them
+    res <- data.frame()
+    files <- list.files(dir, pattern = '.csv$')
+    for(i in 1:length(files)) {
+        tmp <- read.csv(paste(dir, files[i], sep = '/'), header = TRUE,
+                        sep = ',', stringsAsFactors = FALSE)
+        tmp$source <- strsplit(files[i], split = '_')[[1]][1]
+        res <- rbind(res, tmp)
+    }
+    return(res)
+}
+
 strip_chars <- function(d) {
     return(
         data.frame(apply(d, 2, function(x) {
@@ -214,10 +231,11 @@ strip_chars <- function(d) {
 }
 
 # Load raw breadboard data
-exp1 <- read.csv('NGS2-Cycle1-Experiment1/data/ngs2_e1_pilot_2017-07-12-01_9222.csv',
-                 header = TRUE, sep = ',', stringsAsFactors = FALSE)
-exp2 <- read.csv('NGS2-Cycle1-Experiment2/data/ngs2_e2_pilot_2017-07-12-01_10381.csv',
-                 header = TRUE, sep = ',', stringsAsFactors = FALSE)
+exp1 <- read_input_files(paste0('NGS2-Cycle', CYCLE, '-Experiment1/data'))
+exp2 <- read_input_files(paste0('NGS2-Cycle', CYCLE, '-Experiment2/data'))
+if(EXP3) {
+    exp3 <- read_input_files(paste0('NGS2-Cycle', CYCLE, '-Experiment3/data'))
+}
 
 # gather empanelment information to add in ids for experiments below
 emp_bb_id_matches <- match_empanelment_bb_ids(

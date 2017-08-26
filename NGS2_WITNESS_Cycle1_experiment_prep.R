@@ -166,11 +166,6 @@ create_subsets <- function(data, action, scrubs) {
     # create data subsets
     tmp <- dcast(subset(data, event == action), id ~ data.name,
                  value.var = 'data.value')
-    tmp[, grep(scrubs, names(tmp))] <- apply(
-        tmp[, grep(scrubs, names(tmp))], 2, function(x) {
-            as.numeric(gsub('_', '', x))
-        }
-    )
     return(tmp[complete.cases(tmp), ])
 }
 
@@ -188,15 +183,16 @@ match_empanelment_bb_ids <- function(emp, id_dict) {
     # reads in files to match up empanelment and breadboard ids
     comps <- read.csv(paste('data', emp, sep = '/'), header = TRUE,
                       sep = ',', stringsAsFactors = FALSE)
-    bb_ids <- read.csv(paste('data', id_dict, sep = '/'), header = TRUE,
-                       sep = ',', stringsAsFactors = FALSE)
+    bb_ids <- read.table(paste('data', id_dict, sep = '/'), header = TRUE,
+                       sep = '\t', stringsAsFactors = FALSE)
     emp_bb_ids <- merge(
-        comps[, c('RecipientLastName', 'RecipientFirstName', 'ExternalReference')],
-        bb_ids[, c('LastName', 'FirstName', 'USERID')],
-        by.x = c('RecipientLastName', 'RecipientFirstName'),
-        by.y = c('LastName', 'FirstName')
+        comps[, c('ExternalReference')],
+        bb_ids,
+        by.x = c('ExternalReference'),
+        by.y = c('EMPLOYEE_KEY_VALUE')
     )
-    names(emp_bb_ids)[3:4] <- c('empanel_id', 'bb_id')
+    names(emp_bb_ids) <- c('empanel_id', 'bb_id')
+
     if(nrow(emp_bb_ids) == nrow(bb_ids)) {
         return(emp_bb_ids[, c('empanel_id', 'bb_id')])
     } else {
@@ -207,14 +203,16 @@ match_empanelment_bb_ids <- function(emp, id_dict) {
 
 read_input_files <- function(dir) {
     # identifies all csv files in a directory, reads then into r, and appends them
-    res <- data.frame()
+    res <- list()
     files <- list.files(dir, pattern = '.csv$')
+    sources <- strsplit(files, split = '_')
     for(i in 1:length(files)) {
         tmp <- read.csv(paste(dir, files[i], sep = '/'), header = TRUE,
                         sep = ',', stringsAsFactors = FALSE)
-        tmp$source <- strsplit(files[i], split = '_')[[1]][1]
-        res <- rbind(res, tmp)
+        tmp$source <- sources[[i]][1]
+        res[[i]] <- tmp
     }
+
     return(res)
 }
 
@@ -239,8 +237,8 @@ if(EXP3) {
 
 # gather empanelment information to add in ids for experiments below
 emp_bb_id_matches <- match_empanelment_bb_ids(
-    'ngs2_empanelment_pilot_completes.csv',
-    'empanelment_breadboard_ids.csv'
+    'wl_empanelment_20170811_1558.csv',
+    'oms_url_upload_20170821_1145.txt'
 )
 
 # EXPERIMENT 1

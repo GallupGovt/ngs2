@@ -8,31 +8,33 @@ exp1_rewire <- read.csv('NGS2-Cycle1-Experiment1/rewire_exp1.csv', header = TRUE
 
 ### Show stopper
 
-print("ATENTION!! Need to make sure the exp1_cooperation dataset includes the following variables: sessionnum, condition, decision..0.D.1.C.")
+if(!all(c('sessionnum', 'condition', 'decision..0.D.1.C.') %in% names(exp1_cooperation))) {
+    stop('Attention! `exp1_cooperation` must include `sessionnum`, `condition`, and `decision..0.D.1.C.` to proceed. Please fix.')
+}
+
+### Logit test and summary function
+
+logit_test_and_summary <- function (data, filter.condition) {
+  sub <- subset(data, condition == filter.condition)
+  logit_result <- glm(decision..0.D.1.C. ~ round_num, data = sub, family = 'binomial')
+  logit_vcov <- cluster.vcov(logit_result, cbind(sub$sessionnum, sub$playerid))
+  print(coeftest(logit_result, logit_vcov))
+}
 
 #Hypothesis 4.1.1: Fixed network compositions reduce exp1_cooperation
 #Rand  et al. (2011) coeff = -0.186, p<.000
 
-exp1_cooperation.fixed<-subset(exp1_cooperation, condition=="Static")
-logit.fixed <- glm(decision..0.D.1.C.~ round_num, data = exp1_cooperation.fixed, family = "binomial")
-logit.multiwayvcov.fixed <- cluster.vcov(logit.fixed, cbind(exp1_cooperation.fixed$sessionnum, exp1_cooperation.fixed$playerid))
-coeftest(logit.fixed, logit.multiwayvcov.fixed)
+Hypothesis.4.1.1<-logit_test_and_summary(exp1_cooperation, "Static")
 
 #Hypothesis 4.1.2: Randomly updating network compositions reduce exp1_cooperation
 #Rand  et al. (2011) coeff = -0.113, p<.000
 
-exp1_cooperation.random<-subset(exp1_cooperation, condition=="Random")
-logit.random <- glm(decision..0.D.1.C.~ round_num, data = exp1_cooperation.random, family = "binomial")
-logit.multiwayvcov.random <- cluster.vcov(logit.random, cbind(exp1_cooperation.random$sessionnum, exp1_cooperation.random$playerid))
-coeftest(logit.random, logit.multiwayvcov.random)
+Hypothesis.4.1.2<-logit_test_and_summary(exp1_cooperation, "Random")
 
 #Hypothesis 4.1.3: Slowly updating strategic networks reduce exp1_cooperation
 #Rand  et al. (2011) coeff = -0.220, p=.013
 
-exp1_cooperation.viscous<-subset(exp1_cooperation, condition=="Viscous")
-logit.viscous <- glm(decision..0.D.1.C.~ round_num, data = exp1_cooperation.viscous, family = "binomial")
-logit.multiwayvcov.viscous <- cluster.vcov(logit.viscous, cbind(exp1_cooperation.viscous$sessionnum, exp1_cooperation.viscous$playerid))
-coeftest(logit.viscous, logit.multiwayvcov.viscous)
+Hypothesis.4.1.3<-logit_test_and_summary(exp1_cooperation, "Viscous")
 
 #Hypothesis 4.1.4: Rapidly updating strategic networks support exp1_cooperation relative to all other conditions 
 #Rand  et al. (2011) coeff = 0.135, p = .006
@@ -43,10 +45,20 @@ coeftest(logit, logit.multiwayvcov)
 
 #Hypothesis 4.2.1	Rapidly updating strategic networks have greater network heterogeneity
 
-var <-aggregate(exp1_cooperation[,7], by=list(sessionnum=exp1_cooperation$sessionnum, fluid_dummy=exp1_cooperation$fluid_dummy), FUN=var)
-fluid.var<-(subset(var$x, var$fluid_dummy==1))
-other.var<-(subset(var$x, var$fluid_dummy==0))
-wilcox.test(fluid.var, other.var, paired = FALSE, alternative = "two.sided")
+network.variance <-aggregate(exp1_cooperation[,7], 
+                             by=list(sessionnum=exp1_cooperation$sessionnum, 
+                                     fluid_dummy=exp1_cooperation$fluid_dummy), 
+                             FUN=var)
+fluid.var<-(subset(network.variance$x, 
+                   network.variance$fluid_dummy==1)
+           )
+other.var<-(subset(var$x, 
+                   network.variance$fluid_dummy==0)
+           )
+wilcox.test(fluid.var, 
+            other.var, 
+            paired = FALSE, 
+            alternative = "two.sided")
 
 #Hypothesis 4.2.2	Links in rapidly updating strategic networks are more stable between cooperators than between a cooperator and a defector
 #Rand  et al. (2011) coeff = -2.29, p<.000

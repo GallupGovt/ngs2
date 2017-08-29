@@ -5,7 +5,7 @@
 a=Sys.info()
 print(a)
 b=sessionInfo(package = NULL)
-print(a)
+print(b)
 
 ### Set base directory
 

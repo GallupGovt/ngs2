@@ -19,7 +19,7 @@ rm(list=ls())
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
 pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmisc, corrgram, PerformanceAnalytics, 
-               doBy, car, ggplot2, DT, utils, lme4, rstan, rstanarm)
+               doBy, car, ggplot2, DT, utils, lme4, rstan, rstanarm, igraph)
 
 ### Process empanelment data
 

@@ -25,13 +25,9 @@ pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmis
 
 source ("NGS2_WITNESS_empanelment_prep.R")
 
-### Process breadboard data
+### Process breadboard data, including coloring game (post experiment 1) & DIFI  (post experiment 2)
 
 source ("NGS2_WITNESS_Cycle1_experiment_prep.R")
-
-### Process coloring game data
-
-# source ("NGS2_WITNESS_Cycle1_coloring_prep.R") ### TO BE ADDED (Pablo)
 
 ### Response funnel 
 
@@ -54,8 +50,8 @@ source ("NGS2_WITNESS_Cycle1_bayesian_exp1.R")
 ### EXPERIMENT 2
 ### Analyze experiment 2 
 
-source ("NGS2_WITNESS_Cycle1_exploratory_exp1.R")
+source ("NGS2_WITNESS_Cycle1_exploratory_exp2.R")
 # source ("NGS2_WITNESS_Cycle1_machine_exp2.R")  ### TO BE ADDED (Anu)
-source ("NGS2_WITNESS_Cycle1_confirmatory_exp1.R")
-# source ("NGS2_WITNESS_Cycle1_bayesian_exp2.R")  ### TO BE ADDED (Pablo)
+source ("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
+source ("NGS2_WITNESS_Cycle1_bayesian_exp2.R")
 

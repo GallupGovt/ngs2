@@ -24,10 +24,10 @@ def create_experiment_counts(files):
 
 
 def determine_eligibility(row):
-    if (row.signups==2) & (row.experiments>0):
-        return 'ineligible'
-    else:
+    if (row.experiments==0) | ((row.signups==1) & (row.experiments==1)):
         return 'eligible'
+    else:
+        return 'ineligible'
 
 
 def gather_data(directory):
@@ -92,22 +92,3 @@ if __name__ == '__main__':
     args_dict = vars(parser.parse_args())
 
     run(args_dict)
-
-
-# INSTRUCTIONS
-# (signup, experiment)
-# 1. Participant has completed no experiments and is not signed up for any
-#       additional sessions = Eligible (0, 0)
-# 2. Participant has completed no experiments and is signed up for one
-#       additional session = Eligible (1, 0)
-# 3. Participant has completed no experiments and is signed up for two
-#       additional sessions (unlikely, but possible since we are doing manual
-#       additions) = Ineligible, alert Dan (2, 0)
-# 4. Participant has completed one experiment and is not signed up for any
-#       additional sessions = Eligible (1, 1)
-# 5. Participant has completed one experiment and is signed up for one
-#       additional session = Ineligible (2, 1)
-# 6. Participant has completed two experiments = Ineligible (2, 2)
-
-# ELIGIBLE: [1] (0, 0), [2] (1, 0), [3] (2, 0), [4] (1, 1)
-# INELIGIBLE: [5] (2, 1), [6] (2, 2)

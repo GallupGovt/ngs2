@@ -7,67 +7,77 @@ EXP3 <- FALSE # boolean; change to TRUE if there is experiment 3 data
 # Define functions
 add_actions <- function(data, actions, focus = c('player', 'alter')) {
     # add respondent actions to `rewire` dataset
-    return(mapply(function(x, y) {
-        if(focus == 'player') {
-            x <- merge(
-                x,
-                y[, c('pid', 'round', 'action')],
-                by = c('round', 'pid')
-            )
-            x$action <- ifelse(x$action == 'cooperate', 'C', 'D')
-            names(x)[grep('^action$', names(x))] <- 'playeraction'
+    res <- mapply(function(x, y) {
+        if(nrow(x) > 0) {
+            if(focus == 'player') {
+                x <- merge(
+                    x,
+                    y[, c('pid', 'round', 'action')],
+                    by = c('round', 'pid')
+                )
+                x$action <- ifelse(x$action == 'cooperate', 'C', 'D')
+                names(x)[grep('^action$', names(x))] <- 'playeraction'
+            } else {
+                x <- merge(
+                    x,
+                    y[, c('pid', 'round', 'action')],
+                    by.x = c('round', 'nid'),
+                    by.y = c('round', 'pid')
+                )
+                x$action <- ifelse(x$action == 'cooperate', 'C', 'D')
+                names(x)[grep('^action$', names(x))] <- 'alteraction'
+            }
+            return(x)
         } else {
-            x <- merge(
-                x,
-                y[, c('pid', 'round', 'action')],
-                by.x = c('round', 'nid'),
-                by.y = c('round', 'pid')
-            )
-            x$action <- ifelse(x$action == 'cooperate', 'C', 'D')
-            names(x)[grep('^action$', names(x))] <- 'alteraction'
+            return(data.frame())
         }
-        return(x)
-    }, data, actions, SIMPLIFY = FALSE))
+    }, data, actions, SIMPLIFY = FALSE)
+    return(res)
 }
 
 add_ties <- function(rewire, connections, rd_changes) {
     # add current and previous ties for actors
-    return(mapply(function(x, y, z) {
-        x$previouslytie <- NA
-        x$nowtie <- NA
-        for(i in 1:nrow(x)) {
-            if(x$round[i] == 1) {
-                id1 <- x[i, 'pid']
-                id2 <- x[i, 'nid']
-                conn_id <- which(
-                    (y$playerId1 == id1 & y$playerId2 == id2) |
-                    (y$playerId1 == id2 & y$playerId2 == id1)
-                )
-                x$previouslytie[i] <- ifelse(length(conn_id) == 0, 0, 1)
-                x$nowtie[i] <- ifelse(
-                    (x$previouslytie[i] == 1 & x$break_tie[i] != 1) |
-                    (x$previouslytie[i] == 0 & x$make_tie[i] == 1), 1, 0
-                )
-            } else {
-                rd <- x$round[i] - 1
-                id1 <- x[i, 'pid']
-                id2 <- x[i, 'nid']
-                conn_id <- which(
-                    (z[[rd]]$playerId1 == id1 & z[[rd]]$playerId2 == id2) |
-                    (z[[rd]]$playerId1 == id2 & z[[rd]]$playerId2 == id1)
-                )
-                x$previouslytie[i] <- ifelse(length(conn_id) == 0, 0, 1)
-                x$nowtie[i] <- ifelse(
-                    (x$previouslytie[i] == 1 & x$break_tie[i] != 1) |
-                    (x$previouslytie[i] == 0 & x$make_tie[i] == 1), 1, 0
-                )
+    res <- mapply(function(x, y, z) {
+        if(nrow(x) > 0) {
+            x$previouslytie <- NA
+            x$nowtie <- NA
+            for(i in 1:nrow(x)) {
+                if(x$round[i] == 1) {
+                    id1 <- x[i, 'pid']
+                    id2 <- x[i, 'nid']
+                    conn_id <- which(
+                        (y$playerId1 == id1 & y$playerId2 == id2) |
+                        (y$playerId1 == id2 & y$playerId2 == id1)
+                    )
+                    x$previouslytie[i] <- ifelse(length(conn_id) == 0, 0, 1)
+                    x$nowtie[i] <- ifelse(
+                        (x$previouslytie[i] == 1 & x$break_tie[i] != 1) |
+                        (x$previouslytie[i] == 0 & x$make_tie[i] == 1), 1, 0
+                    )
+                } else {
+                    rd <- x$round[i] - 1
+                    id1 <- x[i, 'pid']
+                    id2 <- x[i, 'nid']
+                    conn_id <- which(
+                        (z[[rd]]$playerId1 == id1 & z[[rd]]$playerId2 == id2) |
+                        (z[[rd]]$playerId1 == id2 & z[[rd]]$playerId2 == id1)
+                    )
+                    x$previouslytie[i] <- ifelse(length(conn_id) == 0, 0, 1)
+                    x$nowtie[i] <- ifelse(
+                        (x$previouslytie[i] == 1 & x$break_tie[i] != 1) |
+                        (x$previouslytie[i] == 0 & x$make_tie[i] == 1), 1, 0
+                    )
+                }
             }
-        }
-        names(x)[grep('pid', names(x))] <- 'playerid'
-        names(x)[grep('nid', names(x))] <- 'alterid'
+            names(x)[grep('pid', names(x))] <- 'playerid'
+            names(x)[grep('nid', names(x))] <- 'alterid'
 
-        return(x)
-    }, rewire, connections, rd_changes, SIMPLIFY = FALSE))
+            return(x)
+        } else {
+            return(data.frame())
+        }
+    }, rewire, connections, rd_changes, SIMPLIFY = FALSE)
+    return(res)
 }
 
 build_cooperation <- function(actions) {
@@ -117,18 +127,23 @@ build_empanelment_bb_xwalk <- function(file) {
 
 build_rewire <- function(changes) {
     # start building the `rewire` output file
-    return(lapply(changes, function(x) {
-        tmp <- x[
-            order(x$round, x$pid, x$nid),
-            c('round', 'pid', 'nid', 'action_num')
-        ]
+    res <- lapply(changes, function(x) {
+        if(nrow(x) > 0) {
+            tmp <- x[
+                order(x$round, x$pid, x$nid),
+                c('round', 'pid', 'nid', 'action_num')
+            ]
 
-        tmp$break_tie <- ifelse(tmp$action_num == -1, 1, 0)
-        tmp$make_tie <- ifelse(tmp$action_num == 1, 1, 0)
-        tmp$action_num <- ifelse(tmp$action != 0, 1, tmp$action_num)
+            tmp$break_tie <- ifelse(tmp$action_num == -1, 1, 0)
+            tmp$make_tie <- ifelse(tmp$action_num == 1, 1, 0)
+            tmp$action_num <- ifelse(tmp$action != 0, 1, tmp$action_num)
 
-        return(tmp)
-    }))
+            return(tmp)
+        } else {
+            return(data.frame())
+        }
+    })
+    return(res)
 }
 
 calculate_connections <- function(rounds) {
@@ -212,14 +227,23 @@ create_subsets <- function(data, action, scrubs, strip_practice=TRUE) {
     }))
 }
 
-identify_condition <- function(data, condition) {
-    # takes a specified initial starting condition and returns its values
-    tmp <- data$data.value[data$data.name == condition]
-    if(length(grep('^[A-Za-z]', tmp)) == 0) {
-        return(as.numeric(tmp))
-    } else {
-        return(as.logical(toupper(tmp)))
+get_neighbor_number <- function(d, cnx, rd) {
+    ids <- d$pid[d$round == rd]
+    tmp <- cnx[cnx$playerId1 %in% ids & cnx$playerId2 %in% ids, ]
+    tmp_df <- merge(
+        data.frame(table(tmp$playerId1)),
+        data.frame(table(tmp$playerId2)),
+        by = 'Var1',
+        all = TRUE
+    )
+    tmp_df[is.na(tmp_df)] <- 0
+    for(id in ids) {
+        d$num_neighbors[d$round == rd & d$pid == id] <- sum(
+            tmp_df$Freq.x[tmp_df$Var1 == id],
+            tmp_df$Freq.y[tmp_df$Var1 == id]
+        )
     }
+    return(d)
 }
 
 read_input_files <- function(dir) {
@@ -291,9 +315,7 @@ coop <- mapply(function(x, y, exp) {
                        value.var = 'data.value')
         x$num_neighbors <- NA
         for(i in 1:max(x$round)) {
-            if(i == 1) {
-
-            }
+            x <- get_neighbor_number(x, conns, i)
         }
         return(x[, c('round', 'pid', 'action', 'group_size',
                      'previous_decision', 'num_neighbors')])
@@ -341,13 +363,17 @@ rewire <- add_actions(rewire, act, focus = 'player')
 rewire <- add_actions(rewire, act, focus = 'alter')
 
 rewire <- lapply(rewire, function(x) {
-    x$state <- apply(x[, grep('action$', names(x))], 1, function(y) {
-        paste0(y, collapse = '')
-    })
-    x$CC <- ifelse(x$state == 'CC', 1, 0)
-    x$DD <- ifelse(x$state == 'DD', 1, 0)
-    x$other_d <- ifelse(x$alteraction == 'D', 1, 0)
-    return(x)
+    if(nrow(x) > 0) {
+        x$state <- apply(x[, grep('action$', names(x))], 1, function(y) {
+            paste0(y, collapse = '')
+        })
+        x$CC <- ifelse(x$state == 'CC', 1, 0)
+        x$DD <- ifelse(x$state == 'DD', 1, 0)
+        x$other_d <- ifelse(x$alteraction == 'D', 1, 0)
+        return(x)
+    } else {
+        return(data.frame())
+    }
 })
 
 # add in previous and current ties
@@ -355,7 +381,9 @@ rewire <- add_ties(rewire, conn, round_changes)
 
 # add oin parameters from dataset for completeness
 rewire <- do.call(rbind, mapply(function(x, name) {
-    x$session <- name
+    if(nrow(x) > 0) {
+        x$session <- name
+    }
     return(x)
 }, rewire, as.list(names(rewire)), SIMPLIFY = FALSE))
 
@@ -394,9 +422,9 @@ write.csv(rewire[order(rewire$round, rewire$playerid), var_order],
 
 # Experiment 2
 ###############################################################################
-#Restructure raw data output from Breadboard into 'cooperation' dataset
+# Restructure raw data output from Breadboard into 'cooperation' dataset
 ###############################################################################
-#Subset cooperation decisions, drop "datetime" and "event fields"
+# Subset cooperation decisions, drop "datetime" and "event fields"
 coop <- lapply(exp2, function(x) {
     return(subset(x, event == 'CooperationDecision',
                   select = c('id', 'data.name', 'data.value')))
@@ -406,90 +434,113 @@ coop <- lapply(exp2, function(x) {
 coop.events <- lapply(coop, function(x) {
     tmp <- reshape(x, timevar = "data.name", idvar = c("id"), direction = "wide")
 
-    # Declare `data.value` fields as numerics so events can be sorted logically
-    tmp[, 2:ncol(tmp)] <- apply(tmp[, 2:ncol(tmp)], 2, function(y) {
-        return(ifelse(grepl('^_', y), as.numeric(gsub('_', '', y)), as.numeric(y)))
-    })
-
-    # Sort cooperation events by player id ('data.value.pid') and round
-    # ('data.value.curRound')
-    tmp <- tmp[order(tmp$data.value.pid, tmp$data.value.curRound), ]
-
+    # Declare some `data.value` fields as numerics so events can be sorted logically
+    tmp[, grep('oup|ion|und$', names(tmp))] <- apply(
+        tmp[, grep('oup|ion|und$', names(tmp))], 2, function(y) {
+            return(ifelse(grepl('^_', y), as.numeric(gsub('_', '', y)), as.numeric(y)))
+        }
+    )
     return(tmp)
 })
 
-#Create list of group selections by each individual ('pid') at the "ChooseGroup"
-#and "ChangeGroup" events
+# Create list of group selections by each individual ('pid') at the "ChooseGroup"
+# and "ChangeGroup" events
 group <- lapply(exp2, function(x) {
     return(subset(x, event %in% c('ChooseGroup', 'ChangeGroup') &
            data.name %in% c('group', 'pid', 'curRound'),
            select = c('id', 'data.name', 'data.value')))
 })
 group.events <- lapply(group, function(x) {
-    tmp <- reshape(x, timevar = "data.name", idvar = c("id"), direction = "wide")[,-(1)]
-    tmp$link <- tmp$data.value.pid * 1000 + tmp$data.value.curRound
-    tmp <- tmp[,c(2,4)]
-    colnames(tmp)[1] <- c("group")
+    tmp <- reshape(x, timevar = "data.name", idvar = c("id"), direction = "wide")[, -1]
+    tmp$link <- (as.numeric(as.factor(tmp$data.value.pid)) * 1000 +
+                 as.numeric(tmp$data.value.curRound))
+    tmp <- tmp[, grep('pid|group|link$', names(tmp))]
+    names(tmp) <- gsub('data.value.', '', names(tmp))
     return(tmp)
 })
 
-#Since group changes only happen at rounds 1, 4, 8, 12 and so on, need to
-#recode id links at the coop.events level to match this sequence
-#CHECK THAT THIS IS INDEED THE GROUP CHANGE SEQUENCE. (ALSO FIND LESS
-#EMBARRASSING WAY TO CREATE THIS 'recround' VARIABLE!)
-#WILL NEED TO ADD MORE 'recround' values if there are more than 24 rounds in a given game
+# Since group changes only happen at rounds 1, 4, 8, 12 and so on, need to
+# recode id links at the coop.events level to match this sequence
+coop.events <- lapply(coop.events, function(x) {
+    x$recround <- cut(
+        x$data.value.curRound,
+        breaks = c(seq(1,24, 4), 24),
+        right = FALSE,
+        include.lowest = TRUE,
+        labels = c(1, 4, 8, 12, 16, 20)
+    )
+    # Create id link for coop.events data frame to merge the group change data
+    x$link <- (as.numeric(as.factor(x$data.value.pid)) * 1000 +
+               as.numeric(as.character(x$recround)))
+    return(x)
+})
 
-## Comment by Anu: I changed your code to following to reflect the same logic
-coop.events$recround <- cut(coop.events$data.value.curRound,
-                            breaks = c(seq(1,24, 4), 24), right = FALSE,
-                            include.lowest = TRUE, labels = c(1, 4, 8, 12, 16, 20))
+cooperation <- mapply(function(x, y) {
+    merge(x, y, by = 'link')
+}, coop.events, group.events, SIMPLIFY = FALSE)
 
-#Create id link for coop.events data frame to merge the group change data
-## Comment by Anu: We need to change the recround to be numeric to do the operation
-coop.events$link<-coop.events$data.value.pid*1000 + as.numeric(as.character(coop.events$recround))
-cooperation <- merge(coop.events, group.events,by="link")
+# Add condition
+cooperation <- do.call(rbind, mapply(function(x, y, name) {
+    c1 <- as.numeric(y$data.value[y$data.name == 'M'])
+    c2 <- as.numeric(subset(y, data.name == 'sameGroupConnectivity')[, 'data.value'])
+    c3 <- as.numeric(subset(y, data.name == 'diffGroupConnectivity')[, 'data.value'])
 
-#Add condition
-#CHECK HOW THIS WORKS WITH MULTIPLE SESSIONS/CONDITIONS!!)
-condition1<- as.character(exp2$data.value[exp2$data.name == "M"])
-condition2<- as.numeric(as.character(subset(exp2, data.name=="sameGroupConnectivity")[,5]))
-condition3<- as.numeric(as.character(subset(exp2, data.name=="diffGroupConnectivity")[,5]))
-if (condition1=="2" & condition2>condition3) {
-  cooperation$condition<-"Biased-2"
-} else if (condition1=="4" & condition2>condition3) {
-  cooperation$condition<-"Biased-4"
-} else if (condition1=="2" & condition2==condition3) {
-  cooperation$condition<-"Unbiased-2"
-} else if (condition1=="4" & condition2==condition3)
-  cooperation$condition<-"Unbiased-4"
-#'condition3'>'condition2' (biased connections towards outgroup)is not contemplated in the current experiment
-#If this situation would happen by mistake, the value of 'condition' will show as "".
-#cooperation$condition
+    if (c1 == 2 & c2 > c3) {
+        x$condition <- 'Biased-2'
+    } else if (c1 == 4 & c2 > c3) {
+        x$condition <- 'Biased-4'
+    } else if (c1 == 2 & c2 == c3) {
+        x$condition <- 'Unbiased-2'
+    } else if (c1 == 4 & c2 == c3){
+        x$condition <- 'Unbiased-4'
+    # 'c3' > 'c2' (biased connections towards outgroup) is not contemplated in
+    # the current experiment. If this situation would happen by mistake, the
+    # value of 'condition' will show as 'Other'.
+    } else {
+        x$condition <- 'Other'
+    }
 
-#Add session number
-#CHECK HOW THIS WORKS WITH MULTIPLE SESSIONS/CONDITIONS!!)
-cooperation$session<- "1"
+    # Add session number
+    x$session <- name
 
-#Drop unused variables
-cooperation<-cooperation [,c(3:6,8:10)]
+    return(x)
+}, cooperation, exp2, as.list(names(cooperation)), SIMPLIFY = FALSE))
+
+# Drop unused variables
+KEEP_VARS <- c(
+    'data.value.pid',
+    'data.value.curRound',
+    'data.value.group',
+    'data.value.cooperation',
+    'group',
+    'condition',
+    'session'
+)
+cooperation <- cooperation[, KEEP_VARS]
 
 #Change variable names to shorter, clearer names
-colnames(cooperation) <- c("playerid", "round_num", "group_coop", "decision0d1c", "group", "condition", "session")
-
-#Remove factor levels for 'group_coop' and 'decision0d1c'
-cooperation$group_coop<-as.numeric(as.character(cooperation$group_coop))
-cooperation$decision0d1c<-as.numeric(as.character(cooperation$decision0d1c))
+names(cooperation) <- c(
+    'playerid',
+    'round_num',
+    'group_coop',
+    'decision0d1c',
+    'group',
+    'condition',
+    'session'
+)
 
 #Add in-group vs. out-group dummy
-cooperation$ingroup <- ifelse(cooperation$group_coop==cooperation$group, 1, 0)
+cooperation$ingroup <- ifelse(cooperation$group_coop == cooperation$group, 1, 0)
 
 #Add biased vs. unbiased dummy
-cooperation$biased <- ifelse(cooperation$condition=="Biased-2" | cooperation$condition=="Biased-4", 1, 0)
-cooperation$identities <- ifelse(cooperation$condition=="Biased-4" | cooperation$condition=="Unbiased-4", 1, 0)
+cooperation$biased <- ifelse(cooperation$condition == 'Biased-2' |
+                             cooperation$condition == 'Biased-4', 1, 0)
+cooperation$identities <- ifelse(cooperation$condition == 'Biased-4' |
+                                 cooperation$condition == 'Unbiased-4', 1, 0)
 
 # add in empanelment id for non-bots
-cooperation <- merge(cooperation, emp_bb_id_matches, by.x = 'playerid',
-                     by.y = 'bb_id', all.x = TRUE)
+cooperation <- merge(cooperation, empanel_bb_xwalk, by.x = 'playerid',
+                     by.y = 'bbid', all.x = TRUE)
 
 write.csv(
     cooperation[order(cooperation$round_num, cooperation$playerid), ],
@@ -498,63 +549,85 @@ write.csv(
     na = ''
 )
 
-########################################################################################################################
+###############################################################################
 #Restructure raw data output from Breadboard into 'rewire' dataset
-########################################################################################################################
-
-#Subset change decisions, drop "datetime" and "event fields"
-changegroup <- subset(exp2,
-    event=="ChangeGroup" &
-    (data.name=="group" | data.name=="pid" | data.name=="curRound")
-)[,-(2:3)]
-changegroup.events <- reshape(changegroup, timevar = "data.name", idvar = c("id"), direction = "wide")[,-(1)]
-changegroup.events <- strip_chars(changegroup.events)
-changegroup.events$link<-changegroup.events$data.value.pid*1000+changegroup.events$data.value.curRound
-colnames(changegroup.events)[1] <- "playerid"
-colnames(changegroup.events)[2] <- "group"
-colnames(changegroup.events)[3] <- "round_num"
+###############################################################################
+# Subset change decisions, drop "datetime" and "event fields"
+changegroup.events <- lapply(exp2, function(x) {
+    tmp <- subset(x, event == 'ChangeGroup' & data.name != 'changedGroup',
+                  select = c('id', 'data.name', 'data.value'))
+    tmp <- dcast(tmp, id ~ data.name, value.var = 'data.value')
+    tmp[, grep('^cur|gro', names(tmp))] <- apply(
+        tmp[, grep('^cur|gro', names(tmp))], 2, function(y) {
+            return(as.numeric(y))
+        }
+    )
+    tmp$link <- as.numeric(as.factor(tmp$pid)) * 1000 + tmp$curRound
+    tmp <- tmp[, c('pid', 'group', 'curRound', 'link')]
+    names(tmp) <- c('playerid', 'group', 'round_num', 'link')
+    return(tmp)
+})
 
 #Subset rewire decisions, drop "datetime" and "event fields"
-rewire <- subset(exp2, event=="RewiringDecision")[,-(2:3)]
-rewire.events<-reshape(rewire, timevar = "data.name", idvar = c("id"), direction = "wide")
-rewire.events <- strip_chars(rewire.events)
-rewire.events$link<-rewire.events$data.value.pid*1000+rewire.events$data.value.curRound
-rewire.events<-rewire.events[,c(4:6)]
-colnames(rewire.events)[1] <- "group_connect"
-colnames(rewire.events)[2] <- "connect"
+rewire.events <- lapply(exp2, function(x) {
+    tmp <- dcast(subset(x, event == 'RewiringDecision'), id ~ data.name,
+                 value.var = 'data.value')
+    tmp[, grep('^cur|dec|gro', names(tmp))] <- apply(
+        tmp[, grep('^cur|dec|gro', names(tmp))], 2, function(y) {
+            return(as.numeric(y))
+        }
+    )
+    tmp$link <- as.numeric(as.factor(tmp$pid)) * 1000 + tmp$curRound
+    tmp <- tmp[, c('group', 'decision', 'link')]
+    names(tmp) <- c('group_connect', 'connect', 'link')
+    return(tmp)
+})
 
-rewire <- merge(changegroup.events, rewire.events,by="link")
+rewire <- mapply(function(x, y) {
+    return(merge(x, y, by = 'link'))
+}, changegroup.events, rewire.events, SIMPLIFY = FALSE)
 
 #Add condition
-#CHECK HOW THIS WORKS WITH MULTIPLE SESSIONS/CONDITIONS!!)
-if (condition1=="2" & condition2>condition3) {
-  rewire$condition<-"Biased-2"
-} else if (condition1=="4" & condition2>condition3) {
-  rewire$condition<-"Biased-4"
-} else if (condition1=="2" & condition2==condition3) {
-  rewire$condition<-"Unbiased-2"
-} else if (condition1=="4" & condition2==condition3)
-  rewire$condition<-"Unbiased-4"
+rewire <- do.call(rbind, mapply(function(x, y, name) {
+    c1 <- as.numeric(y$data.value[y$data.name == 'M'])
+    c2 <- as.numeric(subset(y, data.name == 'sameGroupConnectivity')[, 'data.value'])
+    c3 <- as.numeric(subset(y, data.name == 'diffGroupConnectivity')[, 'data.value'])
 
-#Add session number
-#CHECK HOW THIS WORKS WITH MULTIPLE SESSIONS/CONDITIONS!!)
-rewire$sessionnum<- "1"
+    if (c1 == 2 & c2 > c3) {
+        x$condition <- 'Biased-2'
+    } else if (c1 == 4 & c2 > c3) {
+        x$condition <- 'Biased-4'
+    } else if (c1 == 2 & c2 == c3) {
+        x$condition <- 'Unbiased-2'
+    } else if (c1 == 4 & c2 == c3){
+        x$condition <- 'Unbiased-4'
+    # 'c3' > 'c2' (biased connections towards outgroup) is not contemplated in
+    # the current experiment. If this situation would happen by mistake, the
+    # value of 'condition' will show as 'Other'.
+    } else {
+        x$condition <- 'Other'
+    }
+
+    # Add session number
+    x$session <- name
+
+    return(x)
+}, rewire, exp2, as.list(names(rewire)), SIMPLIFY = FALSE))
 
 #Drop unused link variable
-rewire<-rewire[,-1]
-
-#Remove factor levels for 'group_coop' and 'decision0d1c'
-rewire$connect<-as.numeric(as.character(rewire$connect))
+rewire <- rewire[, -which(names(rewire) %in% 'link')]
 
 #Add in-group vs. out-group dummy
-rewire$ingroup <- ifelse(rewire$group_connect==rewire$group, 1, 0)
+rewire$ingroup <- ifelse(rewire$group_connect == rewire$group, 1, 0)
 
 #Add biased vs. unbiased dummy
-rewire$biased <- ifelse(rewire$condition=="Biased-2" | rewire$condition=="Biased-4", 1, 0)
-rewire$identities <- ifelse(rewire$condition=="Biased-4" | rewire$condition=="Unbiased-4", 1, 0)
+rewire$biased <- ifelse(rewire$condition == 'Biased-2' |
+                        rewire$condition == 'Biased-4', 1, 0)
+rewire$identities <- ifelse(rewire$condition == 'Biased-4' |
+                            rewire$condition == 'Unbiased-4', 1, 0)
 
 # add in empanelment id for non-bots
-rewire <- merge(rewire, emp_bb_id_matches, by.x = 'playerid', by.y = 'bb_id',
+rewire <- merge(rewire, empanel_bb_xwalk, by.x = 'playerid', by.y = 'bbid',
                 all.x = TRUE)
 
 write.csv(

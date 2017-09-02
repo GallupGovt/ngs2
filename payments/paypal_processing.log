@@ -1,0 +1,6 @@
+2017-07-27 17:17:06,017 | __main__ | paypal.py (109) | INFO | Starting transactions for /Users/matt_hoover/Documents/ngs2/payouts/test_24jul2017.csv.
+2017-07-27 17:18:09,961 | __main__ | paypal.py (109) | INFO | Starting transactions for /Users/matt_hoover/Documents/ngs2/payouts/test_24jul2017.csv.
+2017-07-27 17:22:39,111 | __main__ | paypal.py (109) | INFO | Starting transactions for /Users/matt_hoover/Documents/ngs2/payouts/test_24jul2017.csv.
+2017-07-27 17:22:41,055 | __main__ | paypal.py (151) | INFO | Payout for `batch_id` 24JUL2017A successfully processed (processing code: 4BVEF2HMBL6BS).
+2017-07-27 17:22:41,059 | __main__ | paypal.py (160) | INFO | Closing log for /Users/matt_hoover/Documents/ngs2/payouts/test_24jul2017.csv.
+

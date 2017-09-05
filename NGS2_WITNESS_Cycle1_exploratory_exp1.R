@@ -102,9 +102,6 @@ ggplot(exp1_cooperation,
 ########################################################################################################################
 #Exploratory analyses - Empanelment Predictors of Cooperation
 ########################################################################################################################
-###Show stopper
-
-print("ATENTION!!! Need to come back here and create summary cooperation variables")
 
 #Prob to cooperate
 
@@ -120,8 +117,7 @@ merged.exp1.agg <- merge (empanelment, av.cooperation, by = "empanel_id")
 
 #Group continuous variables
 
-NameListCont <- c("prob.cooperate", 
-                  "Q11_age",
+NameListCont <- c("Q11_age",
                   "Q25_adult_hh_num",
                   "Q26_child_hh_num",
                   "Q26_child_hh_num",
@@ -143,8 +139,7 @@ NameListCont <- c("prob.cooperate",
 #Group categorical variables
 #!!!Add "time of the day", "computer settings", "Race/ethnicity", "technology access"
 
-NameListCat <- c("prob.cooperate", 
-                 "Q12_gender",
+NameListCat <- c("Q12_gender",
                  "Q13_education",
                  "Q14_job",
                  "Q17_occupation",
@@ -156,11 +151,13 @@ NameListCat <- c("prob.cooperate",
 
 empanelment$empanel_id<-empanelment$ExternalReference
 
+merged.exp1.agg <- merge(empanelment, av.cooperation, by = "empanel_id")
+
 col.num <- which(colnames(merged.exp1.agg) %in% NameListCont)
 cont.vars <- merged.exp1.agg[,col.num]
 cont.data<-cbind(cont.vars, merged.exp1.agg$prob.cooperate)
 
-col.num <- which(colnames(empanelment) %in% NameListCat)
+col.num <- which(colnames(merged.exp1.agg) %in% NameListCat)
 cat.vars<- merged.exp1.agg[,col.num]
 cat.data<-cbind(cat.vars, merged.exp1.agg$prob.cooperate)
 
@@ -210,7 +207,7 @@ logit.tester <- function(ind.var) {
 
 logistic.coeffs.frame = list()
 for (i in all.vars) {
-  report.logistic<-logit.test(i)
+  report.logistic<-logit.tester(i)
   report.rows<-length(report.logistic[,1])
   logistic.coeffs.frame[[i]]<-as.data.frame(report.logistic[,1:4])[2:report.rows,]
 }

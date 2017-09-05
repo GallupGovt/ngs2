@@ -49,7 +49,7 @@ session_round_rate=exp1_cooperation%>%
   group_by(session, 
            round)%>%
   summarise(
-    rate_contr=mean(decision..0.D.1.C.)
+    rate_contr=mean(action)
   )
 session_round_rate=left_join(session_round_rate, 
                              session_info,
@@ -74,7 +74,7 @@ coop_neighbor=
            num_neighbors, 
            session)%>%
   summarise(
-    rate_contr=mean(decision..0.D.1.C.)
+    rate_contr=mean(action)
     )
 
 ggplot(coop_neighbor, 

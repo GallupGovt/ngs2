@@ -6,10 +6,6 @@ exp1_cooperation <- read.csv('NGS2-Cycle1-Experiment1/cooperation_exp1.csv',
 exp1_rewire <- read.csv('NGS2-Cycle1-Experiment1/rewire_exp1.csv', header = TRUE,
                         sep = ',')
 
-# Drop "other" conditions
-exp1_cooperation <- subset (exp1_cooperation, condition!="Other")
-exp1_rewire <- subset (exp1_cooperation, condition!="Other")
-
 ### Show stopper
 
 if(!all(c('session', 'condition', 'action') %in% names(exp1_cooperation))) {

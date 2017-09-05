@@ -27,7 +27,8 @@ source ("NGS2_WITNESS_empanelment_prep.R")
 
 ### Process breadboard data, including coloring game (post experiment 1) & DIFI  (post experiment 2)
 
-source ("NGS2_WITNESS_Cycle1_experiment_prep.R")
+source ("NGS2_WITNESS_Cycle1_experiment1_prep.R")
+source ("NGS2_WITNESS_Cycle1_experiment2_prep.R")
 
 ### Response funnel 
 

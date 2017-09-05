@@ -5,6 +5,8 @@ exp1_cooperation <- read.csv('NGS2-Cycle1-Experiment1/cooperation_exp1.csv',
                              header = TRUE, sep = ',')
 empanelment <- read.csv('data/empanelment_cleaned.csv',
                         header = TRUE, sep = ',')
+empanelment$empanel_id <- empanelment$ExternalReference
+merged.exp1 <- merge (empanelment, exp1_cooperation, by = "empanel_id")
 
 ########################################################################################################################
 #Descriptive analyses - Cooperation (From Tian Zeng)
@@ -13,13 +15,13 @@ empanelment <- read.csv('data/empanelment_cleaned.csv',
 ### Number of unique players, sessions, conditions.
 
 length(unique(merged.exp1$empanel_id))
-length(unique(merged.exp1$sessionnum))
+length(unique(merged.exp1$session))
 unique(merged.exp1$condition)
 
 ### Explore overall patterns of experimental sessions
 session_info=exp1_cooperation%>%
-  filter(round_num==1)%>%
-  group_by(sessionnum)%>%
+  filter(round==1)%>%
+  group_by(session)%>%
   summarise(
     num_player=n(),
     condition=unique(condition)[1]
@@ -44,17 +46,17 @@ ggplot(data = session_info,
 #### Cooperation rate over the course of a game.
 
 session_round_rate=exp1_cooperation%>%
-  group_by(sessionnum, 
-           round_num)%>%
+  group_by(session, 
+           round)%>%
   summarise(
     rate_contr=mean(decision..0.D.1.C.)
   )
 session_round_rate=left_join(session_round_rate, 
                              session_info,
-                             by="sessionnum")
+                             by="session")
 
 ggplot(session_round_rate, 
-       aes(x=factor(round_num), 
+       aes(x=factor(round), 
            y=rate_contr,
            fill=condition))+
   geom_boxplot()+
@@ -70,7 +72,7 @@ coop_neighbor=
   exp1_cooperation%>%
   group_by(condition, 
            num_neighbors, 
-           sessionnum)%>%
+           session)%>%
   summarise(
     rate_contr=mean(decision..0.D.1.C.)
     )
@@ -87,7 +89,7 @@ ggplot(coop_neighbor,
                                  hjust=1))
 
 ggplot(exp1_cooperation, 
-       aes(x=factor(round_num), 
+       aes(x=factor(round), 
            y=num_neighbors,
            fill=condition))+
   geom_boxplot()+
@@ -106,18 +108,20 @@ print("ATENTION!!! Need to come back here and create summary cooperation variabl
 
 #Prob to cooperate
 
-myvars <- c("empanel_id", "cooperate")
+myvars <- c("empanel_id", "action")
 newdata <- merged.exp1[myvars]
 
-av.cooperation <-aggregate(newdata$cooperate, 
+av.cooperation <-aggregate(newdata$action, 
                            by=list(newdata$empanel_id), 
                            FUN=mean, 
                            na.rm=TRUE)
 colnames(av.cooperation)<-c("empanel_id", "prob.cooperate")
+merged.exp1.agg <- merge (empanelment, av.cooperation, by = "empanel_id")
 
 #Group continuous variables
 
-NameListCont <- c("Q11_age",
+NameListCont <- c("prob.cooperate", 
+                  "Q11_age",
                   "Q25_adult_hh_num",
                   "Q26_child_hh_num",
                   "Q26_child_hh_num",
@@ -139,7 +143,8 @@ NameListCont <- c("Q11_age",
 #Group categorical variables
 #!!!Add "time of the day", "computer settings", "Race/ethnicity", "technology access"
 
-NameListCat <- c("Q12_gender",
+NameListCat <- c("prob.cooperate", 
+                 "Q12_gender",
                  "Q13_education",
                  "Q14_job",
                  "Q17_occupation",
@@ -165,7 +170,6 @@ all.vars<-c(NameListCat, NameListCont)
 
 corrgram (cont.vars)
 chart.Correlation(cont.vars)
-summary(cont.vars$Q35_social_networks)
 
 ### Association visualizations from categorical variables
 
@@ -194,9 +198,9 @@ for (i in 1:(length(NameListCat))){
 
 logit.tester <- function(ind.var) {
   vars<-paste(c(ind.var))
-  formula.logit<-as.formula(paste("cooperate~", vars, sep=""))
+  formula.logit<-as.formula(paste("action~", vars, sep=""))
   logit.test <- glm(formula.logit, data = merged.exp1, family = "binomial")
-  logit.multiwayvcov.test <- cluster.vcov(logit.test, cbind(merged.exp1$sessionnum, merged.exp1$pid))
+  logit.multiwayvcov.test <- cluster.vcov(logit.test, cbind(merged.exp1$session, merged.exp1$pid))
   output<-coeftest(logit.test, logit.multiwayvcov.test)
   return(output)
 }

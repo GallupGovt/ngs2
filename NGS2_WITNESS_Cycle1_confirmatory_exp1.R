@@ -66,7 +66,7 @@ Hypothesis.4.2.1 <- wilcox.test(fluid.var,
 exp1_rewire.cd.dc<-subset(exp1_rewire, previouslytie==1 & (state=="CC" | state=="CD" | state=="DC"))
 logit.cd.dc <- glm(break_tie~CC, data = exp1_rewire.cd.dc, family = "binomial")
 logit.multiwayvcov.cd.dc <- cluster.vcov(logit.cd.dc, cbind(exp1_rewire.cd.dc$session, exp1_rewire.cd.dc$pid))
-coeftest(logit.cd.dc, logit.multiwayvcov.cd.dc)
+Hypothesis.4.2.2 <- coeftest(logit.cd.dc, logit.multiwayvcov.cd.dc)
 
 #Hypothesis 4.2.3	Links in rapidly updating strategic networks are more stable between cooperators than between between two defectors
 #Rand  et al. (2011) coeff = -2.94, p<.000

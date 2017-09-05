@@ -106,7 +106,7 @@ ggplot(session_round_rate,
 
 session_info=exp2_rewire%>%
   filter(round_num==3)%>%
-  group_by(sessionnum)%>%
+  group_by(session)%>%
   summarise(
     num_player=n(),
     condition=unique(condition)[1]
@@ -114,7 +114,7 @@ session_info=exp2_rewire%>%
   arrange(condition)
 
 session_round_connect=exp2_rewire%>%
-  group_by(sessionnum, 
+  group_by(session, 
            round_num, 
            ingroup)%>%
   summarise(
@@ -122,7 +122,7 @@ session_round_connect=exp2_rewire%>%
   )
 session_round_connect=left_join(session_round_connect, 
                              session_info,
-                             by="sessionnum")
+                             by="session")
 
 ggplot(session_round_connect, 
        aes(x=factor(round_num), 
@@ -141,10 +141,10 @@ ggplot(session_round_connect,
 
 # Prob to cooperate
 
-myvars <- c("empanel_id", "cooperate")
+myvars <- c("empanel_id", "decision0d1c")
 newdata <- merged.exp2[myvars]
 
-av.cooperation <-aggregate(newdata$cooperate, 
+av.cooperation <-aggregate(newdata$decision0d1c, 
                            by=list(newdata$empanel_id), 
                            FUN=mean, 
                            na.rm=TRUE)
@@ -185,6 +185,8 @@ NameListCat <- c("Q12_gender",
                  "Q22_income_feeling")
 
 empanelment$empanel_id<-empanelment$ExternalReference
+
+merged.exp2.agg <- merge(empanelment, av.cooperation, by = "empanel_id")
 
 col.num <- which(colnames(merged.exp2.agg) %in% NameListCont)
 cont.vars <- merged.exp2.agg[,col.num]
@@ -229,7 +231,7 @@ for (i in 1:(length(NameListCat))){
 
 logit.tester <- function(ind.var) {
   vars<-paste(c(ind.var))
-  formula.logit<-as.formula(paste("cooperate~", vars, sep=""))
+  formula.logit<-as.formula(paste("decision0d1c~", vars, sep=""))
   logit.test <- glm(formula.logit, data = merged.exp2, family = "binomial")
   logit.multiwayvcov.test <- cluster.vcov(logit.test, cbind(merged.exp2$session, merged.exp2$pid))
   output<-coeftest(logit.test, logit.multiwayvcov.test)
@@ -241,10 +243,10 @@ logit.tester <- function(ind.var) {
 
 logistic.coeffs.frame = list()
 for (i in all.vars) {
-  report.logistic<-logit.test(i)
+  report.logistic<-logit.tester(i)
   report.rows<-length(report.logistic[,1])
   logistic.coeffs.frame[[i]]<-as.data.frame(report.logistic[,1:4])[2:report.rows,]
 }
 report.logistic.all<-do.call(rbind, logistic.coeffs.frame)
 report.logistic.all<-cbind(row.names(report.logistic.all), report.logistic.all)
-write.csv(report.logistic.all, file = 'logit_coop_exp1.csv', row.names = FALSE, na = '')
+write.csv(report.logistic.all, file = 'logit_coop_exp2.csv', row.names = FALSE, na = '')

@@ -21,11 +21,16 @@ merged.exp2 <- merge (empanelment, exp2_cooperation, by = "empanel_id")
 # Descriptive analyses - Cooperation (From Tian Zeng)
 ########################################################################################################################
 
-# Number of unique players, sessions, conditions.
+# Number of unique players, sessions, conditions, players by condition, sessions by condition
 
 length(unique(exp2_cooperation$empanel_id))
 length(unique(exp2_cooperation$session))
 unique(exp2_cooperation$condition)
+aggregate(empanel_id ~ condition, data = merged.exp2[merged.exp2$round==1,], FUN = length)
+sessions.condition <- aggregate(empanel_id ~ condition+session, 
+                                data = merged.exp2[merged.exp2$round==1,], 
+                                FUN = length)
+aggregate(session ~ condition, data = sessions.condition, FUN = length)
 
 # Explore overall patterns of experimental sessions
 

@@ -39,7 +39,7 @@ Hypothesis.4.1.3<-logit_test_and_summary(exp1_cooperation, "Viscous")
 #Hypothesis 4.1.4: Rapidly updating strategic networks support exp1_cooperation relative to all other conditions 
 #Rand  et al. (2011) coeff = 0.135, p = .006
 
-logit <- glm(action ~ fluid_dummy*round_num, data = exp1_cooperation, family = "binomial")
+logit <- glm(action ~ fluid_dummy*round, data = exp1_cooperation, family = "binomial")
 logit.multiwayvcov <- cluster.vcov(logit, cbind(exp1_cooperation$session, exp1_cooperation$pid))
 Hypothesis.4.1.4<-coeftest(logit, logit.multiwayvcov)
 

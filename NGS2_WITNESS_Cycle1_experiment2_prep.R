@@ -14,11 +14,11 @@ if(Sys.info()['sysname'] == 'Darwin') {
 # Define constants for use in programmatically working through new data
 CYCLE <- 1 # should be numeric; the cycle number being processed
 KEEP_VARS <- c(
-    'data.value.pid',
-    'data.value.curRound',
-    'data.value.group',
-    'data.value.cooperation',
-    'group',
+    'pid',
+    'curRound',
+    'group.x',
+    'cooperation',
+    'group.y',
     'condition',
     'session'
 )
@@ -123,19 +123,16 @@ group <- lapply(exp2, function(x) {
            data.name %in% c('group', 'pid', 'curRound'),
            select = c('id', 'event', 'data.name', 'data.value')))
 })
-group.events <- lapply(group, function(x) {
+group.events <- mapply(function(x, y) {
     tmp <- dcast(x, id + event ~ data.name, value.var = 'data.value')
-    tmp$link <- (as.numeric(as.factor(tmp$pid)) * 1000 + as.numeric(tmp$curRound))
+    tmp <- tmp[tmp$pid %in% y$pid, ]
+    tmp$link <- ifelse(tmp$event == 'ChooseGroup',
+        as.numeric(as.factor(tmp$pid)) * 1000 + as.numeric(tmp$curRound),
+        as.numeric(as.factor(tmp$pid)) * 1000 + (as.numeric(tmp$curRound) + 1))
     tmp <- tmp[, grep('pid|event|group|Round|link$', names(tmp))]
 
-    # add an optional condition to drop the `ChooseGroup` events if there is a
-    # `ChangeGroup` event in round 1
-    if(length(which(tmp$event == 'ChangeGroup' & tmp$curRound == 1))) {
-        tmp <- subset(tmp, tmp$event == 'ChangeGroup')
-    }
-
     return(tmp)
-})
+}, group, coop.events, SIMPLIFY = FALSE)
 
 # Develop change event sequence by session
 change.events <- lapply(exp2, function(x) {
@@ -143,27 +140,28 @@ change.events <- lapply(exp2, function(x) {
     return(which(roll$data.value < .25))
 })
 
-# Group changes happen at random rounds (p ~ 0.25) 1, 4, 8, 12 and so on, need to
-# recode id links at the coop.events level to match this sequence
+# Group changes happen at random rounds (p ~ 0.25) so need to recode id links
+# at the coop.events level to match this sequence
 coop.events <- mapply(function(x, rd) {
     x$recround <- cut(
         x$curRound,
         breaks = c(rd, max(x$curRound) + 1),
-        right = FALSE,
-        include.lowest = TRUE,
-        labels = rd
+        right = TRUE,
+        include.lowest = FALSE,
+        labels = rd + 1
     )
     x$recround <- as.numeric(as.character(x$recround))
     x$recround[is.na(x$recround)] <- 1
 
-    # Create id link for coop.events data frame to merge the group change data
     x$link <- as.numeric(as.factor(x$pid)) * 1000 + x$recround
 
     return(x)
 }, coop.events, change.events, SIMPLIFY = FALSE)
 
 cooperation <- mapply(function(x, y) {
-    merge(x, y, by = 'link')
+    merge(x[, c('cooperation', 'curRound', 'group', 'pid', 'link')],
+          y[, c('link', 'group')],
+          by = 'link')
 }, coop.events, group.events, SIMPLIFY = FALSE)
 
 # Add condition
@@ -172,7 +170,7 @@ cooperation <- add_experiment_condition(cooperation, exp2)
 # Drop unused variables
 cooperation <- cooperation[, KEEP_VARS]
 
-#Change variable names to shorter, clearer names
+# Change variable names to shorter, clearer names
 names(cooperation) <- c(
     'playerid',
     'round_num',
@@ -204,7 +202,7 @@ write.csv(
 )
 
 ###############################################################################
-#Restructure raw data output from Breadboard into 'rewire' dataset
+# Restructure raw data output from Breadboard into 'rewire' dataset
 ###############################################################################
 # Subset change decisions, drop "datetime" and "event fields"
 changegroup.events <- lapply(exp2, function(x) {
@@ -222,7 +220,7 @@ changegroup.events <- lapply(exp2, function(x) {
     return(tmp)
 })
 
-#Subset rewire decisions, drop "datetime" and "event fields"
+# Subset rewire decisions, drop "datetime" and "event fields"
 rewire.events <- lapply(exp2, function(x) {
     tmp <- dcast(subset(x, event == 'RewiringDecision'), id ~ data.name,
                  value.var = 'data.value')

@@ -6,6 +6,13 @@ NGS2-Cycle1-Experiment1/data/
 NGS2-Cycle1-Experiment2/*.csv
 NGS2-Cycle1-Experiment2/data/
 NGS2-Cycle1-Experiment2/documentation/
+*.log
 
 # python bytecode files
 *.pyc
+
+# cache files
+.cache
+
+# zip files
+*.zip

@@ -205,6 +205,9 @@ bb2 <- load_bb_data('NGS2-Cycle1-Experiment2/data')
 d <- emp
 d$source <- 'empanelment'
 
+# drop test files (status equal to 0)
+d <- subset(d, Status == 0)
+
 # 2. bring in breadboard ids for those that went from empanelment to experiment
 # parse out breadboard id
 bb_ids$bb_id <- get_bb_id(bb_ids$ROUTER_URL)
@@ -316,10 +319,10 @@ d <- merge(d, bb2_summary, by.x = 'bb_id', by.y = 'bb2_pid', all = TRUE)
 d$source <- ifelse(is.na(d$source), 'bb', d$source)
 
 # 7. derive variables for analysis
-# d$days_with_panel <- as.numeric(
-#     as.POSIXct('2017-07-12') -
-#     d$panel_MEMBERSHIP_START_DATE
-# )
+d$days_with_panel <- as.numeric(
+    as.POSIXct('2017-10-12') -
+    d$panel_MEMBERSHIP_START_DATE
+)
 d$began_empanelment <- ifelse(d$source == 'empanelment', 1, 0)
 d$stop_prior_to_consent <- ifelse(d$began_empanelment == 1 & is.na(d$Q3_consent), 1,
                                   ifelse(d$began_empanelment == 1, 0, NA))
@@ -334,9 +337,12 @@ d$stop_at_other_point <- apply(d[, relevant_questions], 1, function(x) {
 d$completed_empanelment <- ifelse(!is.na(d$Q39_send_survey_invites), 1,
                                   ifelse(d$source == 'empanelment', 0, NA))
 
-d$experiment_signup <- apply(d[, grep('^exp', names(d))], 1, function(x) {
-    return(ifelse(sum(x, na.rm = TRUE) > 0, 1, 0))
+d$nbr_experiment_signups <- apply(d[, grep('^exp', names(d))], 1, function(x) {
+    return(sum(x, na.rm = TRUE))
+})
+d$nbr_experiment_login <- apply(d[, grep('bb[12]_logged_in', names(d))], 1, function(x) {
+    return(sum(x, na.rm = TRUE))
 })
 
 # write data to disk
-write.csv(d, file = 'response_analysis_clean.csv', row.names = FALSE, na = '')
+# write.csv(d, file = 'response_analysis_clean.csv', row.names = FALSE, na = '')

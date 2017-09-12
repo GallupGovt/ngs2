@@ -484,32 +484,27 @@ variable_rename <- function(d, dict) {
 }
 
 # load all data
-# comps <- read.csv('data/ngs2_empanelment_pilot_completes.csv', header = TRUE,
-#                   sep = ',', stringsAsFactors = FALSE)
-# parts <- read.csv('data/ngs2_empanelment_pilot_partials.csv', header = TRUE,
-#                   sep = ',', stringsAsFactors = FALSE)
-# bb_ids <- read.csv('data/empanelment_breadboard_ids.csv', header = TRUE,
-#                    sep = ',', stringsAsFactors = FALSE)
-# dist1k <- read.csv('data/ngs2_empanelment_distribution_additional_1k.csv',
-#                    header = TRUE, sep = ',', stringsAsFactors = FALSE)
-# times <- read.csv('data/ngs2_pilot_timing_completes.csv', header = TRUE,
-#                   sep = ',', stringsAsFactors = FALSE)
-# panel <- read.spss('data/ngs2_pilot_panel.sav', to.data.frame = TRUE)
-# bb1 <- read.csv('NGS2-Cycle1-Experiment1/data/ngs2_e1_pilot_2017-07-12-01_9222.csv',
-#                 header = TRUE, sep = ',', stringsAsFactors = FALSE)
-# bb2 <- read.csv('NGS2-Cycle1-Experiment2/data/ngs2_e2_pilot_2017-07-12-01_10381.csv',
-#                 header = TRUE, sep = ',', stringsAsFactors = FALSE)
-# bb3 <- read.csv('NGS2-Cycle1-Experiment3/data/ngs2_e3_pilot_2017-07-12-01_9409.csv',
-#                 header = TRUE, sep = ',', stringsAsFactors = FALSE)
-# cdict <- read.csv('data/empanelment_dictionary.csv', header = TRUE, sep = ',',
-#                   stringsAsFactors = FALSE)
-# pdict <- read.csv('data/empanelment_partial_dictionary.csv', header = TRUE,
-#                   sep = ',', stringsAsFactors = FALSE)
-emp <- read.csv('empanlment_cleaned.csv', header = TRUE, sep = ',',
-                stringsAsFactors = FALSE)
-bb_ids <- read.csv('data/oms_url_upload_20170821_1145.txt', header = TRUE,
-                   sep = '\t', stringsAsFactors = FALSE)
-
+comps <- read.csv('data/ngs2_empanelment_pilot_completes.csv', header = TRUE,
+                  sep = ',', stringsAsFactors = FALSE)
+parts <- read.csv('data/ngs2_empanelment_pilot_partials.csv', header = TRUE,
+                  sep = ',', stringsAsFactors = FALSE)
+bb_ids <- read.csv('data/empanelment_breadboard_ids.csv', header = TRUE,
+                   sep = ',', stringsAsFactors = FALSE)
+dist1k <- read.csv('data/ngs2_empanelment_distribution_additional_1k.csv',
+                   header = TRUE, sep = ',', stringsAsFactors = FALSE)
+times <- read.csv('data/ngs2_pilot_timing_completes.csv', header = TRUE,
+                  sep = ',', stringsAsFactors = FALSE)
+panel <- read.spss('data/ngs2_pilot_panel.sav', to.data.frame = TRUE)
+bb1 <- read.csv('NGS2-Cycle1-Experiment1/data/ngs2_e1_pilot_2017-07-12-01_9222.csv',
+                header = TRUE, sep = ',', stringsAsFactors = FALSE)
+bb2 <- read.csv('NGS2-Cycle1-Experiment2/data/ngs2_e2_pilot_2017-07-12-01_10381.csv',
+                header = TRUE, sep = ',', stringsAsFactors = FALSE)
+bb3 <- read.csv('NGS2-Cycle1-Experiment3/data/ngs2_e3_pilot_2017-07-12-01_9409.csv',
+                header = TRUE, sep = ',', stringsAsFactors = FALSE)
+cdict <- read.csv('data/empanelment_dictionary.csv', header = TRUE, sep = ',',
+                  stringsAsFactors = FALSE)
+pdict <- read.csv('data/empanelment_partial_dictionary.csv', header = TRUE,
+                  sep = ',', stringsAsFactors = FALSE)
 
 # 1. deal with survey responses, both `completes` and `partials`
 # rename variables for both `completes` and `partials`

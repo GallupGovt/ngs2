@@ -11,7 +11,7 @@ bayesian.summary <- function (model) {
   plot(model, plotfun = "areas", prob = 0.9)
 }
 
-###################################################### ##################################################################
+########################################################################################################################
 #Hypothesis tests
 ########################################################################################################################
 #1.1.	Individuals will be more likely to form connections with in-group members than with out-group members
@@ -38,11 +38,11 @@ glmm1.2.default <- stan_glmer(decision0d1c~round_num + (1|playerid),
                               chains = 3, iter = 3000)
 hypothesis.1.2.default <- bayesian.summary(glmm1.2.default)
 
-#Prior of OR = 1.5 over 20 rounds, (expressed in log odds, as log(1.5^(1/20)) from expected effect size (see pre-registration)
+#Prior of OR = 1.5 over 15 rounds, (expressed in log odds, as log(1.5^(1/15)) from expected effect size (see pre-registration)
 glmm1.2.inform <- stan_glmer(decision0d1c~round_num + (1|playerid), 
                               data = exp2_cooperation, 
                               family = binomial(link = "logit"), 
-                              prior = student_t(log(1.5^(1/20)), df = 7),
+                              prior = student_t(log(1.5^(1/15)), df = 7),
                               chains = 3, iter = 3000)
 hypothesis.1.2.inform <- bayesian.summary(glmm1.2.inform)
 

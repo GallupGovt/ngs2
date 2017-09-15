@@ -17,7 +17,7 @@ if(!all(c('session', 'condition', 'action') %in% names(exp1_cooperation))) {
 logit_test_and_summary <- function (data, filter.condition) {
   sub <- subset(data, condition == filter.condition)
   logit_result <- glm(action ~ round, data = sub, family = 'binomial')
-  logit_vcov <- cluster.vcov(logit_result, cbind(sub$session, sub$id))
+  logit_vcov <- cluster.vcov(logit_result, cbind(sub$session, sub$pid))
   print(coeftest(logit_result, logit_vcov))
 }
 

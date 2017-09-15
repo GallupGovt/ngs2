@@ -75,4 +75,4 @@ for (i in VarList) {
 }
 
 report.lm.overlapScale<-do.call(rbind, lm.overlapScale.frame)
-write.csv(report.lm.overlapScale, file = 'lm_DIFIdistance_exp2.csv', row.names = FALSE, na = '')
+write.csv(report.lm.overlapScale, file = 'lm_DIFIoverlap_exp2.csv', row.names = FALSE, na = '')

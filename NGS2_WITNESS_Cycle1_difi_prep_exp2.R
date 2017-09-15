@@ -4,8 +4,9 @@
 
 # Breadboard extract function by event type
 
-breadboard.extract <- function (eventType) {
-  breadboard.list <- lapply(exp2, function(x) {
+
+breadboard.extract <- function (eventType, data) {
+  breadboard.list <- lapply(data, function(x) {
     roll <- subset(x, 
                    event == eventType, 
                    select = c('id', 
@@ -30,9 +31,12 @@ breadboard.extract <- function (eventType) {
 
 # Extract DIFI scores
 
-DIFI.final<-breadboard.extract ("DIFI")
+DIFI.final<-breadboard.extract ("DIFI", exp2)
 
 # Compute individual probability of cooperation
+
+exp2_cooperation <- read.csv('NGS2-Cycle1-Experiment2/cooperation_exp2.csv',
+                             header = TRUE, sep = ',')
 
 av.cooperation.exp2 <-aggregate(exp2_cooperation$decision0d1c,
                                 by=list(exp2_cooperation$playerid),
@@ -44,15 +48,12 @@ colnames(av.cooperation.exp2)<-c("pid", "prob.cooperate")
 
 # Final score
 
-score.exp2 <- breadboard.extract ("FinalScore")
+score.exp2 <- breadboard.extract ("FinalScore", exp2)
 
 # Final group
 
-exp2_cooperation <- read.csv('NGS2-Cycle1-Experiment2/cooperation_exp2.csv',
-                             header = TRUE, sep = ',')
-
 final.group <- unique(subset (exp2_cooperation, 
-                       round_num == 15, 
+                       round_num == max(round_num), 
                        select = c('playerid', 'group')))
 
 colnames(final.group) <- c('pid', 'group')
@@ -73,7 +74,7 @@ connections.list <- lapply(exp2, function(x) {
 connections.list2 <- mapply(`[<-`, 
                             connections.list, 
                            'session', 
-                           value = names(breadboard.list), 
+                           value = names(connections.list), 
                            SIMPLIFY = FALSE)
 connection.events<-do.call(rbind,
                            lapply(connections.list2,data.frame)
@@ -81,7 +82,8 @@ connection.events<-do.call(rbind,
 connections.exp2.dcast <- dcast(connection.events,
                                 id+session+event ~ data.name,
                                 value.var="data.value")
-
+connections.exp2.dcast <- connections.exp2.dcast[order(connections.exp2.dcast$session, 
+                                                       connections.exp2.dcast$id),]
 connections.exp2.final <- connections.exp2.dcast[0,]
 
 for (i in 1:length(connections.exp2.dcast$id))
@@ -113,8 +115,6 @@ connections.from.to.exp2 <- cbind(connections.exp2.final$playerId1,
 
 connections.from.to.exp2.final <- connections.from.to.exp2[complete.cases(connections.from.to.exp2), ]
 DIFI.1 <- merge (av.cooperation.exp2, score.exp2, by = "pid")
-
-DIFI.1.subset<-subset(DIFI.1, session == i)
 
 ### Loop over each session to compute network metrics and graphs
 
@@ -155,7 +155,8 @@ for(i in unique(connections.from.to.exp2.final[,3])) {
   
   # Plot final network
   
-  jpeg(file = paste('netgraph.', i, '.jpeg', sep = ''))
+  deg.exp.network <-degree(net.exp2, mode="all")
+  pdf(file = paste('netgraph.', i, '.pdf', sep = ''))
   plot(net.exp2,
        edge.arrow.size=.2,
        edge.curved=0,
@@ -164,7 +165,7 @@ for(i in unique(connections.from.to.exp2.final[,3])) {
        vertex.label=V(net.exp2)$pid,
        vertex.label.color="black",
        vertex.label.cex=.7, 
-       vertex.size=(deg.exp2*3), 
+       vertex.size=(deg.exp.network*3), 
        main=i)
   dev.off()
   }
@@ -175,15 +176,15 @@ network.frame <- subset(network.frame, !is.na(network.frame$session))
 
 av.cooperation.round.exp2 <-aggregate(
   as.integer(exp2_cooperation$decision0d1c),
-  by=list(exp2_cooperation$round_num),
+  by=list(exp2_cooperation$round_num, exp2_cooperation$session),
   FUN=mean,
   na.rm=TRUE)
 
-colnames(av.cooperation.round.exp2) <- c("finalRound", "av.coop")
+colnames(av.cooperation.round.exp2) <- c("finalRound", "session", "av.coop")
 
 av.cooperation.round.exp2.final <- subset(av.cooperation.round.exp2,
                                           finalRound==max(finalRound),
-                                          select=c("av.coop"))
+                                          select=c("session", "av.coop"))
 
 # Node metrics
 
@@ -212,7 +213,8 @@ DIFI.3 <- merge (DIFI.1, DIFI.2, by = "pid")
 names(DIFI.3)[names(DIFI.3) == 'session.x'] <- 'session'
 DIFI.4 <- merge (network.frame, DIFI.3, by =  "session")
 DIFI.5 <- merge (DIFI.4, deg.frame.exp2, by = "pid")
-DIFI.save <- merge (DIFI.5, eigen.frame.exp2, by = "pid")
+DIFI.6 <- merge (DIFI.5, av.cooperation.round.exp2.final, by = "session")
+DIFI.save <- merge (DIFI.6, eigen.frame.exp2, by = "pid")
 
 write.csv(DIFI.save,
           "NGS2-Cycle1-Experiment2/DIFI.exp2.csv")

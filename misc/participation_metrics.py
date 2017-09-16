@@ -5,55 +5,81 @@ import pandas as pd
 
 
 VARORDER = [
-    'experiment_nbr',
+    'experiment',
     'started',
     'finished',
     'total_experiments',
 ]
 VARORDER_DETAIL = [
-    'experiment_nbr',
+    'experiment',
+    'condition',
     'started',
     'finished',
     'total_experiments',
-    'condition',
+    'experiment_nbrs',
 ]
 
 
-def create_output_tables(data, proc, experiment, detail=False):
+def calculate_conditions(data, exp):
+    if exp==1:
+        cond = float(data['data value'][(data.event=='initParameters') &
+                                        (data['data name']=='k')])
+        if cond==0.0:
+            return 'Static'
+        elif cond==0.1:
+            return 'Viscous'
+        elif cond==0.3:
+            return 'Fluid'
+        elif cond==1.0:
+            return 'Random'
+        else:
+            return 'Other'
+    else:
+        c1 = float(data['data value'][data['data name']=='M'])
+        c2 = float(data['data value'][data['data name']=='sameGroupConnectivity'])
+        c3 = float(data['data value'][data['data name']=='diffGroupConnectivity'])
+
+        if c1==2.0 and c2>c3:
+            return 'Biased-2'
+        elif c1==4.0 and c2>c3:
+            return 'Biased-4'
+        elif c1==2.0 and c2==c3:
+            return 'Unbiased-2'
+        elif c1==4.0 and c2==c3:
+            return 'Unbiased-4'
+        else:
+            return 'Other'
+
+
+def create_output_tables(data, experiment, detail=False):
     def experiment_number(x):
         return len(set(x))
 
-    def modal_condition(x):
-        return max(set(x))
-
-    proc['experiment_nbr'] = proc.session.apply(lambda x: x.split('_')[0])
-    condition = (proc
-                 .groupby('experiment_nbr')
-                 .agg({'condition': modal_condition})
-                 .reset_index()
-    )
+    def experiment_types(x):
+        return ', '.join(list(set(x)))
 
     if detail:
         data['exp_num'] = data.experiment.apply(lambda x: x.split('_')[0])
-        table = data.groupby('exp_num').agg({
+        table = data.groupby('condition').agg({
             'id': 'count',
             'final_score': 'count',
             'experiment': experiment_number,
+            'exp_num': experiment_types,
         }).reset_index()
         table.rename(columns={
             'id': 'started',
             'final_score': 'finished',
-            'exp_num': 'experiment_nbr',
+            'exp_num': 'experiment_nbrs',
             'experiment': 'total_experiments',
         }, inplace=True)
-        table = table.merge(condition, on='experiment_nbr')
+        table['experiment'] = experiment
         return table
     else:
         return pd.DataFrame({
             'started': [data.id.count()],
             'finished': [data.final_score.count()],
             'total_experiments': [len(set(data.experiment))],
-            'experiment_nbr': [experiment],
+            'experiment': [experiment],
         })
 
 
@@ -70,11 +96,13 @@ def gather_data(directory, file, experiment):
     })
     finishers = tmp[tmp.event=='FinalScore']
     if experiment==1:
+        condition = calculate_conditions(tmp, experiment)
         finishers = finishers[['data name', 'data value']].rename(columns={
             'data name': 'id',
             'data value': 'final_score',
         })
     else:
+        condition = calculate_conditions(tmp, experiment)
         finishers = finishers.pivot(index='id', columns='data name',
                                     values='data value').reset_index()
         finishers = finishers[['pid', 'score']].rename(columns={
@@ -82,6 +110,7 @@ def gather_data(directory, file, experiment):
             'score': 'final_score',
         })
     res = starters.merge(finishers, on='id', how='left')
+    res['condition'] = condition
     res['experiment'] = '{}_{}'.format(fileid[0], fileid[1])
 
     return res
@@ -99,14 +128,12 @@ def run():
     # load data
     data = [process_directory(directory, experiment) for directory, experiment in
             zip(RAW_DATA, EXPERIMENTS)]
-    proc = [pd.read_csv(file, sep=None, engine='python') for file in PROCESSED_DATA]
-
 
     # build output tables
-    table = pd.concat([create_output_tables(d, p, exp, False) for
-                      d, p, exp in zip(data, proc, EXPERIMENTS)])
-    table_detail = pd.concat([create_output_tables(d, p, exp, True) for
-                             d, p, exp in zip(data, proc, EXPERIMENTS)])
+    table = pd.concat([create_output_tables(d, exp, False) for d, exp in
+                      zip(data, EXPERIMENTS)])
+    table_detail = pd.concat([create_output_tables(d, exp, True) for d, exp in
+                             zip(data, EXPERIMENTS)])
 
     # output table
     table[VARORDER].to_csv('misc/current_experiment_statistics.csv', index=False)
@@ -117,10 +144,6 @@ if __name__ == '__main__':
     RAW_DATA = [
         'NGS2-Cycle1-Experiment1/data',
         'NGS2-Cycle1-Experiment2/data',
-    ]
-    PROCESSED_DATA = [
-        'NGS2-Cycle1-Experiment1/cooperation_exp1.csv',
-        'NGS2-Cycle1-Experiment2/cooperation_exp2.csv',
     ]
     EXPERIMENTS = [
         1,

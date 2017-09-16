@@ -65,7 +65,7 @@ Hypothesis.4.2.1 <- wilcox.test(fluid.var,
 
 exp1_rewire.cd.dc<-subset(exp1_rewire, previouslytie==1 & (state=="CC" | state=="CD" | state=="DC"))
 logit.cd.dc <- glm(break_tie~CC, data = exp1_rewire.cd.dc, family = "binomial")
-logit.multiwayvcov.cd.dc <- cluster.vcov(logit.cd.dc, cbind(exp1_rewire.cd.dc$session, exp1_rewire.cd.dc$pid))
+logit.multiwayvcov.cd.dc <- cluster.vcov(logit.cd.dc, cbind(exp1_rewire.cd.dc$session, exp1_rewire.cd.dc$playerid))
 Hypothesis.4.2.2 <- coeftest(logit.cd.dc, logit.multiwayvcov.cd.dc)
 
 #Hypothesis 4.2.3	Links in rapidly updating strategic networks are more stable between cooperators than between between two defectors
@@ -73,7 +73,7 @@ Hypothesis.4.2.2 <- coeftest(logit.cd.dc, logit.multiwayvcov.cd.dc)
 
 exp1_rewire.dd<-subset(exp1_rewire, previouslytie==1 & (state=="CC" | state=="DD"))
 logit.dd <- glm(break_tie~CC, data = exp1_rewire.dd, family = "binomial")
-logit.multiwayvcov.dd <- cluster.vcov(logit.dd, cbind(exp1_rewire.dd$session, exp1_rewire.dd$pid))
+logit.multiwayvcov.dd <- cluster.vcov(logit.dd, cbind(exp1_rewire.dd$session, exp1_rewire.dd$playerid))
 Hypothesis.4.2.3 <- coeftest(logit.dd, logit.multiwayvcov.dd)
 
 #Hypothesis 4.2.4	Cooperators have more connections than defectors in rapidly updating strategic networks

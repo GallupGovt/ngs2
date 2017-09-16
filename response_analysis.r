@@ -6,7 +6,7 @@ if(Sys.info()['sysname'] == 'Darwin') {
     rm(list = ls())
 
     # Install packages that are required for this file
-    list.of.packages <- c('foreign', 'reshape2')
+    list.of.packages <- c('reshape2')
     new.packages <- list.of.packages[!(list.of.packages %in%
                                        installed.packages()[, 'Package'])]
     if(length(new.packages)) {
@@ -125,9 +125,16 @@ bb_login <- function(d, end_time) {
     tmp <- tmp[order(tmp$datetime, decreasing = TRUE), ]
     tmp <- tmp[tmp$datetime <= end_time, ]
     tmp <- tmp[!duplicated(tmp$clientId), ]
+    tmp$device <- ifelse(
+        grepl('iP[ad|hone]', tmp$userAgent), 'iPad/iPhone',
+        ifelse(grepl('Windows', tmp$userAgent), 'Windows',
+        ifelse(grepl('Android', tmp$userAgent), 'Android',
+        ifelse(grepl('Macintosh', tmp$userAgent), 'Mac',
+        ifelse(grepl('X11|Linux', tmp$userAgent), 'Linux', 'Other')))))
     return(data.frame(pid = tmp$clientId, ip_address = tmp$ipAddress,
-                      date = unique(d$exp_date), game = unique(d$game),
-                      logged_in = 1, stringsAsFactors = FALSE))
+                      device = tmp$device, date = unique(d$exp_date),
+                      game = unique(d$game), logged_in = 1,
+                      stringsAsFactors = FALSE))
 }
 
 bb_passed_training <- function(d, experiment = c(1, 2)) {
@@ -343,6 +350,33 @@ d$nbr_experiment_signups <- apply(d[, grep('^exp', names(d))], 1, function(x) {
 d$nbr_experiment_login <- apply(d[, grep('bb[12]_logged_in', names(d))], 1, function(x) {
     return(sum(x, na.rm = TRUE))
 })
+d$nbr_experiment_dropped <- apply(d[, grep('logged_in|end_score', names(d))], 1,
+    function(x) {
+        up <- sum(x[1], x[3], na.rm = TRUE)
+        score_vec <- c(x[2], x[4])
+        dn <- length(score_vec[!is.na(score_vec)])
+        return(ifelse(up - dn == 0, 0, up - dn))
+    }
+)
+d$nbr_experiment_complete <- apply(d[, grep('end_score', names(d))], 1,
+    function(x) {
+        return(length(x[!is.na(x)]))
+    }
+)
+d$exp1_dropped <- apply(d[, grep('bb1_[logged_in|end_score]', names(d))], 1,
+    function(x) {
+        ifelse(is.na(x[1]), NA, ifelse(is.na(x[2]), 1, 0))
+    }
+)
+d$exp2_dropped <- apply(d[, grep('bb2_[logged_in|end_score]', names(d))], 1,
+    function(x) {
+        ifelse(is.na(x[1]), NA, ifelse(is.na(x[2]), 1, 0))
+    }
+)
+d$StartDate <- strptime(d$StartDate, '%Y-%m-%d %H:%S:%M')
+d$EndDate <- strptime(d$EndDate, '%Y-%m-%d %H:%S:%M')
+d$empanelment_minutes_to_complete <- difftime(d$EndDate, d$StartDate,
+                                              units = 'mins')
 
 # write data to disk
-# write.csv(d, file = 'response_analysis_clean.csv', row.names = FALSE, na = '')
+write.csv(d, file = 'response_analysis_clean.csv', row.names = FALSE, na = '')

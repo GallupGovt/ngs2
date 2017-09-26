@@ -86,7 +86,9 @@ Subjects are randomly assigned to one of four conditions of varying diversity of
 ## Hypotheses, variables and expected effect sizes
 
 ```{r hypotheses, echo=FALSE}
-hypexp2 <- read.csv("hyp_exp2.csv")
+hypexp2 <- read.csv(url("https://raw.githubusercontent.com/gallup/NGS2/master/hyp_exp2.csv"),
+                             header = TRUE,
+                             sep = ',')
 library(knitr)
 kable(hypexp2, 
           caption = "Experimental Hypotheses, Variables, and Expected Effect Sizes")

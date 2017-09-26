@@ -4,7 +4,7 @@ title: |
   | Cooperation in Dynamic social Networks
   
 author: Feng Fu, Nicholas A. Christakis, Pablo Diego-Rosell
-date: "September 1, 2017"
+date: "September 28, 2017"
 output:
   html_document:
     toc: true
@@ -28,6 +28,9 @@ This is a fully reproducible *Rmarkdown notebook* describing the design,
 results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 2. 
 Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Special thanks to Ghazal Fazelnia (EE, Columbia), John Paisley (EE, Columbia) and Tian Zheng (Statistics, Columbia) for their prototype notebook, upon which this notebook is based.
+
 <br />
 <br />
 
@@ -35,8 +38,6 @@ When you click the **Knit** button a document will be generated that includes bo
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 start.time=Sys.time()
 ```
-
-<mark>Once cooperation and rewire data are in OSF, point "NGS2_WITNESS_Cycle1_confirmatory_exp2.R" there.</mark>
 
 ```{r confirmatory, include=F}
 script <- getURL("https://raw.githubusercontent.com/gallup/NGS2/master/NGS2_WITNESS_Cycle1_confirmatory_exp2.R", ssl.verifypeer = FALSE)
@@ -54,9 +55,10 @@ source("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
 
 + The experiment was pre-registered on 2017-03-31, and the pre-registration form is available at https://osf.io/swpa6/.
 + The experiment was later amended on 2017-07-07 per https://osf.io/qjhb5/.
-+ And amended again on 2017-08-08 per https://osf.io/qzgk2/.
++ Amended again on 2017-08-08 per https://osf.io/qzgk2/.
++ And again on 2017-09-13 per https://osf.io/bmcnu/.
 
-## Experimental design:
+## Experimental design
 
 + Subjects are given the option to affiliate with one of several available groups represented by evaluatively neutral avatars, such as geometric patterns or pictures of animals.
 
@@ -64,16 +66,17 @@ source("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
 
 + Once networks are formed, subjects play a multi-round cooperation game where they are given the option to cooperate with their neighbors or defect.
 
--	Cooperate entails reducing one's own wealth by 50 'units' per neighbor in order to increase the wealth of all neighbors by 100 units each while defection generates no unit cost or benefit.
--	Before making each decision, subjects are reminded of their number of neighbors and the neighbors' previous decisions.
--	At the end of each turn, subjects are informed about the decisions of their neighbors, along with their own payoff.
+    -	Cooperate entails reducing one's own wealth by 50 'units' per neighbor in order to increase the wealth of all neighbors by 100 units each while defection generates no unit cost or benefit.
+    
+    -	Before making each decision, subjects are reminded of their number of neighbors and the neighbors' previous decisions.
+    
+    -	At the end of each turn, subjects are informed about the decisions of their neighbors, along with their own payoff.
 
 + After every round, the probability that another round will occur is 0.8, and the probability that there will be a rewiring round is 0.25. At each rewiring round subjects are reminded of the size and the performance of each group and are given the opportunity to choose to switch to a different group or stay with their current group. If subjects switch groups, new within and between group ties will have to be generated de novo according to the procedure outlined above.
 
+## Experimental conditions
 
-## Experimental conditions:
-
- Subjects are randomly assigned to one of four conditions of varying diversity of group identities (two avatar options vs four avatar options) and group-pairing probabilities (Unbiased random pairings in which subjects are equally likely to be paired with in-group vs out-group members vs. biased pairings in which subjects are more likely to be paired with in-group members). These two factors are combined in a factorial design, with the resulting four conditions: 
+Subjects are randomly assigned to one of four conditions of varying diversity of group identities (two avatar options vs four avatar options) and group-pairing probabilities (Unbiased random pairings in which subjects are equally likely to be paired with in-group vs out-group members vs. biased pairings in which subjects are more likely to be paired with in-group members). These two factors are combined in a factorial design, with the resulting four conditions: 
 
 +	Unbiased Pairing - 2 Avatars
 +	Unbiased Pairing - 4 Avatars
@@ -91,7 +94,7 @@ kable(hypexp2,
 
 ## Data used for the prediction
 
-+ Gallup recruited a total of `r length(unique(exp2_cooperation$pid))` unique players for the experiment. 
++ Gallup recruited a total of `r length(unique(exp2_cooperation$playerid))` unique players for the experiment. 
 + Gallup ran a total of `r length(unique(exp2_cooperation$session))` instances of the experiment. 
 + Research participants were recruited from  <mark>(Update sample size by country)</mark>
     - The Gallup Panel in the U.S. (n=500) 
@@ -106,7 +109,7 @@ The "cooperation" dataset includes the following variables:
 
 ```{r cooperation descriptives}
 names(exp2_cooperation)
-datatable(sample_n(exp2_cooperation, 10), 
+datatable(sample_n(exp2_cooperation, 5), 
           caption = "Randomly selected rows of cooperation data.",
           options = list(
               scrollX = TRUE,
@@ -119,7 +122,7 @@ The "rewire" dataset includes the following variables:
 
 ```{r rewire decriptives}
 names(exp2_rewire)
-datatable(sample_n(exp2_rewire, 10), 
+datatable(sample_n(exp2_rewire, 5), 
           caption = "Randomly selected rows of rewire data.",
           options = list(
               scrollX = TRUE,
@@ -129,7 +132,8 @@ datatable(sample_n(exp2_rewire, 10),
 # Links to other documents in this submission 
 
 + World Lab Empanelment Screener https://osf.io/z5cjm/
-+ Original articles 
++ Power analysis: https://osf.io/tw3cp/
++ Foundational articles: 
 - Fu et al. (2012a): https://osf.io/dfgmy/
 - Fu et al. (2012b): https://osf.io/uz8s9/
 
@@ -143,6 +147,36 @@ datatable(sample_n(exp2_rewire, 10),
 
 exp2_rewire$ingroup2 <- ifelse (exp2_rewire$ingroup == 0, "Outgroup", "Ingroup")
 exp2_rewire$connect2 <- ifelse (exp2_rewire$connect == 0, "No connect", "Connect")
+
+session_info=exp2_rewire%>%
+  group_by(session)%>%
+  summarise(
+    num_player=n(),
+    condition=unique(condition)[1]
+  )%>%
+  arrange(condition)
+session_round_connect=exp2_rewire%>%
+  group_by(session, 
+           ingroup2)%>%
+  summarise(
+    rate_connect=mean(connect)
+  )
+
+session_round_connect=left_join(session_round_connect, 
+                             session_info,
+                             by="session")
+plot.connect <-ggplot(session_round_connect, 
+       aes(x=factor(ingroup2), 
+           y=rate_connect,
+           fill=condition))+
+  geom_boxplot()+
+  facet_grid(.~condition)+
+  labs(x="Condition")+
+  labs(y="Connection Rates")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.connect
 mosaicplot(ingroup2 ~ connect2, 
            data = exp2_rewire, 
            col = c("lightskyblue2", "tomato"),
@@ -156,15 +190,6 @@ Hypothesis.1.1
 + Hypothesis 1.2: Overall cooperation level will increase with successive rounds
 
 ```{r graph2}
-session_info=exp2_cooperation%>%
-  filter(round_num==1)%>%
-  group_by(session)%>%
-  summarise(
-    num_player=n(),
-    condition=unique(condition)[1]
-  )%>%
-  arrange(condition)
-
 session_round_rate2=exp2_cooperation%>%
   group_by(session, 
            round_num)%>%
@@ -197,9 +222,10 @@ Hypothesis.1.2
 
 ```{r graph3}
 exp2_cooperation$ingroup2 <- ifelse (exp2_cooperation$ingroup == 0, "Outgroup", "Ingroup")
+exp2_cooperation$biased2 <- ifelse (exp2_cooperation$biased == 0, "Unbiased", "Biased")
 
 session_round_rate3=exp2_cooperation%>%
-  group_by(session, biased, ingroup2)%>%
+  group_by(session, biased2, ingroup2)%>%
   summarise(
     rate_coop=mean(decision0d1c)
   )
@@ -207,9 +233,9 @@ session_round_rate3=exp2_cooperation%>%
 plot.coop3 <-ggplot(session_round_rate3, 
        aes(x=factor(ingroup2), 
            y=rate_coop,
-           fill=biased))+
+           fill=biased2))+
   geom_boxplot() +
-  facet_grid(.~biased)+
+  facet_grid(.~biased2)+
   labs(x="Group")+
   labs(y="Rate of Cooperation")+
   theme(axis.text.x=element_text(angle=0, 
@@ -225,8 +251,9 @@ Hypothesis.2.1
 + Hypothesis 3.1: Individuals in the 2 avatar condition will be more likely to form connections with in-group members than those in the 4 avatar condition 
 
 ```{r graph4}
+exp2_rewire$identities2 <- ifelse (exp2_rewire$identities == 0, "2 avatars", "4 avatars")
 session_round_rate4=exp2_rewire%>%
-  group_by(session, condition, ingroup2)%>%
+  group_by(session, identities2, ingroup2)%>%
   summarise(
     rate_connect=mean(connect)
   )
@@ -234,9 +261,9 @@ session_round_rate4=exp2_rewire%>%
 plot.coop4 <-ggplot(session_round_rate4, 
        aes(x=factor(ingroup2), 
            y=rate_connect,
-           fill=condition))+
+           fill=identities2))+
   geom_boxplot() +
-  facet_grid(.~condition)+
+  facet_grid(.~identities2)+
   labs(x="Group")+
   labs(y="Rate of Connection")+
   theme(axis.text.x=element_text(angle=0, 
@@ -256,13 +283,13 @@ Hypothesis.3.1
 exp2_cooperation$identities2 <- ifelse (exp2_cooperation$identities == 0, "2 avatars", "4 avatars")
                                 
 session_round_rate5=exp2_cooperation%>%
-  group_by(session, identities2, ingroup)%>%
+  group_by(session, identities2, ingroup2)%>%
   summarise(
     rate_coop=mean(decision0d1c)
   )
   
 plot.coop5 <-ggplot(session_round_rate5, 
-       aes(x=factor(ingroup), 
+       aes(x=factor(ingroup2), 
            y=rate_coop,
            fill=identities2))+
   geom_boxplot() +
@@ -288,6 +315,10 @@ run.time=difftime(end.time, start.time, "secs")
 This report was produced in `r format(run.time)`.
 <br />
 <br />
+
+Since we conduct a total of five confirmatory analyses, Bonferroni-corrected alpha = 0.01
+
+References:
 
 + Fu, F., Nowak, M. A., Christakis, N. A., & Fowler, J. H. (2012a). The evolution of homophily. Scientific reports, 2, 845.
 

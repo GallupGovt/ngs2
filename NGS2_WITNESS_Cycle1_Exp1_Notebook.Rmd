@@ -81,7 +81,9 @@ At the beginning of the experiment, the social network isinitialized with 20% of
 ## Hypotheses, variables and expected effect sizes
 
 ```{r hypotheses, echo=FALSE}
-hypexp1 <- read.csv("hyp_exp1.csv")
+hypexp1 <- read.csv(url("https://raw.githubusercontent.com/gallup/NGS2/master/hyp_exp1.csv"),
+                             header = TRUE,
+                             sep = ',')
 library(knitr)
 kable(hypexp1, 
           caption = "Experimental Hypotheses, Variables, and Expected Effect Sizes")

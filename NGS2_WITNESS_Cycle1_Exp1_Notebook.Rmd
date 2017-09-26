@@ -17,12 +17,6 @@ library ("pacman")
 pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmisc, corrgram, PerformanceAnalytics, doBy, car, ggplot2, DT, utils, lme4, rstan, rstanarm, igraph, RCurl)
 ```
 
-```{r, echo=FALSE}
-htmltools::img(src = knitr::image_uri("Gallup.png"), 
-               alt = 'logo', 
-               style = 'position:absolute; top:0; right:0; padding:10px;')
-```
-
 <br />
 This is a fully reproducible *Rmarkdown notebook* describing the design, 
 results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 1. 
@@ -290,4 +284,3 @@ References:
 
 + Rand, David G., Samuel Arbesman, and Nicholas A. Christakis. 2011. "Dynamic Social Networks Promote Cooperation in Experiments with Humans." Proceedings of the National Academy of Sciences 108 (48): 19193-8. doi:10.1073/pnas.1108243108.
 
-![ ](Gallup.png)

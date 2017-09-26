@@ -73,8 +73,8 @@ build_empanelment_bb_xwalk <- function(file) {
 
 experiments_to_drop <- function(d) {
     no_ppl <- aggregate(
-        d$playerid[d$round_num == 1],
-        by = list(d$session[d$round_num == 1]),
+        d$playerid,
+        by = list(d$session),
         function(x) {
             length(unique(x))
         }

@@ -32,12 +32,12 @@ Hypothesis.4.1.1<-logit_test_and_summary(exp1_cooperation, "Static")
 #Hypothesis 4.1.2: Randomly updating network compositions reduce exp1_cooperation
 #Rand  et al. (2011) coeff = -0.113, p<.000
 
-Hypothesis.4.1.2<-logit_test_and_summary(exp1_cooperation, "Random")
+# TURNED OFF FOR INTERIM SUBMISSION # Hypothesis.4.1.2<-logit_test_and_summary(exp1_cooperation, "Random")
 
 #Hypothesis 4.1.3: Slowly updating strategic networks reduce exp1_cooperation
 #Rand  et al. (2011) coeff = -0.220, p=.013
 
-Hypothesis.4.1.3<-logit_test_and_summary(exp1_cooperation, "Viscous")
+# TURNED OFF FOR INTERIM SUBMISSION # Hypothesis.4.1.3<-logit_test_and_summary(exp1_cooperation, "Viscous")
 
 #Hypothesis 4.1.4: Rapidly updating strategic networks support exp1_cooperation relative to all other conditions 
 #Rand  et al. (2011) coeff = 0.135, p = .006

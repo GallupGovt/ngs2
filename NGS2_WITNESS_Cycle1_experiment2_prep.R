@@ -71,6 +71,18 @@ build_empanelment_bb_xwalk <- function(file) {
     return(bb_ids[, c('empanel_id', 'bbid')])
 }
 
+experiments_to_drop <- function(d) {
+    no_ppl <- aggregate(
+        d$playerid[d$round_num == 1],
+        by = list(d$session[d$round_num == 1]),
+        function(x) {
+            length(unique(x))
+        }
+    )
+    no_ppl <- no_ppl$Group.1[no_ppl$x < 8]
+    return(no_ppl)
+}
+
 read_input_files <- function(dir) {
     # identifies all csv files in a directory, reads then into r, and appends them
     res <- list()
@@ -194,6 +206,13 @@ cooperation$identities <- ifelse(cooperation$condition == 'Biased-4' |
 cooperation <- merge(cooperation, empanel_bb_xwalk, by.x = 'playerid',
                      by.y = 'bbid', all.x = TRUE)
 
+# drop ridiculous experiments
+# conditions:
+#   1. less than 8 participants
+experiment_drops <- experiments_to_drop(cooperation)
+cooperation <- subset(cooperation, !(session %in% experiment_drops))
+
+# write data to disk
 write.csv(
     cooperation[order(cooperation$round_num, cooperation$playerid), ],
     file = "NGS2-Cycle1-Experiment2/cooperation_exp2.csv",
@@ -258,6 +277,10 @@ rewire$identities <- ifelse(rewire$condition == 'Biased-4' |
 rewire <- merge(rewire, empanel_bb_xwalk, by.x = 'playerid', by.y = 'bbid',
                 all.x = TRUE)
 
+# subset out ridiculous experiments
+rewire <- subset(rewire, !(session %in% experiment_drops))
+
+# write data to disk
 write.csv(
     rewire[order(rewire$round_num, rewire$playerid), ],
     file = "NGS2-Cycle1-Experiment2/rewire_exp2.csv",

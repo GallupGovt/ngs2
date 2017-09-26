@@ -1,10 +1,13 @@
 #Created by Pablo Diego Rosell, PhD, for Gallup inc. in March 2017
 
 # Load data for analysis
-exp1_cooperation <- read.csv('NGS2-Cycle1-Experiment1/cooperation_exp1.csv',
-                             header = TRUE, sep = ',')
-exp1_rewire <- read.csv('NGS2-Cycle1-Experiment1/rewire_exp1.csv', header = TRUE,
-                        sep = ',')
+exp1_cooperation <- read.csv(url("https://raw.githubusercontent.com/gallup/NGS2/master/cooperation_exp1.csv"),
+                             header = TRUE,
+                             sep = ',')
+
+exp1_rewire <- read.csv(url("https://raw.githubusercontent.com/gallup/NGS2/master/rewire_exp1.csv"),
+                             header = TRUE,
+                             sep = ',')
 
 ### Show stopper
 

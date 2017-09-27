@@ -1,7 +1,7 @@
 ---
 title: |
   | Coevolution of Homophily and 
-  | Cooperation in Dynamic social Networks
+  | Cooperation in Dynamic social Networks - Partial Submission
   
 author: Feng Fu, Nicholas A. Christakis, Pablo Diego-Rosell
 date: "September 28, 2017"
@@ -19,13 +19,14 @@ pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmis
 
 <br />
 This is a fully reproducible *Rmarkdown notebook* describing the design, 
-results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 2. 
+results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 2.  This is a partial submission with the data collected up until September 28, 2017. A full submission will follow at a later date. 
+<br />
+
 Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 Special thanks to Ghazal Fazelnia (EE, Columbia), John Paisley (EE, Columbia) and Tian Zheng (Statistics, Columbia) for their prototype notebook, upon which this notebook is based.
 
-<br />
 <br />
 
 ```{r setup, include=FALSE}
@@ -43,7 +44,16 @@ source("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
 
 # Abstract
 
-<mark>To be written last, based on final results.</mark>
+The tendency for individuals to interact with similar others (homophily) is much more common in nature than the tendency to interact with dissimilar others (heterophily), suggesting an evolutionary advantage that has not been studied to date (Fu et al. 2012a). The formation of social ties is driven by homophilic preferences of individuals, thereby leading to positive network assortment. Spatial assortment promotes the evolution of cooperation. These two processes can form a positive feedback in coevolutionary dynamics: an increase in homophilic tendencies leads to stronger assortment and thus higher cooperativity, which can in turn cause a further increase in homophilic preferences.
+
+This experiment aims to find out how the diversity of group identities affect the emergence of homophily and cooperation in a multi-round cooperation game. Before the game starts, subjects are given the option to affiliate with one of several available groups. Subjects are then be given the opportunity to form network connections with both in-group and out-group members. Once networks are formed, subjects play a multi-round cooperation game where they are given the option to cooperate with their neighbors or defect. At each rewiring round, occurring on a random round, with a probability of 25%, subjects are reminded of the size and the performance of each group and are given the opportunity to choose to switch to a different group or stay with their current group. The two experimental conditions are the number of identities available in a given game (*2 avatars* vs. *4 avatars*), and the group-pairing probabilities, with either *unbiased* pairings in which subjects are equally likely to be paired with in-group vs out-group members, or *biased* pairings in which subjects are more likely to be paired with in-group members
+
+A simulation with a group of individuals with multiple observable phenotypes, and different probabilities for homophilic preference by Fu et al. (2012), showed that homophily tends to predominate under a wide variety of conditions, including a low number of phenotypes in the population, low phenotypic mutation rate, and low preference mutation rate. Likewise, (Fu et al. 2012b) demonstrated that individual-level selection can favour the emergence of in-group bias in a world of dynamic social ties and group identities. Homophily and cooperation will co-evolve as a result of positive feedback that mutually reinforces the two behavioral propensities. Our results find support for the hypothesis that individuals will be more likely to form connections with in-group members than with out-group members (hypothesis 1.1), but cooperation levels do not increase with successive rounds (hypothesis 1.2). 
+
+Interactions tend to be more likely between individuals of the same type because they are drawn to – or drawn from – similar environments. Introducing an additional parameter to allow for such assortativity, Fu et al. (2012b) showed in their simulations that in-group favoritism will be more likely to emerge when subjects are more likely to be paired with in-group members. However our results show an effect in the opposite direction from the hypothesis. In-group favoritism is more likely in the unbiased pairing condition, than in the unbiased pairing condition (hypothesis 2.1). 
+
+Without flexibility in group identity all individuals eventually end up in the same group, and then the system is prone to exploitation of in-group members. Simulations by (Fu et al. 2012b) showed that a larger number of possible groups leads to stronger selection for in-group bias, and that increasing the diversity of group identities should reduce the levels of homophily but promote in-group cooperation. Hypothesis 3.1 posits that individuals in the 2 avatar condition will be more likely to form connections with in-group members than those in the 4 avatar condition, although based on our data to date we cannot reject the null. We find on the other hand support for hypothesis 3.2, predicting that individuals in the 4 avatar condition will be more likely to cooperate with in-group members than those in the 2 avatar condition. 
+
 
 # Pre-registration summary
 
@@ -92,10 +102,7 @@ kable(hypexp2,
 
 + Gallup recruited a total of `r length(unique(exp2_cooperation$playerid))` unique players for the experiment. 
 + Gallup ran a total of `r length(unique(exp2_cooperation$session))` instances of the experiment. 
-+ Research participants were recruited from  <mark>(Update sample size by country)</mark>
-    - The Gallup Panel in the U.S. (n=500) 
-    - In-person recruitment efforts in Morocco (n=250) 
-    - In-person recruitment efforts in the Philippines (n=250) 
++ Research participants were recruited from the Gallup Panel in the U.S.
 
 The study hypotheses are tested using two datasets, a "cooperation" dataset showing cooperation decisions at the individual level for each cooperation round, and "rewire" dataset showing connection decisions at the individual level for each rewiring round. 
 
@@ -135,9 +142,9 @@ datatable(sample_n(exp2_rewire, 5),
 
 # Conclusions
 
-<mark>Conclusions to be written last, based on final results.</mark>
++ **Hypothesis 1.1: Individuals will be more likely to form connections with in-group members than with out-group members**
 
-+ Hypothesis 1.1: Individuals will be more likely to form connections with in-group members than with out-group members
+The null hypothesis is rejected. Individuals show a greater likelihood of forming connections with in-group members (coeff = `r round(Hypothesis.1.1$coefficients[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.1.1$coefficients[8], 3))`).
 
 ```{r graph1}
 
@@ -183,7 +190,9 @@ mosaicplot(ingroup2 ~ connect2,
 Hypothesis.1.1
 ```
 
-+ Hypothesis 1.2: Overall cooperation level will increase with successive rounds
++ **Hypothesis 1.2: Overall cooperation level will increase with successive rounds**
+
+The null hypothesis cannot be rejected. Cooperation levels do not increase with successive rounds  (coeff = `r round(Hypothesis.1.2$coefficients[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.1.2$coefficients[8], 3))`).
 
 ```{r graph2}
 session_round_rate2=exp2_cooperation%>%
@@ -214,7 +223,9 @@ plot.coop2
 Hypothesis.1.2
 ```
 
-+ Hypothesis 2.1: In-group favoritism will be more likely in the biased pairing condition
++ **Hypothesis 2.1: In-group favoritism will be more likely in the biased pairing condition**
+
+The null hypothesis is rejected, but the effect is in the opposite direction from the hypothesis. In-group favoritism is more likely in the unbiased pairing condition (coeff = `r round(Hypothesis.2.1$coefficients[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.2.1$coefficients[16], 3))`).
 
 ```{r graph3}
 exp2_cooperation$ingroup2 <- ifelse (exp2_cooperation$ingroup == 0, "Outgroup", "Ingroup")
@@ -244,7 +255,9 @@ plot.coop3
 Hypothesis.2.1
 ```
 
-+ Hypothesis 3.1: Individuals in the 2 avatar condition will be more likely to form connections with in-group members than those in the 4 avatar condition 
++ **Hypothesis 3.1: Individuals in the 2 avatar condition will be more likely to form connections with in-group members than those in the 4 avatar condition**
+
+The null hypothesis cannot be rejected (coeff = `r round(Hypothesis.3.1$coefficients[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.3.1$coefficients[16], 3))`).
 
 ```{r graph4}
 exp2_rewire$identities2 <- ifelse (exp2_rewire$identities == 0, "2 avatars", "4 avatars")
@@ -272,7 +285,9 @@ plot.coop4
 Hypothesis.3.1
 ```
 
-+ Hypothesis 3.2: Individuals in the 2 avatar condition will be less likely to cooperate with in-group members than those in the 4 avatar condition
++ **Hypothesis 3.2: Individuals in the 2 avatar condition will be less likely to cooperate with in-group members than those in the 4 avatar condition**
+
+The null hypothesis is rejected. Individuals in the 4 avatar condition are more likely to cooperate with in-group members than those in the 2 avatar condition (coeff = `r round(Hypothesis.3.2$coefficients[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.3.2$coefficients[16], 3))`).
 
 ```{r graph5}
 

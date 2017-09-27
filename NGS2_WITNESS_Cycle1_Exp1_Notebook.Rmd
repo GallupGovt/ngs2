@@ -1,7 +1,7 @@
 ---
 title: |
   | Cooperation in Dynamic Networks Game:
-  | A replication of Rand et al. (2011)
+  | A replication of Rand et al. (2011) - Partial Submission
 
 author: Pablo Diego-Rosell, PhD  - Gallup
 date: "September 1, 2017"
@@ -19,7 +19,8 @@ pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmis
 
 <br />
 This is a fully reproducible *Rmarkdown notebook* describing the design, 
-results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 1. 
+results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 1. This is a partial submission with the data collected up until September 28, 2017. A full submission will follow at a later date. 
+<br />
 Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 

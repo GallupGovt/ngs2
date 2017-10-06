@@ -95,25 +95,43 @@ def gather_data(directory, file, experiment):
                .tolist()),
     })
     finishers = tmp[tmp.event=='FinalScore']
-    if experiment==1:
-        condition = calculate_conditions(tmp, experiment)
-        finishers = finishers[['data name', 'data value']].rename(columns={
-            'data name': 'id',
-            'data value': 'final_score',
-        })
-    else:
-        condition = calculate_conditions(tmp, experiment)
-        finishers = finishers.pivot(index='id', columns='data name',
-                                    values='data value').reset_index()
-        finishers = finishers[['pid', 'score']].rename(columns={
-            'pid': 'id',
-            'score': 'final_score',
-        })
-    res = starters.merge(finishers, on='id', how='left')
-    res['condition'] = condition
-    res['experiment'] = '{}_{}'.format(fileid[0], fileid[1])
+    rounds = (tmp['data value']
+              [(tmp.event=='cooperationEvent') &
+               (tmp['data name']=='round')]
+              .unique()
+              .tolist()
+    )
+    rds = []
+    for i in rounds:
+        try:
+            rds.append(int(i))
+        except ValueError:
+            pass
+    if finishers.shape[0]>=8:
+        if experiment==1:
+            condition = calculate_conditions(tmp, experiment)
+            if ('Other' in condition) | (max(rds)<2):
+                return pd.DataFrame()
+            else:
+                finishers = finishers[['data name', 'data value']].rename(columns={
+                    'data name': 'id',
+                    'data value': 'final_score',
+                })
+        else:
+            condition = calculate_conditions(tmp, experiment)
+            finishers = finishers.pivot(index='id', columns='data name',
+                                        values='data value').reset_index()
+            finishers = finishers[['pid', 'score']].rename(columns={
+                'pid': 'id',
+                'score': 'final_score',
+            })
+        res = starters.merge(finishers, on='id', how='left')
+        res['condition'] = condition
+        res['experiment'] = '{}_{}'.format(fileid[0], fileid[1])
 
-    return res
+        return res
+    else:
+        return pd.DataFrame()
 
 
 def process_directory(directory, experiment):

@@ -48,8 +48,13 @@ def loose_eligibility(row):
         return 'ineligible'
 
 
-def strict_eligibility(row):
-    if (row.experiments==0) | ((row.signups==1) & (row.experiments==1)):
+def strict_eligibility(row, ids):
+    if row.ExternalDataReference in ids:
+        if ((row.experiments==0) | ((row.signups==1) & (row.experiments==1))):
+            return 'eligible'
+        else:
+            return 'ineligible'
+    elif row.experiments<=1:
         return 'eligible'
     else:
         return 'ineligible'
@@ -60,6 +65,8 @@ def run(args_dict):
     exp = [gather_data(directory) for directory in args_dict['experiment']]
     inv = pd.read_csv(args_dict['data'], sep=None, engine='python')
     xwalk = pd.read_csv(args_dict['crosswalk'], sep=None, engine='python')
+
+    curr_exp_ids = inv.ExternalDataReference[inv.Batch==max(inv.Batch)].tolist()
 
     # process breadboard ids in crosswalk
     xwalk['bbid'] = xwalk.ROUTER_URL.apply(lambda x: x.split('/')[-1])
@@ -79,12 +86,26 @@ def run(args_dict):
                              right_on='EMPLOYEE_KEY_VALUE', how='left')
     status = status[VARNAMES].fillna(0)
 
+    # check for manual adjustments
+    if args_dict['manuals']:
+        man = pd.read_csv('misc/bb_ids_nonstarts.csv', sep=None, engine='python')
+        man = man.merge(xwalk[['EMPLOYEE_KEY_VALUE', 'bbid']],
+                        on='bbid', how='left')
+        change_vals = pd.DataFrame({
+            'ExternalDataReference': man.EMPLOYEE_KEY_VALUE,
+            'reducer': 1,
+        })
+        status = status.merge(change_vals, on='ExternalDataReference', how='left')
+        status.reducer.fillna(0, inplace=True)
+        status.experiments = status.experiments - status.reducer
+        status.drop('reducer', axis=1, inplace=True)
+
     # determine email eligibility
     if 'loose' in args_dict['criteria']:
         status['eligibility'] = status.apply(lambda x: loose_eligibility(x),
                                              axis=1)
     elif 'strict' in args_dict['criteria']:
-        status['eligibility'] = status.apply(lambda x: strict_eligibility(x),
+        status['eligibility'] = status.apply(lambda x: strict_eligibility(x, curr_exp_ids),
                                              axis=1)
     else:
         sys.exit('PROBLEM! Not programmed for `{}`'.format(args_dict['criteria']))
@@ -103,6 +124,8 @@ if __name__ == '__main__':
                         'selecting eligibility.')
     parser.add_argument('-d', '--data', required=True, help='Path/name of file '
                         'housing experiment invitation data.')
+    parser.add_argument('-m', '--manuals', action='store_true', help='File '
+                        'with IDs that will be adjusted for eligibility.')
     parser.add_argument('-w', '--crosswalk', required=True, help='Path/name of '
                         'crosswalk file from Gallup/Breadboard IDs.')
     parser.add_argument('-x', '--experiment', required=True, nargs='*',

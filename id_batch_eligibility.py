@@ -3,6 +3,7 @@
 import argparse
 import pandas as pd
 import os
+import sys
 
 
 VARNAMES = [
@@ -23,13 +24,6 @@ def create_experiment_counts(files):
     return tmp
 
 
-def determine_eligibility(row):
-    if (row.experiments==0) | ((row.signups==1) & (row.experiments==1)):
-        return 'eligible'
-    else:
-        return 'ineligible'
-
-
 def gather_data(directory):
     files = os.listdir(directory)
     res = []
@@ -45,6 +39,20 @@ def gather_data(directory):
             )
             res += bbid
     return res
+
+
+def loose_eligibility(row):
+    if row.experiments<=1:
+        return 'eligible'
+    else:
+        return 'ineligible'
+
+
+def strict_eligibility(row):
+    if (row.experiments==0) | ((row.signups==1) & (row.experiments==1)):
+        return 'eligible'
+    else:
+        return 'ineligible'
 
 
 def run(args_dict):
@@ -72,17 +80,27 @@ def run(args_dict):
     status = status[VARNAMES].fillna(0)
 
     # determine email eligibility
-    status['eligibility'] = status.apply(lambda x: determine_eligibility(x),
-                                         axis=1)
+    if 'loose' in args_dict['criteria']:
+        status['eligibility'] = status.apply(lambda x: loose_eligibility(x),
+                                             axis=1)
+    elif 'strict' in args_dict['criteria']:
+        status['eligibility'] = status.apply(lambda x: strict_eligibility(x),
+                                             axis=1)
+    else:
+        sys.exit('PROBLEM! Not programmed for `{}`'.format(args_dict['criteria']))
 
     # output file
     FILEOUT = os.path.splitext(args_dict['data'])
-    status.to_csv('{}_updated{}'.format(FILEOUT[0], FILEOUT[1]), index=False)
+    status.to_csv('{}_updated_{}{}'.format(FILEOUT[0], args_dict['criteria'],
+                                           FILEOUT[1]), index=False)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Identify eligibility for '
                                      'future experiment invites.')
+    parser.add_argument('-c', '--criteria', required=True, choices=['loose',
+                        'strict'], help='Identifies criteria to use in '
+                        'selecting eligibility.')
     parser.add_argument('-d', '--data', required=True, help='Path/name of file '
                         'housing experiment invitation data.')
     parser.add_argument('-w', '--crosswalk', required=True, help='Path/name of '

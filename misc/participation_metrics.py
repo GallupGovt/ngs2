@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
+import numpy as np
 import pandas as pd
 
 
@@ -73,14 +74,19 @@ def create_output_tables(data, experiment, detail=False):
             'experiment': 'total_experiments',
         }, inplace=True)
         table['experiment'] = experiment
+        table.finished = table.apply(lambda x: np.nan if (x.experiment==3) &
+                                     (x.finished==0) else x.finished, axis=1)
         return table
     else:
-        return pd.DataFrame({
+        table = pd.DataFrame({
             'started': [data.id.count()],
             'finished': [data.final_score.count()],
             'total_experiments': [len(set(data.experiment))],
             'experiment': [experiment],
         })
+        table.finished = table.apply(lambda x: np.nan if (x.experiment==3) &
+                                     (x.finished==0) else x.finished, axis=1)
+        return table
 
 
 def gather_data(directory, file, experiment):
@@ -94,44 +100,51 @@ def gather_data(directory, file, experiment):
                .unique()
                .tolist()),
     })
-    finishers = tmp[tmp.event=='FinalScore']
-    rounds = (tmp['data value']
-              [(tmp.event=='cooperationEvent') &
-               (tmp['data name']=='round')]
-              .unique()
-              .tolist()
-    )
-    rds = []
-    for i in rounds:
-        try:
-            rds.append(int(i))
-        except ValueError:
-            pass
-    if finishers.shape[0]>=8:
-        if experiment==1:
-            condition = calculate_conditions(tmp, experiment)
-            if ('Other' in condition) | (max(rds)<2):
-                return pd.DataFrame()
+    if experiment in [1, 2]:
+        finishers = tmp[tmp.event=='FinalScore']
+        rounds = (tmp['data value']
+                  [(tmp.event=='cooperationEvent') &
+                   (tmp['data name']=='round')]
+                  .unique()
+                  .tolist()
+        )
+        rds = []
+        for i in rounds:
+            try:
+                rds.append(int(i))
+            except ValueError:
+                pass
+        if finishers.shape[0]>=8:
+            if experiment==1:
+                condition = calculate_conditions(tmp, experiment)
+                if ('Other' in condition) | (max(rds)<2):
+                    return pd.DataFrame()
+                else:
+                    finishers = finishers[['data name', 'data value']].rename(columns={
+                        'data name': 'id',
+                        'data value': 'final_score',
+                    })
             else:
-                finishers = finishers[['data name', 'data value']].rename(columns={
-                    'data name': 'id',
-                    'data value': 'final_score',
+                condition = calculate_conditions(tmp, experiment)
+                finishers = finishers.pivot(index='id', columns='data name',
+                                            values='data value').reset_index()
+                finishers = finishers[['pid', 'score']].rename(columns={
+                    'pid': 'id',
+                    'score': 'final_score',
                 })
-        else:
-            condition = calculate_conditions(tmp, experiment)
-            finishers = finishers.pivot(index='id', columns='data name',
-                                        values='data value').reset_index()
-            finishers = finishers[['pid', 'score']].rename(columns={
-                'pid': 'id',
-                'score': 'final_score',
-            })
-        res = starters.merge(finishers, on='id', how='left')
-        res['condition'] = condition
-        res['experiment'] = '{}_{}'.format(fileid[0], fileid[1])
+            res = starters.merge(finishers, on='id', how='left')
+            res['condition'] = condition
+            res['experiment'] = '{}_{}'.format(fileid[0], fileid[1])
 
-        return res
+            return res
+        else:
+            return pd.DataFrame()
     else:
-        return pd.DataFrame()
+        starters['final_score'] = np.nan
+        starters['condition'] = 'Coloring'
+        starters['experiment'] = '{}_{}'.format(fileid[0], fileid[1])
+
+        return starters
 
 
 def process_directory(directory, experiment):
@@ -158,14 +171,17 @@ def run():
     table_detail[VARORDER_DETAIL].to_csv('misc/current_experiment_statistics_detail.csv',
                                          index=False)
 
+
 if __name__ == '__main__':
     RAW_DATA = [
         'NGS2-Cycle1-Experiment1/data',
         'NGS2-Cycle1-Experiment2/data',
+        'NGS2-Cycle1-Experiment3/data',
     ]
     EXPERIMENTS = [
         1,
         2,
+        3,
     ]
 
     run()

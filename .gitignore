@@ -17,3 +17,9 @@ misc/nfiles
 
 # zip files
 *.zip
+
+# shell scripts
+*.sh
+
+# intermediate check files
+misc/id_*.py

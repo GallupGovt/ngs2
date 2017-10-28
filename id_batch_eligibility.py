@@ -63,10 +63,17 @@ def strict_eligibility(row, ids):
 def run(args_dict):
     # load raw data
     exp = [gather_data(directory) for directory in args_dict['experiment']]
-    inv = pd.read_csv(args_dict['data'], sep=None, engine='python')
+    inv = pd.read_excel(args_dict['data'])
     xwalk = pd.read_csv(args_dict['crosswalk'], sep=None, engine='python')
 
+    # rename key field in signup data
+    inv.rename(columns={
+        'EMPLOYEE_KEY_VALUE': 'ExternalDataReference',
+    }, inplace=True)
+
+    # id the current experiment
     curr_exp_ids = inv.ExternalDataReference[inv.Batch==max(inv.Batch)].tolist()
+
 
     # process breadboard ids in crosswalk
     xwalk['bbid'] = xwalk.ROUTER_URL.apply(lambda x: x.split('/')[-1])
@@ -112,8 +119,8 @@ def run(args_dict):
 
     # output file
     FILEOUT = os.path.splitext(args_dict['data'])
-    status.to_csv('{}_updated_{}{}'.format(FILEOUT[0], args_dict['criteria'],
-                                           FILEOUT[1]), index=False)
+    status.to_csv('{}_updated_{}.csv'.format(FILEOUT[0], args_dict['criteria']),
+                  index=False)
 
 
 if __name__ == '__main__':

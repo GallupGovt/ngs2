@@ -19,7 +19,7 @@ misc/nfiles
 *.zip
 
 # shell scripts
-*.sh
+misc/make_metrics.sh
 
 # intermediate check files
 misc/id_*.py

@@ -8,6 +8,7 @@ import sys
 
 VARNAMES = [
     'ExternalDataReference',
+    'contact_ok',
     'signups',
     'experiments',
 ]
@@ -60,6 +61,13 @@ def strict_eligibility(row, ids):
         return 'ineligible'
 
 
+def yesno(x):
+    if 'N' in x.tolist():
+        return 0
+    else:
+        return 1
+
+
 def run(args_dict):
     # load raw data
     exp = [gather_data(directory) for directory in args_dict['experiment']]
@@ -80,8 +88,14 @@ def run(args_dict):
 
     # generate count of invites/experiments in which respondent participated
     exp_count = create_experiment_counts(exp)
-    inv_count = inv.groupby('ExternalDataReference').size().reset_index()
-    inv_count.rename(columns = {0: 'signups'}, inplace=True)
+    inv_count = (inv
+                 .groupby('ExternalDataReference')
+                 .agg({'Batch': 'size', 'EMAIL_CONTACT_APPROVED': yesno})
+                 .reset_index())
+    inv_count.rename(columns={
+        'Batch': 'signups',
+        'EMAIL_CONTACT_APPROVED': 'contact_ok',
+    }, inplace=True)
 
     # merge experiment data to crosswalk
     participation = xwalk[['EMPLOYEE_KEY_VALUE', 'bbid']].merge(exp_count,

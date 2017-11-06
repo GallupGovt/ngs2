@@ -86,7 +86,7 @@ experiments_to_drop <- function(d) {
 read_input_files <- function(dir) {
     # identifies all csv files in a directory, reads then into r, and appends them
     res <- list()
-    files <- list.files(dir, pattern = '.csv$')
+    files <- list.files(dir, pattern = '^e.*[0-9]\\.csv$')
     sources <- strsplit(files, split = '_')
     for(i in 1:length(files)) {
         tmp <- read.csv(paste(dir, files[i], sep = '/'), header = TRUE,

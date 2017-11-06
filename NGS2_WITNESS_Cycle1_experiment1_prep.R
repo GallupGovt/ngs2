@@ -412,7 +412,7 @@ merge_with_empanelment <- function(data, empanel, merge_var, rename = FALSE,
 read_input_files <- function(dir) {
     # identifies all csv files in a directory, reads then into r, and appends them
     res <- list()
-    files <- list.files(dir, pattern = '.csv$')
+    files <- list.files(dir, pattern = '^e.*[0-9]\\.csv$')
     sources <- strsplit(files, split = '_')
     for(i in 1:length(files)) {
         tmp <- read.csv(paste(dir, files[i], sep = '/'), header = TRUE,
@@ -433,26 +433,28 @@ rewiring_round_changes <- function(changes, connections) {
             for(j in 1:max(x$round)) {
                 tmp <- subset(x, x$round == j)
                 tmp <- tmp[order(tmp$id), ]
-                for(i in 1:nrow(tmp)) {
-                    id1 <- tmp[i, 'nid']
-                    id2 <- tmp[i, 'pid']
-                    conn_id <- which((y$playerId1 == id1 & y$playerId2 == id2) |
-                                     (y$playerId1 == id2 & y$playerId2 == id1))
-                    if(length(conn_id) == 0) {
-                        if(tmp[i, 'action'] == 'makeConnection') {
-                            y <- rbind(y,
-                                       data.frame(id = tmp[i, 'id'],
-                                                  playerId1 = id1,
-                                                  playerId2 = id2,
-                                                  change_event = 1)
+                if(nrow(tmp) > 0) {
+                    for(i in 1:nrow(tmp)) {
+                        id1 <- tmp[i, 'nid']
+                        id2 <- tmp[i, 'pid']
+                        conn_id <- which((y$playerId1 == id1 & y$playerId2 == id2) |
+                                         (y$playerId1 == id2 & y$playerId2 == id1))
+                        if(length(conn_id) == 0) {
+                            if(tmp[i, 'action'] == 'makeConnection') {
+                                y <- rbind(y,
+                                           data.frame(id = tmp[i, 'id'],
+                                                      playerId1 = id1,
+                                                      playerId2 = id2,
+                                                      change_event = 1)
+                                )
+                            }
+                        } else {
+                            y$change_event[conn_id] <- ifelse(
+                                is.na(y$change_event[conn_id]),
+                                tmp[i, 'action_num'],
+                                y$change_event[conn_id] + tmp[i, 'action_num']
                             )
                         }
-                    } else {
-                        y$change_event[conn_id] <- ifelse(
-                            is.na(y$change_event[conn_id]),
-                            tmp[i, 'action_num'],
-                            y$change_event[conn_id] + tmp[i, 'action_num']
-                        )
                     }
                 }
                 y <- y[y$change_event >= 0, ]

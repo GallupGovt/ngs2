@@ -197,11 +197,11 @@ load_bb_data <- function(dir) {
 }
 
 # load all data
-emp <- read.csv('empanelment_cleaned.csv', header = TRUE, sep = ',',
+emp <- read.csv('ngs2_empanelment_us.csv', header = TRUE, sep = ',',
                 stringsAsFactors = FALSE)
 panel <- read.csv('data/WORLD_LAB_PANEL_DEMOS.csv', header = TRUE, sep = ',',
                   stringsAsFactors = FALSE)
-bb_ids <- read.csv('data/oms_url_upload_20170821_1145.txt', header = TRUE,
+bb_ids <- read.csv('data/all_ids_24oct2017.csv', header = TRUE,
                    sep = '\t', stringsAsFactors = FALSE)
 times <- read.csv('data/experiment_signup_list_20170907_0700.csv', header = TRUE,
                   sep = ',', stringsAsFactors = FALSE)

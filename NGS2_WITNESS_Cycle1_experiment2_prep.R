@@ -62,8 +62,8 @@ add_experiment_condition <- function(data, raw) {
 build_empanelment_bb_xwalk <- function(file) {
     # reads in data to determine breadboard/empanelment crosswalk and outputs a
     # clean file
-    bb_ids <- read.table(paste('data', file, sep = '/'), header = TRUE,
-                         sep = '\t', stringsAsFactors = FALSE)
+    bb_ids <- read.csv(paste('data', file, sep = '/'), header = TRUE,
+                         sep = ',', stringsAsFactors = FALSE)
     bb_ids$bbid <- do.call(c, lapply(strsplit(bb_ids$ROUTER_URL, '/'), function(x) {
         return(x[length(x)])
     }))
@@ -102,7 +102,7 @@ read_input_files <- function(dir) {
 exp2 <- read_input_files(paste0('NGS2-Cycle', CYCLE, '-Experiment2/data'))
 
 # gather empanelment/breadboard crosswalk information
-empanel_bb_xwalk <- build_empanelment_bb_xwalk('oms_url_upload_20170821_1145.txt')
+empanel_bb_xwalk <- build_empanelment_bb_xwalk('all_ids_24oct2017.csv')
 
 # Experiment 2
 ###############################################################################

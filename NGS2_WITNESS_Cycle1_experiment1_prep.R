@@ -157,8 +157,8 @@ build_cooperation <- function(actions) {
 build_empanelment_bb_xwalk <- function(file) {
     # reads in data to determine breadboard/empanelment crosswalk and outputs a
     # clean file
-    bb_ids <- read.table(paste('data', file, sep = '/'), header = TRUE,
-                         sep = '\t', stringsAsFactors = FALSE)
+    bb_ids <- read.csv(paste('data', file, sep = '/'), header = TRUE,
+                         sep = ',', stringsAsFactors = FALSE)
     bb_ids$bbid <- do.call(c, lapply(strsplit(bb_ids$ROUTER_URL, '/'), function(x) {
         return(x[length(x)])
     }))
@@ -471,7 +471,7 @@ rewiring_round_changes <- function(changes, connections) {
 exp1 <- read_input_files(paste0('NGS2-Cycle', CYCLE, '-Experiment1/data'))
 
 # gather empanelment/breadboard crosswalk information
-empanel_bb_xwalk <- build_empanelment_bb_xwalk('oms_url_upload_20170821_1145.txt')
+empanel_bb_xwalk <- build_empanelment_bb_xwalk('all_ids_24oct2017.csv')
 
 # EXPERIMENT 1
 # cooperation dataset

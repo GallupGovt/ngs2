@@ -1,0 +1,333 @@
+---
+title: |
+  | Coevolution of Homophily and 
+  | Cooperation in Dynamic social Networks - Partial Submission
+  
+author: Feng Fu, Nicholas A. Christakis, Pablo Diego-Rosell
+date: "November 8, 2017"
+output:
+  html_document:
+    toc: true
+    theme: united
+    number_sections: true 
+---
+```{r load_libs, message=F, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmisc, corrgram, PerformanceAnalytics, doBy, car, ggplot2, DT, utils, lme4, rstan, rstanarm, igraph, RCurl)
+```
+
+<br />
+This is a fully reproducible *Rmarkdown notebook* describing the design, results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 2.
+<br />
+
+Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. 
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Special thanks to Ghazal Fazelnia (EE, Columbia), John Paisley (EE, Columbia) and Tian Zheng (Statistics, Columbia) for their prototype notebook, upon which this notebook is based.
+
+<br />
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+start.time=Sys.time()
+```
+```{r confirmatory, include=F}
+script <- getURL("https://raw.githubusercontent.com/gallup/NGS2/master/NGS2_WITNESS_Cycle1_confirmatory_exp2.R", ssl.verifypeer = FALSE)
+ fileConn<-file("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
+ writeLines(script, fileConn)
+ close(fileConn)
+source("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
+```
+
+# Abstract
+
+The tendency for individuals to interact with similar others (homophily) is much more common in nature than the tendency to interact with dissimilar others (heterophily), suggesting an evolutionary advantage that has not been studied to date (Fu et al. 2012a). The formation of social ties is driven by homophilic preferences of individuals, thereby leading to positive network assortment. Spatial assortment promotes the evolution of cooperation. These two processes can form a positive feedback in coevolutionary dynamics: an increase in homophilic tendencies leads to stronger assortment and thus higher cooperativity, which can in turn cause a further increase in homophilic preferences.
+
+This experiment aims to find out how the diversity of group identities affect the emergence of homophily and cooperation in a multi-round cooperation game. Before the game starts, subjects are given the option to affiliate with one of several available groups. Subjects are then be given the opportunity to form network connections with both in-group and out-group members. Once networks are formed, subjects play a multi-round cooperation game where they are given the option to cooperate with their neighbors or defect. At each rewiring round (group change round), with a probability of 25% after each round of game, subjects are reminded of the size and the performance of each group and are given the opportunity to choose to switch to a different group or stay with their current group. The two experimental conditions are the number of identities available in a given game (*2 avatars* vs. *4 avatars*), and the group-pairing probabilities, with either *unbiased* pairings in which subjects are equally likely to be paired with in-group vs out-group members, or *biased* pairings in which subjects are more likely to be paired with in-group members
+
+A simulation with a group of individuals with multiple observable phenotypes, and different probabilities for homophilic preference by Fu et al. (2012), showed that homophily tends to predominate under a wide variety of conditions, including a low number of phenotypes in the population, low phenotypic mutation rate, and low preference mutation rate. Likewise, (Fu et al. 2012b) demonstrated that individual-level selection can favour the emergence of in-group bias in a world of dynamic social ties and group identities. Homophily and cooperation will co-evolve as a result of positive feedback that mutually reinforces the two behavioral propensities. Our results find support for the hypothesis that individuals will be more likely to form connections with in-group members than with out-group members (hypothesis 1.1), but we do not find support for the hypothesis that cooperation levels increase with successive rounds (hypothesis 1.2). 
+
+Interactions tend to be more likely between individuals of the same type because they are drawn to - or drawn from - similar environments. Introducing an additional parameter to allow for such assortativity, Fu et al. (2012b) showed in their simulations that in-group favoritism will be more likely to emerge when subjects are more likely to be paired with in-group members. However our results show an effect in the opposite direction from the hypothesis. In-group favoritism is more likely in the unbiased pairing condition than in the unbiased pairing condition (hypothesis 2.1). 
+
+Without flexibility in group identity all individuals eventually end up in the same group, and then the system is prone to exploitation of in-group members. Simulations by (Fu et al. 2012b) showed that a larger number of possible groups leads to stronger selection for in-group bias, and that increasing the diversity of group identities should reduce the levels of homophily but promote in-group cooperation. Hypothesis 3.1 posits that individuals in the 2 avatar condition will be more likely to form connections with in-group members than those in the 4 avatar condition, although based on our data we cannot reject the null. We find on the other hand support for hypothesis 3.2, predicting that individuals in the 4 avatar condition will be more likely to cooperate with in-group members than those in the 2 avatar condition. 
+
+# Pre-registration summary
+
++ The experiment was pre-registered on 2017-03-31, and the pre-registration form is available at https://osf.io/swpa6/.
++ The experiment was later amended on 2017-07-07 per https://osf.io/qjhb5/.
++ Amended again on 2017-08-08 per https://osf.io/qzgk2/.
++ And again on 2017-09-13 per https://osf.io/bmcnu/.
+
+## Experimental design
+
++ Subjects are given the option to affiliate with one of several available groups represented by evaluatively neutral avatars, such as geometric patterns or pictures of animals.
+
++ Subjects are then be given the opportunity to form network connections with both in-group and out-group members. Connections will be established based on mutual agreement (i.e. accepting connection requests). 
+
++ Once networks are formed, subjects play a multi-round cooperation game where they are given the option to cooperate with their neighbors or defect.
+
+    -	Cooperate entails reducing one's own wealth by 50 'units' per neighbor in order to increase the wealth of all neighbors by 100 units each while defection generates no unit cost or benefit.
+    
+    -	Before making each decision, subjects are reminded of their number of neighbors and the neighbors' previous decisions.
+    
+    -	At the end of each turn, subjects are informed about the decisions of their neighbors, along with their own payoff.
+
++ After every round of the game, the probability that there will be a rewiring round is 0.25. At each rewiring round subjects are reminded of the size and the performance of each group and are given the opportunity to choose to switch to a different group or stay with their current group. If subjects switch groups, new within and between group ties will have to be generated de novo according to the procedure outlined above.
+
+## Experimental conditions
+
+Subjects are randomly assigned to one of four conditions of varying diversity of group identities (two avatar options vs four avatar options) and group-pairing probabilities (Unbiased random pairings in which subjects are equally likely to be paired with in-group vs out-group members vs. biased pairings in which subjects are more likely to be paired with in-group members). These two factors are combined in a factorial design, with the resulting four conditions: 
+
++	Unbiased Pairing - 2 Avatars
++	Unbiased Pairing - 4 Avatars
++	Biased Pairing - 2 Avatars
++	Biased Pairing - 4 Avatars
+
+## Hypotheses, variables and expected effect sizes
+
+```{r hypotheses, echo=FALSE}
+hypexp2 <- read.csv(url("https://raw.githubusercontent.com/gallup/NGS2/master/hyp_exp2.csv"),
+                             header = TRUE,
+                             sep = ',')
+library(knitr)
+kable(hypexp2, 
+          caption = "Experimental Hypotheses, Variables, and Expected Effect Sizes")
+```
+
+## Data used for the prediction
+
++ Gallup recruited a total of `r length(unique(exp2_cooperation$playerid))` unique players for the experiment. 
++ Gallup ran a total of `r length(unique(exp2_cooperation$session))` instances of the experiment. 
++ Research participants were recruited from the Gallup Panel in the U.S.
+
+The study hypotheses are tested using two datasets, a "cooperation" dataset showing cooperation decisions at the individual level for each cooperation round, and "rewire" dataset showing connection decisions at the individual level for each rewiring round. 
+
+### Cooperation data
+
+The "cooperation" dataset includes the following variables:
+
+```{r cooperation descriptives}
+names(exp2_cooperation)
+datatable(sample_n(exp2_cooperation, 5), 
+          caption = "Randomly selected rows of cooperation data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```
+
+### Rewire data
+
+The "rewire" dataset includes the following variables:
+
+```{r rewire decriptives}
+names(exp2_rewire)
+datatable(sample_n(exp2_rewire, 5), 
+          caption = "Randomly selected rows of rewire data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```
+
+# Links to other documents in this submission 
+
++ World Lab Empanelment Screener https://osf.io/z5cjm/
++ Power analysis: https://osf.io/tw3cp/
++ Foundational articles: 
+- Fu et al. (2012a): https://osf.io/dfgmy/
+- Fu et al. (2012b): https://osf.io/uz8s9/
+
+# Conclusions
+
++ **Hypothesis 1.1: Individuals will be more likely to form connections with in-group members than with out-group members**
+
+The null hypothesis is rejected. Individuals show a greater likelihood of forming connections with in-group members (coeff = `r round(Hypothesis.1.1$coefficients[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.1.1$coefficients[8], 3))`).
+
+```{r graph1}
+
+exp2_rewire$ingroup2 <- ifelse (exp2_rewire$ingroup == 0, "Outgroup", "Ingroup")
+exp2_rewire$connect2 <- ifelse (exp2_rewire$connect == 0, "No connect", "Connect")
+
+session_info=exp2_rewire%>%
+  group_by(session)%>%
+  summarise(
+    num_player=n(),
+    condition=unique(condition)[1]
+  )%>%
+  arrange(condition)
+session_round_connect=exp2_rewire%>%
+  group_by(session, 
+           ingroup2)%>%
+  summarise(
+    rate_connect=mean(connect)
+  )
+
+session_round_connect=left_join(session_round_connect, 
+                             session_info,
+                             by="session")
+plot.connect <-ggplot(session_round_connect, 
+       aes(x=factor(ingroup2), 
+           y=rate_connect,
+           fill=condition))+
+  geom_boxplot()+
+  facet_grid(.~condition)+
+  labs(x="Condition")+
+  labs(y="Connection Rates")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.connect
+mosaicplot(ingroup2 ~ connect2, 
+           data = exp2_rewire, 
+           col = c("lightskyblue2", "tomato"),
+           main = "Probabiliy of Connection by Group")
+```
+
+```{r Hypothesis.1.1}
+Hypothesis.1.1
+```
+
++ **Hypothesis 1.2: Overall cooperation level will increase with successive rounds**
+
+The null hypothesis cannot be rejected. Cooperation levels do not increase with successive rounds  (coeff = `r round(Hypothesis.1.2$coefficients[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.1.2$coefficients[8], 3))`).
+
+```{r graph2}
+session_round_rate2=exp2_cooperation%>%
+  group_by(session, 
+           round_num)%>%
+  summarise(
+    rate_contr=mean(decision0d1c)
+  )
+session_round_rate2=left_join(session_round_rate2, 
+                             session_info,
+                             by="session")
+
+plot.coop2 <-ggplot(session_round_rate2, 
+       aes(x=factor(round_num), 
+           y=rate_contr,
+           fill=condition))+
+  geom_boxplot()+
+  facet_grid(.~condition)+
+  labs(x="Round")+
+  labs(y="Cooperative players")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.coop2
+```
+
+```{r Hypothesis.1.2}
+Hypothesis.1.2
+```
+
++ **Hypothesis 2.1: In-group favoritism will be more likely in the biased pairing condition**
+
+The null hypothesis is rejected, but the effect is in the opposite direction from the hypothesis. In-group favoritism is more likely in the unbiased pairing condition (coeff = `r round(Hypothesis.2.1$coefficients[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.2.1$coefficients[16], 3))`).
+
+```{r graph3}
+exp2_cooperation$ingroup2 <- ifelse (exp2_cooperation$ingroup == 0, "Outgroup", "Ingroup")
+exp2_cooperation$biased2 <- ifelse (exp2_cooperation$biased == 0, "Unbiased", "Biased")
+
+session_round_rate3=exp2_cooperation%>%
+  group_by(session, biased2, ingroup2)%>%
+  summarise(
+    rate_coop=mean(decision0d1c)
+  )
+  
+plot.coop3 <-ggplot(session_round_rate3, 
+       aes(x=factor(ingroup2), 
+           y=rate_coop,
+           fill=biased2))+
+  geom_boxplot() +
+  facet_grid(.~biased2)+
+  labs(x="Group")+
+  labs(y="Rate of Cooperation")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.coop3
+```
+
+```{r Hypothesis.2.1}
+Hypothesis.2.1
+```
+
++ **Hypothesis 3.1: Individuals in the 2 avatar condition will be more likely to form connections with in-group members than those in the 4 avatar condition**
+
+The null hypothesis cannot be rejected (coeff = `r round(Hypothesis.3.1$coefficients[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.3.1$coefficients[16], 3))`).
+
+```{r graph4}
+exp2_rewire$identities2 <- ifelse (exp2_rewire$identities == 0, "2 avatars", "4 avatars")
+session_round_rate4=exp2_rewire%>%
+  group_by(session, identities2, ingroup2)%>%
+  summarise(
+    rate_connect=mean(connect)
+  )
+  
+plot.coop4 <-ggplot(session_round_rate4, 
+       aes(x=factor(ingroup2), 
+           y=rate_connect,
+           fill=identities2))+
+  geom_boxplot() +
+  facet_grid(.~identities2)+
+  labs(x="Group")+
+  labs(y="Rate of Connection")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.coop4
+```
+
+```{r Hypothesis.3.1}
+Hypothesis.3.1
+```
+
++ **Hypothesis 3.2: Individuals in the 2 avatar condition will be less likely to cooperate with in-group members than those in the 4 avatar condition**
+
+The null hypothesis is rejected. Individuals in the 4 avatar condition are more likely to cooperate with in-group members than those in the 2 avatar condition (coeff = `r round(Hypothesis.3.2$coefficients[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.3.2$coefficients[16], 3))`).
+
+```{r graph5}
+
+exp2_cooperation$identities2 <- ifelse (exp2_cooperation$identities == 0, "2 avatars", "4 avatars")
+                                
+session_round_rate5=exp2_cooperation%>%
+  group_by(session, identities2, ingroup2)%>%
+  summarise(
+    rate_coop=mean(decision0d1c)
+  )
+  
+plot.coop5 <-ggplot(session_round_rate5, 
+       aes(x=factor(ingroup2), 
+           y=rate_coop,
+           fill=identities2))+
+  geom_boxplot() +
+  facet_grid(.~identities2)+
+  labs(x="Ingroup")+
+  labs(y="Rate of Cooperation")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.coop5
+```
+
+
+```{r Hypothesis.3.2}
+Hypothesis.3.2
+```
+
+```{r, include=F}
+end.time=Sys.time()
+run.time=difftime(end.time, start.time, "secs")
+```
+<br />
+This report was produced in `r format(run.time)`.
+<br />
+<br />
+
+Since we conduct a total of five confirmatory analyses, Bonferroni-corrected alpha = 0.01
+
+References:
+
++ Fu, F., Nowak, M. A., Christakis, N. A., & Fowler, J. H. (2012a). The evolution of homophily. Scientific reports, 2, 845.
+
++ Fu, F., Tarnita, C. E., Christakis, N. A., Wang, L., Rand, D. G., & Nowak, M. A. (2012b). Evolution of in-group favoritism. Scientific reports, 2, 460.

@@ -33,11 +33,11 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE
 start.time=Sys.time()
 ```
 ```{r confirmatory, include=F}
-script <- getURL("https://raw.githubusercontent.com/gallup/NGS2/master/NGS2_WITNESS_Cycle1_confirmatory_exp2.R", ssl.verifypeer = FALSE)
- fileConn<-file("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
+script <- getURL("https://raw.githubusercontent.com/gallup/NGS2/master/NGS2_WITNESS_Cycle1_confirmatory_exp2_FINAL.R", ssl.verifypeer = FALSE)
+ fileConn<-file("NGS2_WITNESS_Cycle1_confirmatory_exp2_FINAL.R")
  writeLines(script, fileConn)
  close(fileConn)
-source("NGS2_WITNESS_Cycle1_confirmatory_exp2.R")
+source("NGS2_WITNESS_Cycle1_confirmatory_exp2_FINAL.R")
 ```
 
 # Abstract

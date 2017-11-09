@@ -471,7 +471,7 @@ rewiring_round_changes <- function(changes, connections) {
 exp1 <- read_input_files(paste0('NGS2-Cycle', CYCLE, '-Experiment1/data'))
 
 # gather empanelment/breadboard crosswalk information
-empanel_bb_xwalk <- build_empanelment_bb_xwalk('all_ids_24oct2017.csv')
+empanel_bb_xwalk <- build_empanelment_bb_xwalk('all_ids_us_24oct2017.csv')
 
 # EXPERIMENT 1
 # cooperation dataset
@@ -515,10 +515,10 @@ coop <- do.call(rbind, mapply(function(x, name, exp) {
     exp_cond <- as.numeric(exp$data.value[exp$event == 'initParameters' &
                                           exp$data.name == 'k'])
     x$session <- name
-    x$condition <- ifelse(exp_cond == 0, 'Static',
+    x$condition <- ifelse(exp_cond == 1 | grepl('random', name), 'Random',
+                          ifelse(exp_cond == 0, 'Static',
                           ifelse(exp_cond == .1, 'Viscous',
-                          ifelse(exp_cond == .3, 'Fluid',
-                          ifelse(exp_cond == 1, 'Random', 'Other'))))
+                          ifelse(exp_cond == .3, 'Fluid', 'Other'))))
     x$fluid_dummy <- ifelse(x$condition == 'Fluid', 1, 0)
     return(x)
 }, coop, as.list(names(coop)), exp1, SIMPLIFY = FALSE))

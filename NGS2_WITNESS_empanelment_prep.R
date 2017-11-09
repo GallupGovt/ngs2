@@ -33,7 +33,7 @@ tipi_scale <- function(var1, var2) {
 }
 
 # read in empanelment data
-empanel <- read.csv('data/wl_empanelment.csv', header = TRUE,
+empanel <- read.csv('data/ngs2_empanelment_us.csv', header = TRUE,
                     sep = ',', stringsAsFactors = FALSE)
 empanel_dict <- read.csv('data/empanelment_dictionary.csv', header = TRUE,
                          sep = ',', stringsAsFactors = FALSE)
@@ -45,31 +45,6 @@ for(i in 1:length(names(empanel))) {
         empanel_dict$verbose[which(names(empanel)[i] == empanel_dict$label)],
         names(empanel)[i])
 }
-
-# Recode religion variable into fewer categories
-empanel$religion[empanel$Q23_religion=="Protestant"] <- "Christian"
-empanel$religion[empanel$Q23_religion=="Roman Catholic"] <- "Christian"
-empanel$religion[empanel$Q23_religion=="Mormon/Latter-Day Saints"] <- "Christian"
-empanel$religion[empanel$Q23_religion=="Other Christian Religion"] <- "Christian"
-
-empanel$religion[empanel$Q23_religion=="Islam/Muslim (Shiite)"] <- "Muslim"
-empanel$religion[empanel$Q23_religion=="Islam/Muslim (Sunni)"] <- "Muslim"
-empanel$religion[empanel$Q23_religion=="Muslim/Islam"] <- "Muslim"
-
-empanel$religion[empanel$Q23_religion=="Other Non-Christian Religion"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Spiritism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Buddhism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Jewish"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Primal-indigenous/African Traditional and Diasporic/Animist/Nature Worship/Paganism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Chinese Traditional Religion/Confucianism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Sikhism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Hinduism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Other (Write in:)"] <- "Other religion"
-
-empanel$religion[empanel$Q23_religion=="No Religion/Atheist/Agnostic"] <- "No Religion/Atheist/Agnostic"
-
-empanel$religion[is.na(empanel$religion)]<- "DK"
-empanel$religion<-as.factor(empanel$religion)
 
 # create scales
 # tipi

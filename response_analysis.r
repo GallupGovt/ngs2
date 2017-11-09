@@ -29,6 +29,18 @@ PANEL_VARNAMES <- c(
 )
 
 # function definitions
+aggregate_exp_number <- function(x, exp=c(1, 2)) {
+    var <- which(names(x) == paste0('bb', exp, '_pid'))
+    x <- merge(
+        x,
+        aggregate(x[, var], by = list(x[, var]), length),
+        by.x = paste0('bb', exp, '_pid'),
+        by.y = 'Group.1'
+    )
+    names(x)[grep('^x$', names(x))] <- paste0('bb', exp, '_nbr_times_played')
+    return(x[!duplicated(x[, var], fromLast = TRUE), ])
+}
+
 bb_data_merge <- function(login, training, play = NULL, decision = NULL,
                           scores = NULL, prefix = 'bb') {
     # merge various breadboard summary pieces together
@@ -197,19 +209,19 @@ load_bb_data <- function(dir) {
 }
 
 # load all data
-emp <- read.csv('ngs2_empanelment_us.csv', header = TRUE, sep = ',',
+emp <- read.csv('empanelment_cleaned.csv', header = TRUE, sep = ',',
                 stringsAsFactors = FALSE)
-panel <- read.csv('data/WORLD_LAB_PANEL_DEMOS.csv', header = TRUE, sep = ',',
+panel <- read.csv('data/WORLD_LAB_PANEL_DEMOS_NGS2.csv', header = TRUE, sep = ',',
                   stringsAsFactors = FALSE)
-bb_ids <- read.csv('data/all_ids_24oct2017.csv', header = TRUE,
-                   sep = '\t', stringsAsFactors = FALSE)
+bb_ids <- read.csv('data/all_ids_us_24oct2017.csv', header = TRUE,
+                   sep = ',', stringsAsFactors = FALSE)
 times <- read.csv('data/experiment_signup_list_20170907_0700.csv', header = TRUE,
                   sep = ',', stringsAsFactors = FALSE)
 bb1 <- load_bb_data('NGS2-Cycle1-Experiment1/data')
 bb2 <- load_bb_data('NGS2-Cycle1-Experiment2/data')
 
 # 1. deal with survey responses
-d <- emp
+d <- emp[!duplicated(emp$ExternalDataReference), ]
 d$source <- 'empanelment'
 
 # drop test files (status equal to 0)
@@ -249,6 +261,7 @@ d <- merge(
 )
 
 # 4. add in panel demographics
+panel <- panel[!duplicated(panel), ]
 panel <- panel[, PANEL_VARNAMES]
 names(panel) <- paste('panel', names(panel), sep = '_')
 
@@ -320,9 +333,19 @@ bb1_summary <- bb_data_merge(bb1_login, bb1_training, bb1_play,
 bb2_summary <- bb_data_merge(bb2_login, bb2_training, bb2_play,
                              bb2_decision, bb2_scores, prefix = 'bb2')
 
+# create total times experiment was played
+# note: many people had tried to play, but got bounced for some reason; after
+#       clearing the backlog of those that had logged in, but not actually
+#       played, people were allowed to play again. however, it means they show
+#       as having played multiple times... and this code here records how many
+#       times, but keeps the dataset at the 'empanelment' level by dropping
+#       the duplicate records that will happen from the merges later on.
+bb1_summary <- aggregate_exp_number(bb1_summary, 1)
+bb2_summary <- aggregate_exp_number(bb2_summary, 2)
+
 # merge breadboard summaries to data
-d <- merge(d, bb1_summary, by.x = 'bb_id', by.y = 'bb1_pid', all = TRUE)
-d <- merge(d, bb2_summary, by.x = 'bb_id', by.y = 'bb2_pid', all = TRUE)
+d <- merge(d, bb1_summary, by.x = 'bb_id', by.y = 'bb1_pid', all.x = TRUE)
+d <- merge(d, bb2_summary, by.x = 'bb_id', by.y = 'bb2_pid', all.x = TRUE)
 d$source <- ifelse(is.na(d$source), 'bb', d$source)
 
 # 7. derive variables for analysis
@@ -373,8 +396,9 @@ d$exp2_dropped <- apply(d[, grep('bb2_[logged_in|end_score]', names(d))], 1,
         ifelse(is.na(x[1]), NA, ifelse(is.na(x[2]), 1, 0))
     }
 )
-d$StartDate <- strptime(d$StartDate, '%Y-%m-%d %H:%S:%M')
-d$EndDate <- strptime(d$EndDate, '%Y-%m-%d %H:%S:%M')
+
+d$StartDate <- strptime(d$StartDate, '%Y-%m-%d %H:%M:%S')
+d$EndDate <- strptime(d$EndDate, '%Y-%m-%d %H:%M:%S')
 d$empanelment_minutes_to_complete <- difftime(d$EndDate, d$StartDate,
                                               units = 'mins')
 

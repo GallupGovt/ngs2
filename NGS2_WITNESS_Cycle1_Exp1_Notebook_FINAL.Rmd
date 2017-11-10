@@ -1,0 +1,312 @@
+---
+title: |
+  | Cooperation in Dynamic Networks Game:
+  | A replication of Rand et al. (2011)
+
+author: Pablo Diego-Rosell, PhD  - Gallup
+date: "November 10, 2017"
+output:
+  html_document:
+    toc: true
+    theme: united
+    number_sections: true 
+---
+```{r load_libs, message=F, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(multiwayvcov, lmtest, dplyr, reshape2, multiwayvcov, lmtest, Hmisc, corrgram, PerformanceAnalytics, doBy, car, ggplot2, DT, utils, lme4, rstan, rstanarm, igraph, RCurl)
+```
+
+<br />
+This is a fully reproducible *Rmarkdown notebook* describing the design, 
+results, and conclusions of NGS2 WITNESS Cycle 1 Experiment 1. 
+
+Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. 
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Special thanks to Ghazal Fazelnia (EE, Columbia), John Paisley (EE, Columbia) and Tian Zheng (Statistics, Columbia) for their prototype notebook, upon which this notebook is based.
+
+<br />
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+start.time=Sys.time()
+```
+```{r confirmatory, include=F}
+script <- getURL("https://raw.githubusercontent.com/gallup/NGS2/master/NGS2_WITNESS_Cycle1_confirmatory_exp1_FINAL.R", ssl.verifypeer = FALSE)
+fileConn<-file("NGS2_WITNESS_Cycle1_confirmatory_exp1_FINAL.R")
+writeLines(script, fileConn)
+close(fileConn)
+source("NGS2_WITNESS_Cycle1_confirmatory_exp1_FINAL.R")
+```
+
+# Abstract
+
+The study is intended to demonstrate the feasibility of conducting Breadboard experiments with World Lab participants by conducting a replication of Rand, Arbesman, and Christakis (2011), and so the study shares the same background, which we summarize next. As Rand, Arbesman, and Christakis note, "human populations are both highly cooperative and highly organized. Human interactions are not random but rather are structured in social networks. Importantly, ties in these networks often are dynamic, changing in response to the behavior of one's social partners. This dynamic structure permits an important form of conditional action that has been explored theoretically but has received little empirical attention: People can respond to the cooperation and defection of those around them by making or breaking network links" (p 1). 
+
+In recent years, a number of evolutionary game theory models have demonstrated the ability of link reciprocity to promote the evolution of cooperation in group interactions. Several qualitative results emerge consistently across dynamic network models (for a review see Perc & Szolnoki, 2010). Most importantly, these models predict that rapid rewiring of the network supports cooperation. If the network updates too slowly, the threat of severed links cannot be carried out often enough to make defection maladaptive. 
+
+In our replication of Rand et al's experiment (2011) subjects interact anonymously over the internet using custom software playable in a browser window. Subjects are randomly assigned to one of the four network link updating conditions:
+- 1.	Random link updating where neighbors change after each round randomly.
+- 2.	Fixed links where the network is static across rounds.
+- 3.	Viscous strategic link updating where subject pairs are chosen at random with a probability of 10%, and one player from each pair is allowed to break bond with the other player if bond exists or form one if one doesn't.
+- 4.	Fluid strategic link updating where subject pairs are chosen at random with a probability of 30%, and one player from each pair is allowed to break a bond with the other player if one exists or form a new bond if one does not
+
+Subjects are then placed in a random network with other subjects. Within each starting condition, subjects play a multi-round cooperation game where they are given the option to cooperate with their neighbors or defect. Cooperation entails reducing one's own wealth by 50 units per neighbor in order to increase the wealth of all neighbors by 100 units each while defection generates no unit cost or benefit. Before making each decision, subjects are reminded of their number of neighbors and the neighbors' previous decisions.
+At the end of each turn, subjects are informed about the decisions of their neighbors, along with their own payoff. In the strategic link updating conditions, each cooperation round is followed by a rewiring round in which subjects choose whether to alter their network connections. 
+
+Based on a limited sample size, we find support for the central prediction that rapidly updating strategic networks support cooperation over rounds relative to other conditions. We are however unable to reject the null hypotheses indicating that fixed, slowly updating or randomly updating network compositions reduce cooperation over rounds. 
+
+Rapidly updating networks are predicted by Rand et al. (2011) to have more variation across individuals in the number of connections (i.e., a greater degree heterogeneity) than static or slowly updating networks. Again, based on the limited data collected to date, we do not find support for this hypothesis. We are also unable to reject the null of the hypothesis that connections between two cooperators are more stable than connections involving a cooperator and a defector, but we do find that connections between two cooperators are more stable than connections between two defectors. Cooperators are finally predicted to acquire more connections than defectors in rapidly updating networks, but again we do not find support for this hypothesis. 
+
+# Pre-registration summary
+
++ The experiment was pre-registered on 2017-04-04, and the pre-registration form is available at https://osf.io/6jvw9/.
++ The experiment was later amended on 2017-07-07 per https://osf.io/ngwqa/.
++ And amended again on 2017-08-08 per https://osf.io/qymzh/.
+
+## Experimental design:
+
++ Each player resides on a nonweighted network, with 20% possible links formed at *random*.
++ His/her *neighbors* are players connected to him/her on this network.
++ Each player exercises one of the following two actions during each round of the game.
+    - Cooperation: paying 50 units for each neighbor and results in 100 units gain for each neighbor. 
+    - Defection: paying nothing and generating no benefits.
++ Before each round, players are reminded of their number of neighbors and these neighbors' prior decisions. 
++ After each round, players learn about the decisions of their neighbors and their own payoff.
++ The probability for each subsequent round is 0.8, which was communicated to players. 
+
+## Experimental conditions:
+
+At the beginning of the experiment, the social network isinitialized with 20% of possible links being formed at random. We examine three kinds of network conditions: random link updating, fixed links, and strategic link updating.
+
++ **Fixed** links: the network is static for the duration of the experiment
++ **Random** link updating: the social network is regenerated randomly after every round
++ Strategic link updating: a rewiring step following each round. Subject pairs are randomly selected and one randomly selected actor of the selected pair will be given the option to change the status between the pair (connected to disconnected, or disconnected to connected.) The deciding actor will be provided with behavior of the alter's during the previous round. At the end of the rewiring step, each player will receive summaries about updates involved him/her. 
+    - **Viscous**: 10% randomly picked subject pairs selected to have an option of change.
+    - **Fluid**: 30% randomly picked subject pairs selected to have an option of change.
+
+## Hypotheses, variables and expected effect sizes
+
+```{r hypotheses, echo=FALSE}
+hypexp1 <- read.csv(url("https://raw.githubusercontent.com/gallup/NGS2-Exp1-Submission-9.28.17/master/hyp_exp1.csv"),
+                             header = TRUE,
+                             sep = ',')
+library(knitr)
+kable(hypexp1, 
+          caption = "Experimental Hypotheses, Variables, and Expected Effect Sizes")
+```
+
+## Data used for the prediction
+
++ Gallup recruited a total of `r length(unique(exp1_cooperation$pid))` unique players for the experiment. 
++ Gallup ran a total of `r length(unique(exp1_cooperation$session))` instances of the experiment. 
++ Research participants were recruited from the Gallup Panel in the U.S.
+
+The study hypotheses are tested using two datasets, a "cooperation" dataset showing cooperation decisions at the individual level for each cooperation round, and "rewire" dataset showing connection decisions at the individual level for each rewiring round. 
+
+### Cooperation data
+
+The "cooperation" dataset includes the following variables:
+
+```{r cooperation descriptives}
+names(exp1_cooperation)
+datatable(sample_n(exp1_cooperation, 5), 
+          caption = "Randomly selected rows of cooperation data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```
+
+### Rewire data
+
+The "rewire" dataset includes the following variables:
+
+```{r rewire decriptives}
+names(exp1_rewire)
+datatable(sample_n(exp1_rewire, 5), 
+          caption = "Randomly selected rows of rewire data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```
+
+# Links to other documents in this submission 
+
++ Power Analysis for Experiment 1 https://osf.io/tc8un/
++ World Lab Empanelment Screener https://osf.io/z5cjm/
++ Original article by Rand et al. (2011) https://osf.io/74etg/
+
+# Conclusions
+
++ **Hypothesis 1.1 Fixed network compositions reduce cooperation over rounds**
+
+The null hypothesis cannot be rejected. Cooperation in fixed network compositions does not significantly decrease over rounds (coeff = `r round(Hypothesis.4.1.1[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.1.1[8], 3))`).
+
+```{r graph1}
+
+session_round_rate1=exp1_cooperation%>%
+  group_by(condition,round)%>%
+  summarise(rate_contr=mean(action))
+
+ggplot(session_round_rate1,
+       aes(x=round, 
+           y=rate_contr, 
+           colour=condition)) + 
+  geom_line(size=1.2) + 
+  geom_point(aes(shape=condition), size = 2.5) +
+  ggtitle("Cooperative Players by Round and Condition") + 
+  xlab("Round") +
+  ylab("Cooperative Players")
+```
+
+```{r graph2}
+session_info=exp1_cooperation%>%
+  filter(round==1)%>%
+  group_by(session)%>%
+  summarise(
+    num_player=n(),
+    condition=unique(condition)[1]
+  )%>%
+  arrange(condition)
+
+session_round_rate2=exp1_cooperation%>%
+  group_by(session, 
+           round)%>%
+  summarise(
+    rate_contr=mean(action)
+  )
+session_round_rate2=left_join(session_round_rate2, 
+                             session_info,
+                             by="session")
+
+plot.coop2 <-ggplot(session_round_rate2, 
+       aes(x=factor(round), 
+           y=rate_contr,
+           fill=condition))+
+  geom_boxplot()+
+  facet_grid(.~condition)+
+  labs(x="Round")+
+  labs(y="Cooperative players")+
+  theme(axis.text.x=element_text(angle=0, 
+                                 vjust=0.4,
+                                 hjust=1))
+plot.coop2
+```
+
+```{r Hypothesis.4.1.1}
+Hypothesis.4.1.1
+```
+
++ **Hypothesis 1.2 Randomly updating networks reduce cooperation over rounds**
+
+The null hypothesis cannot be rejected. Cooperation in randomly updating network compositions does not significantly decrease over rounds (coeff = `r round(Hypothesis.4.1.2[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.1.2[8], 3))`).
+
+```{r Hypothesis.4.1.2}
+Hypothesis.4.1.2
+```
+
++ **Hypothesis 1.3 Slowly updating strategic networks reduce cooperation over rounds**
+
+The null hypothesis cannot be rejected. Cooperation in slowly updating network compositions does not significantly decrease over rounds (coeff = `r round(Hypothesis.4.1.3[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.1.3[8], 3))`).
+
+```{r Hypothesis.4.1.3}
+Hypothesis.4.1.3
+```
+
++ **Hypothesis 1.4: Rapidly updating strategic networks support exp1_cooperation relative to all other conditions** 
+
+The null hypothesis is rejected. Cooperation in rapidly updating strategic networks is significantly greater than in other conditions (coeff = `r round(Hypothesis.4.1.4[4], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.1.4[16], 3))`).
+
+```{r Hypothesis.4.1.4}
+Hypothesis.4.1.4
+```
++ **Hypothesis 2.1	Rapidly updating strategic networks have greater network heterogeneity**
+
+The null hypothesis cannot be rejected. Network heterogeneity in rapidly updating strategic networks is not significantly greater than in other conditions (Wilcoxon rank-sum *P* = `r sprintf("%.3f", round(Hypothesis.4.2.1$p.value, 3))`).
+
+```{r graph3}
+network.variance2 <-aggregate(exp1_cooperation[,c("num_neighbors")], 
+                             by=list(session=exp1_cooperation$session, 
+                                     condition=exp1_cooperation$condition), 
+                             FUN=var)
+plot.neighbors <-ggplot(network.variance2, 
+                    aes(x=factor(condition), 
+                        y=x, 
+                        fill=condition)) +
+  geom_boxplot() +
+  labs(x="Condition") +
+  labs(y="Number of Neighbors")
+plot.neighbors
+```
+    
+```{r Hypothesis.4.2.1}
+Hypothesis.4.2.1
+```
+
++ **Hypothesis 2.2	Links in rapidly updating strategic networks are more stable between cooperators than between a cooperator and a defector**
+
+The null hypothesis is rejected. Links in rapidly updating strategic networks are less likely to be broken between cooperators than between a cooperator and a defector (coeff = `r round(Hypothesis.4.2.2[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.2.2[8], 3))`).
+
+
+```{r graph4}
+exp1_rewire.previoustie<-subset(exp1_rewire, previouslytie==1)
+exp1_rewire.previoustie$Conection_Type <- ifelse (exp1_rewire.previoustie$state == "CC", "CC",
+                                ifelse (exp1_rewire.previoustie$state == "DD", "DD", "CD/DC"))
+mosaicplot(Conection_Type ~ break_tie, 
+           data = exp1_rewire.previoustie, 
+           col = c("lightskyblue2", "tomato"),
+           main = "Broken Ties by Connection Type")
+```
+
+```{r Hypothesis.4.2.2}
+Hypothesis.4.2.2
+```
+
++ **Hypothesis 2.3	Links in rapidly updating strategic networks are more stable between cooperators than between between two defectors**
+
+The null hypothesis cannot be rejected. Links in rapidly updating strategic networks are not significantly more stable between two cooperators than between two defectors (coeff = `r round(Hypothesis.4.2.3[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.2.3[8], 3))`).
+
+```{r Hypothesis.4.2.3}
+Hypothesis.4.2.3
+```
++ **Hypothesis 2.4	Cooperators have more connections than defectors in rapidly updating strategic networks**
+
+The null hypothesis cannot be rejected. Cooperators in  in rapidly updating strategic networks do not have a significantly greater number of connections than defectors (coeff = `r round(Hypothesis.4.2.4[2], 2)`, *P* = `r sprintf("%.3f", round(Hypothesis.4.2.4[8], 3))`).
+
+```{r graph5}
+exp1_cooperation.fluid$Status <- ifelse (exp1_cooperation.fluid$action == 0, "Defector", "Cooperator")
+session_round_rate3=exp1_cooperation.fluid%>%
+  group_by(Status,round)%>%
+  summarise(av_neighbors=mean(num_neighbors))
+plot.neighbors2<-ggplot(session_round_rate3,
+                        aes(x=round, 
+                            y=av_neighbors, 
+                            colour=Status)) + 
+  geom_line(size=1.2) + 
+  geom_point(aes(shape=Status), size = 2.5) +
+  ggtitle("Number of Neighbors by Round and Cooperation Status") + 
+  xlab("Round") +
+  ylab("Number of Neighbors")
+plot.neighbors2
+```
+
+```{r Hypothesis.4.2.4}
+Hypothesis.4.2.4
+```
+
+```{r, include=F}
+end.time=Sys.time()
+run.time=difftime(end.time, start.time, "secs")
+```
+<br />
+This report was produced in `r format(run.time)`.
+<br />
+<br />
+
+Since we conduct a total of eight confirmatory analyses, Bonferroni-corrected alpha = 0.006
+
+References:
+
++ Rand, D. G., Arbesman, S., & Christakis, N. A. (2011). Dynamic social networks promote cooperation in experiments with humans. *Proceedings of the National Academy of Sciences, 108*(48), 19193-19198.
+
++ Perc, M., & Szolnoki, A. (2010). Coevolutionary games—a mini review. *BioSystems, 99*(2), 109-125.

@@ -1,0 +1,266 @@
+---
+title: |
+  | Cooperation in Dynamic Networks Game:
+  | A replication of Rand et al. (2011)
+
+author: Pablo Diego-Rosell, PhD  - Gallup
+date: "November 15, 2017"
+output:
+  html_document:
+    toc: true
+    theme: united
+    number_sections: true 
+---
+```{r load_libs, message=F, include=FALSE}
+rm(list=(ls)())
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(stats, sfsmisc, pROC, dplyr, reshape2, multiwayvcov, lmtest, Hmisc, PerformanceAnalytics, doBy, car, ggplot2, DT, utils, lme4, rstan, rstanarm, igraph, RCurl)
+```
+
+<br />
+This is a fully reproducible *Rmarkdown notebook* describing some potential approaches to score predictions for a central hypothesis of NGS2 WITNESS Cycle 1 Experiment 1. 
+
+<br />
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+start.time=Sys.time()
+```
+
+# Background
+
+In our replication of Rand et al's experiment (2011) subjects interact anonymously over the internet using custom software playable in a browser window. Subjects are randomly assigned to one of the four network link updating conditions:
+- 1.	Random link updating where neighbors change after each round randomly.
+- 2.	Fixed links where the network is static across rounds.
+- 3.	Viscous strategic link updating where subject pairs are chosen at random with a probability of 10%, and one player from each pair is allowed to break bond with the other player if bond exists or form one if one doesn't.
+- 4.	Fluid strategic link updating where subject pairs are chosen at random with a probability of 30%, and one player from each pair is allowed to break a bond with the other player if one exists or form a new bond if one does not
+
+Subjects are then placed in a random network with other subjects. Within each starting condition, subjects play a multi-round cooperation game where they are given the option to cooperate with their neighbors or defect. Cooperation entails reducing one's own wealth by 50 units per neighbor in order to increase the wealth of all neighbors by 100 units each while defection generates no unit cost or benefit. Before making each decision, subjects are reminded of their number of neighbors and the neighbors' previous decisions.
+At the end of each turn, subjects are informed about the decisions of their neighbors, along with their own payoff. In the strategic link updating conditions, each cooperation round is followed by a rewiring round in which subjects choose whether to alter their network connections. 
+
++ The experiment was pre-registered on 2017-04-04, and the pre-registration form is available at https://osf.io/6jvw9/.
++ The experiment was later amended on 2017-07-07 per https://osf.io/ngwqa/.
++ And amended again on 2017-08-08 per https://osf.io/qymzh/.
+
+Hypothesis 4.1.4 of our study states that rapidly updating strategic networks support exp1_cooperation relative to all other conditions. Rand  et al. (2011) found support for this hypothesis, with coeff = 0.135, p=.006. Based on a limited sample size (n=238), we find strong support for the central prediction that rapidly updating strategic networks support cooperation over rounds relative to other conditions, with coeff = 0.223, p<.001. 
+
+# Prediction scoring approach
+
+In the examples below we consider a logistic regression model from the traditional frequentist viewpoint, as well as within a Bayesian framework, adapting to a logistic regression framework the approach developed by Smith and Zeng (2017) for prediction scoring within a linear regression framework.
+
+## Scoring predictions for outcome variables
+
+The prediction scoring framework is a form of validation, with the original data from Rand et al. (2011) as a training set and our Cycle 1 experiment as a testing set. Within a logistic regression framework, predictive accuracy can be assessed in terms of correct classification of cases on the binary outcome variable. The logistic regression model produces for each case a predicted probability, which can be compared with the actual value for the outcome variable. Since the prediction is a continuous value from 0 to 1, but the outcome is binary (0 or 1), a cut-off threshold must be chosen to compare predictions with actual scores. Two metrics are of particular interest for model evaluation purpoes: sensitivity and specificity. Sensitivity is the proportion of event responses that were predicted to be events. Specificity is the proportion of nonevent responses that were predicted to be nonevents. 
+
+A Receiver Operating Characteristic (ROC) curve is a graphical representation of the trade-off between the false negative and false positive rates for every possible cut off. Different models will show different ROC curves, with different areas under the ROC curve. The overall accuracy of a model is measured by the area under the ROC curve (AUC), with an AUC of 1 representing a perfect model, and an AUC of .5 representing a useless model, as good as a random guess. The AUC metric is calculated by estimating the sensitivity and specificity of the models under different cut-offs. The position of the cut-off determines the number of true positives, true negatives, false positives, and false negatives. Generally, as we lower the cut-off score, sensitivity increases and specificity decreases. 
+
+```{r, include=F}
+temp <- tempfile()
+download.file("http://davidrand-cooperation.com/s/Rand2011PNAS_data_and_code-pi6b.zip",temp, mode="wb")
+unzip(temp, "Rand2011PNAS_cooperation_data.txt")
+rand_cooperation <- read.table("Rand2011PNAS_cooperation_data.txt", sep="\t",skip=0, header=T)
+colnames(rand_cooperation)[1] <- "session"
+colnames(rand_cooperation)[3] <- "pid"
+colnames(rand_cooperation)[4] <- "action"
+colnames(rand_cooperation)[6] <- "round"
+exp1_cooperation <- read.csv("https://raw.githubusercontent.com/gallup/NGS2/master/cooperation_exp1_FINAL.csv")
+```
+We first estimate the model using data from Rand et al (2011) and extract predicted probabilities. 
+
+```{r, include=T}
+logit <- glm(action ~ fluid_dummy*round, data = rand_cooperation, family = "binomial")
+pred.4.1.4_rand <- predict(logit, rand_cooperation)
+```
+We can plot the ROC curve to estimate the predictive performance of the model on the Rand data, and calculate the AUC. 
+
+```{r graph1}
+plot.roc(rand_cooperation$action, 
+         pred.4.1.4_rand,
+         main="Rand Model - AUC on Rand Data", 
+         percent=TRUE, 
+         col="blue", 
+         print.auc=TRUE)
+pred.4.1.4_1 <- lines.roc(rand_cooperation$action, pred.4.1.4_rand, percent=TRUE, col="blue")
+```
+
+The predictive performance on the training data will be inflated, as the model will naturally overfit the data. Our Cycle 1 experiment 1 data can be used as a validation dataset to estimate the performance of the Rand model on unseen data. 
+
+```{r, include=T}
+pred.4.1.4_test <- predict(logit, exp1_cooperation)
+```
+
+```{r graph2}
+plot.roc(exp1_cooperation$action, 
+         pred.4.1.4_test,
+         main="Rand Model - AUC on Rand and NGS2 Data", 
+         percent=TRUE, 
+         col="green", 
+         print.auc=TRUE)
+lines.roc(rand_cooperation$action, pred.4.1.4_rand, percent=TRUE, col="blue")
+pred.4.1.4_2 <- lines.roc(exp1_cooperation$action, pred.4.1.4_test, percent=TRUE, col="green")
+```
+We find that in fact the performance of the Rand model on our Cycle 1 data is superior to the original dataset. We can test the difference between these AUCs by testing the differences between paired ROC curves as described in DeLong et al. (1988), using the algorithm of Sun and Xu (2014). Only comparison of two ROC curves is implemented. The method has been extended for unpaired ROC curves where the p-value is computed with an unpaired t-test with unequal sample size and unequal variance. 
+
+```{r, include=T}
+roc.test(pred.4.1.4_1, pred.4.1.4_2)
+```
+The relatively large p values suggest that the performance is not significantly different. However if we use the model parameters from the Cycle 1 data ("NGS2 model") on the Rand data, we find that performance is much worse. 
+
+```{r, include=F}
+# Calculate Model from testing data and plot performance
+logit2 <- glm(action ~ fluid_dummy*round, data = exp1_cooperation, family = "binomial")
+pred.4.1.4_test2 <- predict(logit2, exp1_cooperation)
+# Predict Rand from testing model and plot performance
+pred.4.1.4_test3 <- predict(logit2, rand_cooperation)
+auc(rand_cooperation$action, pred.4.1.4_test3)
+```
+
+```{r graph3}
+plot.roc(exp1_cooperation$action, 
+         pred.4.1.4_test,
+         main="Performance of both models on both datasets", 
+         percent=TRUE, 
+         col="green")
+lines.roc(rand_cooperation$action, pred.4.1.4_rand, percent=TRUE, col="blue")
+lines.roc(exp1_cooperation$action, pred.4.1.4_test2, percent=TRUE, col="red")
+lines.roc(rand_cooperation$action, pred.4.1.4_test3, percent=TRUE, col="orange")
+legend("bottomright", 
+       legend=c("Rand Data - Rand Model", 
+                "NGS2 Data - Rand Model", 
+                "NGS2 Data - NGS2 Model", 
+                "Rand Data - NGS2 Model"), 
+       col=c("blue", 
+             "green", 
+             "red", 
+             "orange"), 
+       lwd=2)
+```
+
+We can evaluate the overall performance of each model by combineing the data frm the Rand experiment and our Cycle 1 experiment, and compara AUC values for both the "Rand" and the "Test" models on the combined dataset.
+
+```{r, include=F}
+myvars <- c("action", "fluid_dummy", "round")
+rand.vars <- rand_cooperation[myvars]
+exp1.vars <- exp1_cooperation[myvars]
+comb.vars <- rbind (exp1.vars, rand.vars)
+pred.4.1.4_comb1 <- predict(logit, comb.vars)
+pred.4.1.4_comb2 <- predict(logit2, comb.vars)
+```
+
+```{r graph4}
+pred.4.1.4_combplot1 <- plot.roc(comb.vars$action, 
+                         pred.4.1.4_comb1,
+                         main="Statistical Comparison of ROC Curves", 
+                         percent=TRUE, col="#1c61b6")
+pred.4.1.4_combplot2 <- lines.roc(comb.vars$action, pred.4.1.4_comb2, percent=TRUE, col="orange")
+testobj <- roc.test(pred.4.1.4_combplot1, pred.4.1.4_combplot2)
+legend("bottomright", 
+       legend=c("Combined Data - Rand Model", 
+                "Combined Data - NGS2 Model"), 
+       col=c("#1c61b6", 
+             "orange"), 
+       lwd=2)
+text(40, 50, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
+```
+The small p-value for the DeLong test suggests that the NGS2 model outperforms the Rand model on the combined dataset. This can be construed to indicate that even though we replicate the result from Rand that rapidly updating strategic networks support cooperation over rounds relative to other conditions, the NGS2 model parameters predict the outcome better than the Rand model parameters. 
+
+## Scoring predictions for model parameters
+
+The accuracy of predictions (prior) for specific model parameters can also be considered as a comparison between hypothesized distributions for those parameters (priors) and the model parameters estimated from the data, which may or may not incorporate priors. Within a Bayesian framework we can integrate the areas under both the prior and the posterior  distributions and calculate their overlap. A posterior distribution that is exactly equal to the prior distribution would have a 100% overlap. While this approach rewards precision in the predictions, it also penalizes predictions that have lower standard deviations, which will only partially overlap with the prior even if they share the exact same average value. A more generalizable metric of prediction performance is the posterior probability for the slopes to be within the 95% credible interval of the prior, which will often be incorporated as a normally distributed parameter.
+
+We can first calculate the prior distribution directly from the Rand data, using the same methods as in the original study. 
+
+```{r, include=F}
+logit <- glm(action ~ fluid_dummy*round, data = exp1_cooperation, family = "binomial")
+logit.multiwayvcov <- cluster.vcov(logit, cbind(exp1_cooperation$session, exp1_cooperation$pid))
+Hypothesis.4.1.4<-coeftest(logit, logit.multiwayvcov)
+```
+```{r, include=T}
+print (Hypothesis.4.1.4)
+```
+
+Using a Bayesian approach with weakly informative priors we find that our posterior distribution does not overlap greatly with the prior, and the probability that the  parameter will be within the 95% CI of the prior distribution is only of 0.478.
+
+
+```{r, include=F}
+glm.out.4.1.4.default<- stan_glmer(action~fluid_dummy*round + (1|pid), 
+                                   data = exp1_cooperation, 
+                                   family = binomial(link = "logit"),
+                                   chains = 3, iter = 3000)
+priors.4.1.4 <- student_t(c(-0.161, -0.171, 0.135), c(0.230, 0.031, 0.050), df=7)
+glm.out.4.1.4.inform<- stan_glmer(action~fluid_dummy*round + (1|pid), 
+                                  data=exp1_cooperation,
+                                  family = binomial(link = "logit"), 
+                                  prior = priors.4.1.4,
+                                  prior_intercept = student_t(0.700, 0.122, df = 7),
+                                  chains = 3, iter = 3000)
+```
+
+```{r, include=F}
+bayesian.overlap <- function (model.output, prior.mean, prior.sd) {
+  set.seed(1234)
+  draws <- as.matrix(model.output)
+  a <- rnorm(4500, mean=prior.mean, sd=prior.sd)
+  b <- draws[,4]
+  d <- data.frame(variable=c(rep("Prior", 4500), rep("Posterior", 4500)), value=c(a, b))
+  density_plot <- ggplot(d, aes(value, fill=variable)) + geom_density(alpha=.4, color=NA)
+  # define limits of a common grid, adding a buffer so that tails aren't cut off
+  lower <- min(c(a, b)) - 1 
+  upper <- max(c(a, b)) + 1
+  # generate kernel densities
+  da <- density(a, from=lower, to=upper)
+  db <- density(b, from=lower, to=upper)
+  d <- data.frame(x=da$x, a=da$y, b=db$y)
+  # calculate intersection densities
+  d$w <- pmin(d$a, d$b)
+  # integrate areas under curves
+  total <- integrate.xy(d$x, d$a) + integrate.xy(d$x, d$b)
+  intersection <- integrate.xy(d$x, d$w)
+  # compute overlap coefficient
+  overlap <- 2 * intersection / total
+  CI95 <- (length(which(b>prior.mean-(1.96*prior.sd) & b<prior.mean+(1.96*prior.sd)))/4500)*100
+  xposition <- quantile((rbind (a,b)), 0.90)
+  density_plot <- density_plot + annotate("text", 
+                                          x = xposition, 
+                                          y = max(d), 
+                                          label = paste("Overlap = ", 
+                                                        round(overlap, 3)))
+  density_plot <- density_plot + annotate("text", 
+                                          x = xposition, 
+                                          y = max(d)-(max(d)/10), 
+                                          label = paste(round(CI95, 1), "% within 95% CI"))
+  return(density_plot)
+}
+```
+
+```{r graph5}
+bayesian.overlap (glm.out.4.1.4.default, prior.mean=0.135445, prior.sd=0.049747)
+```
+
+Using a Bayesian approach with strongly informative priors we find that our posterior distribution overlaps similarly with the prior, but the probability that the  parameter will be within the 95% CI of the prior distribution is of 1. 
+
+```{r graph6}
+bayesian.overlap (glm.out.4.1.4.inform, prior.mean=0.135445, prior.sd=0.049747)
+```
+
+These findings indicate that the NGS2 experiment provides a strong replication of the original study for this particular parameter of interest. 
+
+```{r, include=F}
+end.time=Sys.time()
+run.time=difftime(end.time, start.time, "secs")
+```
+<br />
+This report was produced in `r format(run.time)`.
+<br />
+<br />
+
+
+References:
+
++ Anna Smith (Statistics, Columbia), Tian Zheng (Statistics, Columbia). Prediction Scoring (August 2017). Available at: https://github.com/als2356/PredictionScoring/blob/master/PredScore.Rmd 
+
++ Elisabeth R. DeLong, David M. DeLong and Daniel L. Clarke-Pearson (1988) ``Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach''. Biometrics 44, 837--845.
+
++ Rand, D. G., Arbesman, S., & Christakis, N. A. (2011). Dynamic social networks promote cooperation in experiments with humans. *Proceedings of the National Academy of Sciences, 108*(48), 19193-19198.
+
++ Xu Sun and Weichao Xu (2014) ``Fast Implementation of DeLongs Algorithm for Comparing the Areas Under Correlated Receiver Operating Characteristic Curves''. IEEE Signal Processing Letters, 21, 1389--1393. DOI: 10.1109/LSP.2014.2337313.

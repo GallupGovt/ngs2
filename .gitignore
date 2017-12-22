@@ -23,3 +23,6 @@ misc/make_metrics.sh
 
 # intermediate check files
 misc/id_*.py
+
+# configuration files
+*.cfg

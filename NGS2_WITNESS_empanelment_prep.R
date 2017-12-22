@@ -12,64 +12,6 @@ if(Sys.info()['sysname'] == "Windows") {
 }
 rm(list=ls())
 
-# Define renaming dictionaries
-Q6_ANSWERS <- list(
-    'Disagree strongly' = 1,
-    'Disagree moderately' = 2,
-    'Disagree a little' = 3,
-    'Neither agree nor disagree' = 4,
-    'Agree a little' = 5,
-    'Agree moderately' = 6,
-    'Agree strongly' = 7
-)
-Q7_ANSWERS <- list(
-    'Very negative' = 1,
-    'Negative' = 2,
-    'Slightly negative' = 3,
-    'Neither positive nor negative' = 4,
-    'Slightly positive' = 5,
-    'Positive' = 6,
-    'Very positive' = 7
-)
-Q8_ANSWERS <- list(
-    'Extremely uncharacteristic of me (1)' = 1,
-    '2' = 2,
-    '3' = 3,
-    '4' = 4,
-    '5' = 5,
-    '6' = 6,
-    'Extremely characteristic of me (7)' = 7
-)
-Q9_ANSWERS <- list(
-    'Never or definitely no (1)' = 1,
-    '2' = 2,
-    '3' = 3,
-    '4' = 4,
-    '5' = 5,
-    '6' = 6,
-    '7' = 7,
-    '8' = 8,
-    'Always or definitely yes (9)' = 9
-)
-EMPANEL_NUMERIC_VARS <- c(
-    'Q11_age',
-    'Q15_total_hours',
-    'Q25_adult_hh_num',
-    'Q26_child_hh_num',
-    'Q28_friends_num',
-    'Q34_internet_hours_day',
-    'Q36_social_media_people_num',
-    'Q37_social_media_hours_day'
-)
-EMPANEL_YESNO_VARS <- c(
-    'Q14_job',
-    'Q29_born_in_country',
-    'Q30_move_last5',
-    'Q35_social_networks',
-    'Q38_online_research',
-    'Q39_send_survey_invites'
-)
-
 # Define functions
 relabel_values <- function(d, regex, dict) {
     # takes a data frame (d) and uses a regular expression (regex) to identify
@@ -91,7 +33,7 @@ tipi_scale <- function(var1, var2) {
 }
 
 # read in empanelment data
-empanel <- read.csv('data/wl_empanelment_20170905_1025.csv', header = TRUE,
+empanel <- read.csv('data/ngs2_empanelment_us.csv', header = TRUE,
                     sep = ',', stringsAsFactors = FALSE)
 empanel_dict <- read.csv('data/empanelment_dictionary.csv', header = TRUE,
                          sep = ',', stringsAsFactors = FALSE)
@@ -103,55 +45,6 @@ for(i in 1:length(names(empanel))) {
         empanel_dict$verbose[which(names(empanel)[i] == empanel_dict$label)],
         names(empanel)[i])
 }
-
-# drop extraneous rows of redundant information
-extra_rows <- apply(empanel, 2, function(x) {grep('^\\{', x)})
-stopifnot(length(unique(extra_rows)) == 1)
-empanel <- empanel[-(1:unique(extra_rows)), ]
-
-# make answer values numerics
-empanel[, grep('^Q6_', names(empanel))] <- relabel_values(empanel, '^Q6_',
-                                                          Q6_ANSWERS)
-empanel[, grep('^Q7_', names(empanel))] <- relabel_values(empanel, '^Q7_',
-                                                          Q7_ANSWERS)
-empanel[, grep('^Q8_', names(empanel))] <- relabel_values(empanel, '^Q8_',
-                                                          Q8_ANSWERS)
-empanel[, grep('^Q9_', names(empanel))] <- relabel_values(empanel, '^Q9_',
-                                                          Q9_ANSWERS)
-empanel[, EMPANEL_NUMERIC_VARS] <- apply(empanel[, EMPANEL_NUMERIC_VARS], 2,
-    function(x) {as.numeric(x)}
-)
-empanel[, EMPANEL_YESNO_VARS] <- apply(empanel[, EMPANEL_YESNO_VARS], 2,
-    function(x) {ifelse(x == '', NA, ifelse(grepl('Yes', x), 1, 0))}
-)
-# note to self (mh): could turn Q27 variables into numeric - need input on
-# scheme though
-
-# Recode religion variable into fewer categories
-
-empanel$religion[empanel$Q23_religion=="Protestant"] <- "Christian"
-empanel$religion[empanel$Q23_religion=="Roman Catholic"] <- "Christian"
-empanel$religion[empanel$Q23_religion=="Mormon/Latter-Day Saints"] <- "Christian"
-empanel$religion[empanel$Q23_religion=="Other Christian Religion"] <- "Christian"
-
-empanel$religion[empanel$Q23_religion=="Islam/Muslim (Shiite)"] <- "Muslim"
-empanel$religion[empanel$Q23_religion=="Islam/Muslim (Sunni)"] <- "Muslim"
-empanel$religion[empanel$Q23_religion=="Muslim/Islam"] <- "Muslim"
-
-empanel$religion[empanel$Q23_religion=="Other Non-Christian Religion"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Spiritism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Buddhism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Jewish"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Primal-indigenous/African Traditional and Diasporic/Animist/Nature Worship/Paganism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Chinese Traditional Religion/Confucianism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Sikhism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Hinduism"] <- "Other religion"
-empanel$religion[empanel$Q23_religion=="Other (Write in:)"] <- "Other religion"
-
-empanel$religion[empanel$Q23_religion=="No Religion/Atheist/Agnostic"] <- "No Religion/Atheist/Agnostic"
-
-empanel$religion[is.na(empanel$religion)]<- "DK"
-empanel$religion<-as.factor(empanel$religion)
 
 # create scales
 # tipi

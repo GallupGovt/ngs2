@@ -21,8 +21,10 @@ VARORDER_DETAIL = [
 ]
 
 
-def calculate_conditions(data, exp):
-    if exp==1:
+def calculate_conditions(data, exp, id_tag):
+    if 'random' in id_tag:
+        return 'Random'
+    elif exp==1:
         cond = float(data['data value'][(data.event=='initParameters') &
                                         (data['data name']=='k')])
         if cond==0.0:
@@ -116,7 +118,7 @@ def gather_data(directory, file, experiment):
                 pass
         if finishers.shape[0]>=8:
             if experiment==1:
-                condition = calculate_conditions(tmp, experiment)
+                condition = calculate_conditions(tmp, experiment, fileid[0])
                 if ('Other' in condition) | (max(rds)<2):
                     return pd.DataFrame()
                 else:
@@ -125,7 +127,7 @@ def gather_data(directory, file, experiment):
                         'data value': 'final_score',
                     })
             else:
-                condition = calculate_conditions(tmp, experiment)
+                condition = calculate_conditions(tmp, experiment, fileid[0])
                 finishers = finishers.pivot(index='id', columns='data name',
                                             values='data value').reset_index()
                 finishers = finishers[['pid', 'score']].rename(columns={

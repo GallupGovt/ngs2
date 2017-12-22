@@ -8,6 +8,7 @@ import sys
 
 VARNAMES = [
     'ExternalDataReference',
+    'contact_ok',
     'signups',
     'experiments',
 ]
@@ -60,21 +61,41 @@ def strict_eligibility(row, ids):
         return 'ineligible'
 
 
+def yesno(x):
+    if 'N' in x.tolist():
+        return 0
+    else:
+        return 1
+
+
 def run(args_dict):
     # load raw data
     exp = [gather_data(directory) for directory in args_dict['experiment']]
-    inv = pd.read_csv(args_dict['data'], sep=None, engine='python')
+    inv = pd.read_excel(args_dict['data'])
     xwalk = pd.read_csv(args_dict['crosswalk'], sep=None, engine='python')
 
+    # rename key field in signup data
+    inv.rename(columns={
+        'EMPLOYEE_KEY_VALUE': 'ExternalDataReference',
+    }, inplace=True)
+
+    # id the current experiment
     curr_exp_ids = inv.ExternalDataReference[inv.Batch==max(inv.Batch)].tolist()
+
 
     # process breadboard ids in crosswalk
     xwalk['bbid'] = xwalk.ROUTER_URL.apply(lambda x: x.split('/')[-1])
 
     # generate count of invites/experiments in which respondent participated
     exp_count = create_experiment_counts(exp)
-    inv_count = inv.groupby('ExternalDataReference').size().reset_index()
-    inv_count.rename(columns = {0: 'signups'}, inplace=True)
+    inv_count = (inv
+                 .groupby('ExternalDataReference')
+                 .agg({'Batch': 'size', 'EMAIL_CONTACT_APPROVED': yesno})
+                 .reset_index())
+    inv_count.rename(columns={
+        'Batch': 'signups',
+        'EMAIL_CONTACT_APPROVED': 'contact_ok',
+    }, inplace=True)
 
     # merge experiment data to crosswalk
     participation = xwalk[['EMPLOYEE_KEY_VALUE', 'bbid']].merge(exp_count,
@@ -112,8 +133,8 @@ def run(args_dict):
 
     # output file
     FILEOUT = os.path.splitext(args_dict['data'])
-    status.to_csv('{}_updated_{}{}'.format(FILEOUT[0], args_dict['criteria'],
-                                           FILEOUT[1]), index=False)
+    status.to_csv('{}_updated_{}.csv'.format(FILEOUT[0], args_dict['criteria']),
+                  index=False)
 
 
 if __name__ == '__main__':

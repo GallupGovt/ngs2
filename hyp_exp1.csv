@@ -1,9 +1,0 @@
-Hypothesis,DV,IV,Effect Size
-1.1 Fixed network compositions reduce cooperation over rounds,Cooperate/Defect,Round number,OR = 0.83
-1.2 Randomly updating networks reduce cooperation over rounds,Cooperate/Defect,Round number,OR = 0.89
-1.3 Slowly updating strategic networks reduce cooperation over rounds,Cooperate/Defect,Round number,OR = 0.8
-1.4 Rapidly updating strategic networks support cooperation over rounds relative to all other conditions,Cooperate/Defect,Fluid*Round,OR = 1.15
-2.1 Rapidly updating strategic networks have greater network heterogeneity,Session variance in connections,Condition,z = -4.6
-2.2 Links in rapidly updating strategic networks are more stable between cooperators than between a cooperator and a defector,Break link,Cooperation (CC vs. CD&DC),OR = 0.1
-2.3 Links in rapidly updating strategic networks are more stable between cooperators than between two defectors,Break link,Cooperation (CC vs. DD),OR = 0.05
-2.4 Cooperators have more connections than defectors in rapidly updating strategic networks,Cooperate/ Defect,Number of neighbors,OR = 1.19

@@ -1,25 +1,12 @@
 # data files
 data/
 *.csv
-NGS2-Cycle1-Experiment1/*.csv
-NGS2-Cycle1-Experiment1/data/
-NGS2-Cycle1-Experiment2/*.csv
-NGS2-Cycle1-Experiment2/data/
-NGS2-Cycle1-Experiment2/documentation/
-*.log
-misc/nfiles
+pilot/
+cycle1/
+misc/
 
 # python bytecode files
 *.pyc
-
-# cache files
-.cache
-
-# zip files
-*.zip
-
-# shell scripts
-misc/make_metrics.sh
 
 # intermediate check files
 misc/id_*.py

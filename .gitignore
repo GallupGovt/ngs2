@@ -13,3 +13,4 @@ misc/id_*.py
 
 # configuration files
 *.cfg
+cookies.txt

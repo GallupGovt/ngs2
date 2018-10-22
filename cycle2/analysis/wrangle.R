@@ -197,7 +197,21 @@ gamesList <- list(
     CSE,
     leaderChoice
 )
-gamesData <- as.data.frame(matrix(unlist(gamesList), nrow = nRounds * nElements))
+
+# run a check on gamesList to ensure the flattening to a matrix/data frame
+# works out okay
+gamesList <- lapply(gamesList, function(x) {
+    tmp <- mapply(function(y, z) {
+        if(length(y) == 0) {
+            return(rep(NA, z))
+        } else {
+            return(y)
+        }
+    }, x, nRounds, SIMPLIFY = FALSE)
+    return(tmp)
+})
+
+gamesData <- as.data.frame(matrix(unlist(gamesList), nrow = sum(unlist(nRounds))))
 colnames(gamesData) <- gamedata_names
 
 # Load metadata

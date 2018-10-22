@@ -3,7 +3,7 @@
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk
 
 # clear workspace
-rm(list = list())
+rm(list = ls())
 library(httr)
 LOCAL <- TRUE # change to FALSE if you want to run from data on the network drive
 URL <- 'https://volunteerscience.com/gallup/boomtown_metadata'
@@ -28,6 +28,9 @@ if(Sys.info()['sysname'] == "Windows") {
 }
 
 # define constants
+gamedata_names <- c("matchid", "round", "h1.1", "h1.3", "h2.1", "h2.2", "h2.3",
+                    "h2.4", "h2.5", "h2.6", "h3.2", "h3.3", "h3.4", "h3.5",
+                    "tools", "innovation", "CSE", "leaderChoice")
 str1.1 <- c("None", "Weak", "Normal", "Strong")
 str2.1 <- c("False", "True")
 str3.2 <- c("LowTolerance", "HighTolerance")
@@ -139,62 +142,29 @@ leaderVotes <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
 leaderChoice <- lapply(leaderVotes, function(x) strsplit(x, ',', fixed = TRUE))
 leaderChoice <- lapply(leaderChoice, function(x) sapply(x, "[[", 3))
 
-
-innovation <- dummyList
-
-for (j in 1:nElements) {
-  for (i in (1:nRounds)) {
-    if ((grepl(card01, toolChoices[[j]][i]) == TRUE) & (grepl("SatchelCharge", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card02, toolChoices[[j]][i]) == TRUE) & (grepl("Dynamite", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card03, toolChoices[[j]][i]) == TRUE) & (grepl("RDX", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card04, toolChoices[[j]][i]) == TRUE) & (grepl("RDX", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card05, toolChoices[[j]][i]) == TRUE) & (grepl("Mine2", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card06, toolChoices[[j]][i]) == TRUE) & (grepl("Mine4", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card071, toolChoices[[j]][i]) == TRUE) & (grepl("Mine1", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card081, toolChoices[[j]][i]) == TRUE) & (grepl("Mine3", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card072, toolChoices[[j]][i]) == TRUE) & (grepl("Mine2", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if ((grepl(card082, toolChoices[[j]][i]) == TRUE) & (grepl("Mine4", leaderVotes[[j]][i]) == TRUE)) {
-      innovation[[j]][i]<-1
-    }
-    else if (grepl(card09, toolChoices[[j]][i]) == TRUE) {
-      innovation[[j]][i]<-NA
-    }
-    else if (grepl(card10, toolChoices[[j]][i]) == TRUE) {
-      innovation[[j]][i]<-NA
-    }
-    else if (grepl(card11, toolChoices[[j]][i]) == TRUE) {
-      innovation[[j]][i]<-NA
-    }
-    else if (grepl(card12, toolChoices[[j]][i]) == TRUE) {
-      innovation[[j]][i]<-NA
-    }
-    else
-      {
-        innovation[[j]][i]<-0
-      }
-  }
-}
+innovation <- mapply(function(leader, tool) {
+    tmp <- ifelse(
+        (grepl(names(tool_dict[1]), tool) == TRUE & grepl('SatchelCharge', leader) == TRUE) |
+        (grepl(names(tool_dict[2]), tool) == TRUE & grepl('Dynamite', leader) == TRUE) |
+        (grepl(names(tool_dict[3]), tool) == TRUE & grepl('RDX', leader) == TRUE) |
+        (grepl(names(tool_dict[4]), tool) == TRUE & grepl('RDX', leader) == TRUE) |
+        (grepl(names(tool_dict[5]), tool) == TRUE & grepl('Mine2', leader) == TRUE) |
+        (grepl(names(tool_dict[6]), tool) == TRUE & grepl('Mine4', leader) == TRUE) |
+        (grepl(names(tool_dict[7]), tool) == TRUE & grepl('Mine1', leader) == TRUE) |
+        (grepl(names(tool_dict[9]), tool) == TRUE & grepl('Mine3', leader) == TRUE) |
+        (grepl(names(tool_dict[8]), tool) == TRUE & grepl('Mine2', leader) == TRUE) |
+        (grepl(names(tool_dict[10]), tool) == TRUE & grepl('Mine4', leader) == TRUE), 1,
+        ifelse(
+            grepl(names(tool_dict[11]), tool) == TRUE |
+            grepl(names(tool_dict[12]), tool) == TRUE |
+            grepl(names(tool_dict[13]), tool) == TRUE |
+            grepl(names(tool_dict[14]), tool) == TRUE, NA, 0
+        )
+    )
+    return(tmp)
+}, leaderVotes, toolChoices, SIMPLIFY = FALSE)
 
 # Post-game survey
-
 survey <- lapply(datalist, function(x) x[grep("SurveyResponse", x)])
 survey <- lapply(survey, function(x) strsplit(x,',',fixed=TRUE))
 playerID <- lapply(survey, function(x) sapply(x, "[[", 3))
@@ -202,37 +172,62 @@ surveyQuestions<-lapply(survey, function(x) sapply(x, "[[", 4))
 surveyResponses<-lapply(survey, function(x) sapply(x, "[[", 5))
 
 CSE <- lapply(surveyResponses, function(x) mean(as.numeric(as.character(x))))
-CSE <- lapply(CSE, function(x) rep(x, nRounds))
+CSE <- mapply(function(cse, n) {
+    return(rep(cse, n))
+}, CSE, nRounds, SIMPLIFY = FALSE)
 
 # Merge all variables into a single frame
-
-gamesList <- list(matchid, round, h1.1, h1.3, h2.1, h2.2, h2.3, h2.4, h2.5, h2.6,
-              h3.2,h3.3,h3.4,h3.5, tools, innovation, CSE, leaderChoice)
-gamesData  <-  as.data.frame(matrix(unlist(gamesList), nrow=nRounds*nElements))
-colnames(gamesData) <- c("matchid", "round", "h1.1", "h1.3", "h2.1", "h2.2", "h2.3", "h2.4", "h2.5", "h2.6",
-"h3.2","h3.3","h3.4","h3.5", "tools", "innovation", "CSE", "leaderChoice")
+gamesList <- list(
+    matchid,
+    lapply(nRounds, function(x) {return(1:x)}),
+    h1.1,
+    h1.3,
+    h2.1,
+    h2.2,
+    h2.3,
+    h2.4,
+    h2.5,
+    h2.6,
+    h3.2,
+    h3.3,
+    h3.4,
+    h3.5,
+    tools,
+    innovation,
+    CSE,
+    leaderChoice
+)
+gamesData <- as.data.frame(matrix(unlist(gamesList), nrow = nRounds * nElements))
+colnames(gamesData) <- gamedata_names
 
 # Load metadata
 # Downloads automatically when visting this URL https://volunteerscience.com/gallup/boomtown_metadata/
 # Tried to automatize download process using "download.file" command, but not working properly.
 # Copy and paste "boomtown_metadata.csv" from "downloads" folder to working directory, then execute below.
-tmp <- tempfile()
-cookies <- readLines(paste(dd, '..', 'cookies.txt', sep = '/'))
-cookies <- cookies[grep('volunteerscience', cookies)]
-cookies <- as.data.frame(do.call(rbind, strsplit(cookies, '\t')[2:length(cookies)]),
-                         stringsAsFactors = FALSE)
-sessid <- cookies$V7[which(cookies$V6 == 'sessionid')]
+if('cookies.txt' %in% list.files(paste(dd, '..', sep = '/'))) {
+    tmp <- tempfile()
+    cookies <- readLines(paste(dd, '..', 'cookies.txt', sep = '/'))
+    cookies <- cookies[grep('volunteerscience', cookies)]
+    cookies <- as.data.frame(do.call(rbind, strsplit(cookies, '\t')[2:length(cookies)]),
+                             stringsAsFactors = FALSE)
+    sessid <- cookies$V7[which(cookies$V6 == 'sessionid')]
 
-GET(URL, set_cookies(.cookies = c('sessionid' = sessid)), write_disk(tmp))
-metadata <- readLines(tmp)
+    GET(URL, set_cookies(.cookies = c('sessionid' = sessid)), write_disk(tmp))
+    metadata <- readLines(tmp)
 
+    metadata_names <- strsplit(metadata[1], ',')[[1]]
+    metadata <-  as.data.frame(do.call(rbind, strsplit(metadata, ',')[2:length(metadata)]),
+                               stringsAsFactors = FALSE)
+    names(metadata) <- metadata_names
 
-
-
-metadata <- read.csv("boomtown_metadata.csv")
-metadata$h3.1[metadata$group..high.low.=="Ambiguity Low"] <- 0
-metadata$h3.1[metadata$group..high.low.=="Ambiguity High"] <- 1
-metadata <- metadata[c("matchID", "h3.1")]
-gamesData  <-  merge(gamesData, metadata, by.x = "matchid", by.y = "matchID", all.x=TRUE)
-write.csv(gamesData, file = "gamesData.csv")
+    metadata$h3.1 <- ifelse(metadata$group == 'Ambiguity Low', 0, 1)
+    gamesData  <-  merge(gamesData, metadata[, c('matchID', 'h3.1')],
+                         by.x = "matchid", by.y = "matchID", all.x = TRUE)
+    write.csv(gamesData, file = paste(od, 'gamesData.csv', sep = '/'),
+              row.names = FALSE)
+} else {
+    print('WARNING -- Missing cookies file, so only writing partial dataset.')
+    write.csv(gamesData, file = paste(od, 'gamesData_partial.csv', sep = '/'),
+              row.names = FALSE)
+}
 rm(list = ls(all = TRUE))

@@ -19,8 +19,8 @@ if(Sys.info()['sysname'] == "Windows") {
     }
 } else if(Sys.info()['sysname'] == 'Darwin') {
     if(LOCAL) {
-        dd <- 'cycle2/data'
-        od <- 'cycle2/output'
+        dd <- '/Users/matt_hoover/git/ngs2/cycle2/data'
+        od <- '/Users/matt_hoover/git/ngs2/cycle2/output'
     } else {
         dd <- '/Volumes/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/data'
         od <- '/Volumes/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/output'

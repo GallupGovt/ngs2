@@ -80,7 +80,8 @@ h_values_complex <- function(rounds, tool_choices, tool_set, v1, v2) {
 }
 
 # Read in logs
-datalist <- lapply(list.files(dd, pattern = ".*.txt"), function(x) {
+files <- list.files(dd, pattern = "*.txt")
+datalist <- lapply(files[!(files %in% 'cookies.txt')], function(x) {
     readLines(paste(dd, x, sep = '/'))
 })
 nElements <- length(datalist)
@@ -218,9 +219,9 @@ colnames(gamesData) <- gamedata_names
 # Downloads automatically when visting this URL https://volunteerscience.com/gallup/boomtown_metadata/
 # Tried to automatize download process using "download.file" command, but not working properly.
 # Copy and paste "boomtown_metadata.csv" from "downloads" folder to working directory, then execute below.
-if('cookies.txt' %in% list.files(paste(dd, '..', sep = '/'))) {
+if('cookies.txt' %in% list.files(paste(dd, sep = '/'))) {
     tmp <- tempfile()
-    cookies <- readLines(paste(dd, '..', 'cookies.txt', sep = '/'))
+    cookies <- readLines(paste(dd, 'cookies.txt', sep = '/'))
     cookies <- cookies[grep('volunteerscience', cookies)]
     cookies <- as.data.frame(do.call(rbind, strsplit(cookies, '\t')[2:length(cookies)]),
                              stringsAsFactors = FALSE)
@@ -244,4 +245,4 @@ if('cookies.txt' %in% list.files(paste(dd, '..', sep = '/'))) {
     write.csv(gamesData, file = paste(od, 'gamesData_partial.csv', sep = '/'),
               row.names = FALSE)
 }
-rm(list = ls(all = TRUE))
+# rm(list = ls(all = TRUE))

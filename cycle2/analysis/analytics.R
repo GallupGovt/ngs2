@@ -30,7 +30,7 @@ if(Sys.info()['sysname'] == "Windows") {
 set.seed(12345)
 
 # Read in data
-if('gamesData.csv' %in% list.files(paste(dd, '..', sep = '/'))) {
+if('gamesData.csv' %in% list.files(paste(od, sep = '/'))) {
     factorial <- read.csv(file = paste(od, "gamesData.csv", sep = '/'))
 } else {
     stop('WARNING - Metadata is missing; download by hand and merge to continue.')

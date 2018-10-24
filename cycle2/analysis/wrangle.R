@@ -4,28 +4,7 @@
 
 # clear workspace
 rm(list = ls())
-library(httr)
-LOCAL <- TRUE # change to FALSE if you want to run from data on the network drive
 URL <- 'https://volunteerscience.com/gallup/boomtown_metadata'
-
-# set directories
-if(Sys.info()['sysname'] == "Windows") {
-    if(LOCAL) {
-        dd <- 'C:/Users/c_pablo_diego-rosell/Desktop/Projects/DARPA/Cycle 2/Analytics/Abductive_loop/pilot'
-        od <- 'C:/Users/c_pablo_diego-rosell/Desktop/Projects/DARPA/Cycle 2/Analytics/Abductive_loop/pilot'
-    } else {
-        dd <- 'W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/data'
-        od <- 'W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/output'
-    }
-} else if(Sys.info()['sysname'] == 'Darwin') {
-    if(LOCAL) {
-        dd <- '/Users/matt_hoover/git/ngs2/cycle2/data'
-        od <- '/Users/matt_hoover/git/ngs2/cycle2/output'
-    } else {
-        dd <- '/Volumes/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/data'
-        od <- '/Volumes/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/output'
-    }
-}
 
 # define constants
 gamedata_names <- c("matchid", "round", "h1.1", "h1.3", "h2.1", "h2.2", "h2.3",

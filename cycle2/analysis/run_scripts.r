@@ -31,6 +31,9 @@ set.seed(12345)
 # source data cleaning
 source('wrangle.R')
 
+# source effects
+source('effects.R')
+
 # source analysis
 source('analytics.R')
 

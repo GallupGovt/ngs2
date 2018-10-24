@@ -4,6 +4,12 @@
 rm(list = ls(all = TRUE))
 set.seed(12345)
 
+# Small, medium, large per Cohen's (1987), and Polanin & Snilstveit (2016)
+
+log.odds.small<-0.2/(sqrt(3)/pi)
+log.odds.medium<-0.5/(sqrt(3)/pi)
+log.odds.large<-0.8/(sqrt(3)/pi)
+
 # Read in data
 if('gamesData.csv' %in% list.files(paste(od, sep = '/'))) {
     factorial <- read.csv(file = paste(od, "gamesData.csv", sep = '/'))

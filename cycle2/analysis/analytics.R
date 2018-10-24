@@ -23,10 +23,20 @@ table (subset(factorial, tools == 12)$leaderChoice)
 # Bayesian modelling
 
 main.formula <- innovation~h1.1+h1.3+h2.1+h3.1+h3.2+h3.3+h3.4+h3.5+tools+(1|matchid)
-
 weak_prior <- cauchy(0, 2.5)
 
-glmmoverall <- stan_glmer(main.formula, data=factorial, family = binomial(link = "logit"),
-                          prior = weak_prior, prior_intercept = weak_prior,
-                          diagnostic_file = "df1.csv")
+# Bayesian GLMM function
+
+bayesGlmer<-function(formula, priors) {
+  fittedGlmer<- stan_glmer(formula, 
+                           data=factorial,
+                           family = binomial(link = "logit"), 
+                           prior = priors,
+                           prior_intercept = weak_prior,
+                           chains = 3, iter = 10000, 
+                           diagnostic_file = "df1.csv")
+  return(fittedGlmer)
+}
+
+glmmoverall <- bayesGlmer(main.formula, weak_prior)
 glmmoverall

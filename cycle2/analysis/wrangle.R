@@ -3,7 +3,6 @@
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk
 
 # clear workspace
-rm(list = ls())
 URL <- 'https://volunteerscience.com/gallup/boomtown_metadata'
 
 # define constants
@@ -224,4 +223,3 @@ if('cookies.txt' %in% list.files(paste(dd, sep = '/'))) {
     write.csv(gamesData, file = paste(od, 'gamesData_partial.csv', sep = '/'),
               row.names = FALSE)
 }
-# rm(list = ls(all = TRUE))

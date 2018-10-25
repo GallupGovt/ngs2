@@ -1,9 +1,6 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2018
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk
 
-rm(list = ls(all = TRUE))
-set.seed(12345)
-
 # Read in data
 if('gamesData.csv' %in% list.files(paste(od, sep = '/'))) {
     factorial <- read.csv(file = paste(od, "gamesData.csv", sep = '/'))
@@ -28,12 +25,12 @@ weak_prior <- cauchy(0, 2.5)
 # Bayesian GLMM function
 
 bayesGlmer<-function(formula, priors) {
-  fittedGlmer<- stan_glmer(formula, 
+  fittedGlmer<- stan_glmer(formula,
                            data=factorial,
-                           family = binomial(link = "logit"), 
+                           family = binomial(link = "logit"),
                            prior = priors,
                            prior_intercept = weak_prior,
-                           chains = 3, iter = 10000, 
+                           chains = 3, iter = 10000,
                            diagnostic_file = "df1.csv")
   return(fittedGlmer)
 }

@@ -10,8 +10,11 @@ def run(args_dict):
     emp = pd.read_csv(args_dict['empanel'], sep=None, engine='python')
     ids = pd.read_csv(args_dict['ids'], sep=None, engine='python')
 
-    # manipulate data
+    # clean up data
+    ids.drop_duplicates(inplace=True)
 
+    # manipulate data
+    emp = emp[[x not in ids.qualtrics_id.tolist() for x in emp.ResponseID]]
 
     # write data to disk
     fpath = os.path.splitext(args_dict['empanel'])

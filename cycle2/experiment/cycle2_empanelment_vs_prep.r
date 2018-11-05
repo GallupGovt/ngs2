@@ -1,8 +1,12 @@
+#!/usr/local/bin/R
 # script to process cycle2 empanelment data for volunteer science upload
 
 # libraries and constants
 library(dplyr)
 library(hot.deck)
+
+# grab command-line arguments
+args <- commandArgs(trailingOnly = TRUE)
 
 complete_vars <- c(
     'RecipientFirstName',
@@ -76,8 +80,7 @@ trans_leadership <- function(x, choice=c('sum', 'mean')) {
 #    1, 4, 5, 9, 10, 11, 12 >> reverse code
 
 # load data
-c <- read.csv('cycle2/data/cycle2_empanelment_24oct2018.csv',
-              sep = ',', header = TRUE, stringsAsFactors = FALSE)
+c <- read.csv(args[1], sep = ',', header = TRUE, stringsAsFactors = FALSE)
 c <- c[c$Status == 0 & c$Q3 == 1, ]
 
 # impute missing data for scale values
@@ -113,7 +116,8 @@ d <- c[, c('first_name', 'last_name', 'user_name', 'id', 'email',
 conditions <- randomize_data(d)
 
 # write data to disk
+fpath = strsplit(args[2], '\\.')
 mapply(function(x, name) {
-    write.csv(x, file = paste0('cycle2/empanelment/cycle2_empanelment_24oct2018_',
-                               name, '.csv'), row.names = FALSE)
+    write.csv(x, file = paste0(fpath[[1]][1], '_', name, '.', fpath[[1]][2]),
+              row.names = FALSE)
 }, conditions, list('low', 'high'))

@@ -4,6 +4,7 @@ data/
 pilot/
 cycle1/
 misc/
+*.json
 
 # python bytecode files
 *.pyc

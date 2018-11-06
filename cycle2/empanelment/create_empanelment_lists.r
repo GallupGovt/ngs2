@@ -7,8 +7,8 @@ local <- TRUE # change to FALSE if getting data from the dod_clients drive
 
 # determine system environment and define constants for use
 if(Sys.info()['sysname'] == "Windows") {
-    dd <- "W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/data"
-    od <- "W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/output"
+    dd <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/data"
+    od <- "//gallup/dod_clients//DARPA_NGS2/CONSULTING/Analytics/cycle2/output"
 } else if(Sys.info()['sysname'] == 'Darwin') {
     if(local) {
         dd <- 'data'

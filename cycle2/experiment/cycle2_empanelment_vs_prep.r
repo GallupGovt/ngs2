@@ -1,6 +1,17 @@
 #!/usr/local/bin/R
 # script to process cycle2 empanelment data for volunteer science upload
 
+# instructions
+#   first name >> RecipientFirstName
+#   last name >> RecipientLastName
+#   username >> RecipientEmail before @ symbol
+#   id (your internal identification for future needs) >> ResponseID
+#   email >> RecipientEmail and/or Q54
+#   phone number >> Q40
+#   transformational leadership value >> Q107_{1-8} (note, there is no 7...)
+#   tolerance of ambiguity value >> Q57_{1-12}
+#    1, 4, 5, 9, 10, 11, 12 >> reverse code
+
 # libraries and constants
 library(dplyr)
 library(hot.deck)
@@ -45,6 +56,10 @@ ambiguity_calc <- function(x) {
     return(apply(x[, grep('Q57_', names(x))], 1, function(y) {sum(y)}))
 }
 
+create_game_id <- function(len=60) {
+    return(paste0(sample(c(letters, 0:9), len, replace = TRUE), collapse = ''))
+}
+
 randomize_data <- function(x) {
     half <- floor(nrow(x) / 2)
     x <- x[order(x$tol_ambiguity), ]
@@ -68,22 +83,18 @@ trans_leadership <- function(x, choice=c('sum', 'mean')) {
     return(tmp)
 }
 
-# instructions
-#   first name >> RecipientFirstName
-#   last name >> RecipientLastName
-#   username >> RecipientEmail before @ symbol
-#   id (your internal identification for future needs) >> ResponseID
-#   email >> RecipientEmail
-#   phone number >> Q40
-#   transformational leadership value >> Q107_{1-8} (note, there is no 7...)
-#   tolerance of ambiguity value >> Q57_{1-12}
-#    1, 4, 5, 9, 10, 11, 12 >> reverse code
-
 # load data
+set.seed(as.numeric(gsub('-', '', Sys.Date())))
+
 c <- read.csv(args[1], sep = ',', header = TRUE, stringsAsFactors = FALSE)
 c <- c[c$Status == 0 & c$Q3 == 1, ]
+gid <- read.csv('cycle2/data/vs_game_ids.csv', header = TRUE, sep = ',',
+                stringsAsFactors = FALSE)
 
 # impute missing data for scale values
+c$Q26 <- ifelse(c$Q26 == ',0', 0, c$Q26)
+c$Q26 <- as.numeric(c$Q26)
+
 c$nid <- 1:nrow(c)
 hd_values <- hot.deck(c[, grep(imputation_variables, names(c))], method = 'best.cell',
                       cutoff = 1, sdCutoff = 3)
@@ -92,12 +103,17 @@ c <- c[, !grepl('.x', names(c))]
 names(c) <- gsub('.y', '', names(c))
 
 # prep the dataset
-c$user_name <- do.call(rbind, lapply(strsplit(c$RecipientEmail, '@'), function(x) {
+c$email <- ifelse(grepl('[Ff]ake', c$RecipientEmail), c$Q54, c$RecipientEmail)
+c$email <- gsub(' ', '', c$email)
+c$user_name <- do.call(rbind, lapply(strsplit(c$email, '@'), function(x) {
     return(trimws(x[1]))
 }))
-c <- c %>% rename(id = ResponseID, email = RecipientEmail, phone_number = Q40,
-                  first_name = RecipientFirstName, last_name = RecipientLastName)
-c$phone_number <- gsub('-', '', c$phone_number)
+c <- c %>% rename(id = ResponseID,
+                  phone_number = Q40,
+                  `First Name` = RecipientFirstName,
+                  `Last Name` = RecipientLastName,
+                  `Email Address` = email)
+c$phone_number <- gsub('-| ', '', c$phone_number)
 c[, grep('Q57_', names(c))] <- apply(c[, grep('Q57_', names(c))], 2, function(x) {
     return(as.numeric(x))
 })
@@ -105,12 +121,17 @@ c[, grep('Q57_', names(c))] <- apply(c[, grep('Q57_', names(c))], 2, function(x)
 # calculate scales
 c$tol_ambiguity <- ambiguity_calc(c)
 c$trans_leadership_sum <- trans_leadership(c, 'sum')
-c$trans_leadership_mean <- trans_leadership(c, 'mean')
 
 # combine data
-d <- c[, c('first_name', 'last_name', 'user_name', 'id', 'email',
-           'phone_number', 'trans_leadership_sum', 'trans_leadership_mean',
-           'tol_ambiguity')]
+d <- c[, c('First Name', 'Last Name', 'user_name', 'id', 'Email Address',
+           'phone_number', 'trans_leadership_sum', 'tol_ambiguity')]
+
+# merge in any old game ids
+d <- merge(d, gid, by.x = 'id', by.y = 'qualtrics_id', all.x = TRUE)
+d$game_id <- sapply(d$game_id, function(x) {
+    ifelse(is.na(x), create_game_id(), x)
+})
+d$`Login Link` <- paste0('https://volunteerscience.com/worldlab/start/', d$game_id, '/')
 
 # randomize to game conditions
 conditions <- randomize_data(d)

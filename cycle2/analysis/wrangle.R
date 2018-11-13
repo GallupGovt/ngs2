@@ -62,11 +62,26 @@ files <- list.files(dd, pattern = "*.txt")
 datalist <- lapply(files[!(files %in% 'cookies.txt')], function(x) {
     readLines(paste(dd, x, sep = '/'))
 })
+                  
+# Select games that had at least one choice (had at least one "LeaderSelection") event
+# Select games played during fielding period (StartMatch date >= 10/25/2018)
+leaderSelection <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
+leaderSelectionYes <- lapply(leaderSelection, function(x) length(as.character(x))>0 & length(as.character(x))<14)
+StartMatch <- lapply(datalist, function(x) gsub(" .*$", "", x[grep("StartMatch", x)]))
+dates <- lapply(StartMatch, function(x) as.Date((gsub("StartMatch,", "", x)), "%m/%d/%Y"))
+datesFIELD <- lapply(dates, function(x) x >= as.Date('2018-10-25'))
+datalist<-datalist[leaderSelectionYes==TRUE & datesFIELD==TRUE]
+
+# Count number of games
 nElements <- length(datalist)
 
+# Count number of rounds (leaderSelection events)
+leaderVotes <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
+nRounds <- lapply(leaderVotes, function(x) length(x))                     
+                     
 # Extract choices in the shop
-toolChoices <- lapply(datalist, function(x) x[grep("StartVotation", x)])
-nRounds <- lapply(toolChoices, function(x) length(x))
+toolChoicesAll <- lapply(datalist, function(x) x[grep("StartVotation", x)])
+toolChoices <- mapply(function(x,y) {return(x[1:y])}, x=toolChoicesAll, y=nRounds)
 
 # Extract match id to create group variable
 matchid <- lapply(datalist, function(x) x[grep("StartMatch", x)])
@@ -86,10 +101,13 @@ h3.3 <- h_values(gameSettings, str3.3, nRounds)
 h3.4 <- h_values(gameSettings, str3.4, nRounds)
 
 # Assign values of h1.3 (Fixed at Rounds 4 & 9 = 1, Rounds = 5 & 7 = 2, else = 0)
-h1.3 <-rep(list(c(0, 0, 0, 1, 2, 0, 2, 0, 1, 0, 0, 0, 0)), nElements)
+h1.3Fixed <-rep(list(c(0, 0, 0, 1, 2, 0, 2, 0, 1, 0, 0, 0, 0)), nElements)
+h1.3 <- mapply(function(x,y) {return(x[1:y])}, x=h1.3Fixed, y=nRounds)
+
 
 # Assign values of h3.5 (Fixed at Round 1 = 0, Rounds 6, 8 = 2, else = 1)
-h3.5 <- rep(list(c(0, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1)), nElements)
+h3.5Fixed <- rep(list(c(0, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1)), nElements)
+h3.5 <- mapply(function(x,y) {return(x[1:y])}, x=h3.5Fixed, y=nRounds)
 
 # Extract value of tool choice for each round
 tools <- lapply(toolChoices, function(x) {
@@ -117,7 +135,6 @@ control1 <- h_values_complex(nRounds, toolChoices, tool_dict, 9, 10)
 control2 <- h_values_complex(nRounds, toolChoices, tool_dict, 11, 12)
 
 # Extract innovation outcome, based on tool choice.
-leaderVotes <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
 leaderChoice <- lapply(leaderVotes, function(x) strsplit(x, ',', fixed = TRUE))
 leaderChoice <- lapply(leaderChoice, function(x) sapply(x, "[[", 3))
 
@@ -214,7 +231,12 @@ if('cookies.txt' %in% list.files(paste(dd, sep = '/'))) {
     names(metadata) <- metadata_names
 
     metadata$h3.1 <- ifelse(metadata$group == 'Ambiguity Low', 0, 1)
-    gamesData  <-  merge(gamesData, metadata[, c('matchID', 'h3.1')],
+    gamesData  <-  merge(gamesData, metadata[, c('matchID', 
+                                               'h3.1', 
+                                               'date/time', 
+                                               'replay', 
+                                               'consumableKey', 
+                                               'settingsNum')],
                          by.x = "matchid", by.y = "matchID", all.x = TRUE)
     write.csv(gamesData, file = paste(od, 'gamesData.csv', sep = '/'),
               row.names = FALSE)

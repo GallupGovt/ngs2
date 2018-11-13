@@ -27,12 +27,12 @@ if(Sys.info()['sysname'] == "Windows") {
 }
 set.seed(12345)
 
-# run scripts in order from wrangling to analysis
-# source data cleaning
-source('wrangle.R')
-
+# run scripts in order
 # source effects
 source('effects.R')
+
+# source data cleaning
+source('wrangle.R')
 
 # source analysis
 source('analytics.R')

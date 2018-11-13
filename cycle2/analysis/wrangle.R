@@ -8,7 +8,7 @@ URL <- 'https://volunteerscience.com/gallup/boomtown_metadata'
 # define constants
 gamedata_names <- c("matchid", "round", "h1.1", "h1.3", "h2.1", "h2.2", "h2.3",
                     "h2.4", "h2.5", "h2.6", "h3.2", "h3.3", "h3.4", "h3.5",
-                    "tools", "innovation", "CSE", "leaderChoice")
+                    "tools", "innovation", "CSE", "leaderChoice", "nConnected")
 str1.1 <- c("None", "Weak", "Normal", "Strong")
 str2.1 <- c("False", "True")
 str3.2 <- c("LowTolerance", "HighTolerance")
@@ -90,6 +90,12 @@ matchid <- mapply(function(x, n) {
     rep(x, n)
 }, matchid, nRounds, SIMPLIFY = FALSE)
 
+# Count number of connected players
+PlayerConnection <- lapply(datalist, function(x) length(x[grep("PlayerConnection", x)]))
+PlayerConnections <- mapply(function(nConnected, n) {
+  return(rep(nConnected, n))
+}, PlayerConnection, nRounds, SIMPLIFY = FALSE)              
+                  
 # Extract values for block-randomized hypotheses
 gameSettings <- lapply(datalist, function(x) x[grep("SetupMatch", x)])
 
@@ -191,7 +197,8 @@ gamesList <- list(
     tools,
     innovation,
     CSE,
-    leaderChoice
+    leaderChoice, 
+    PlayerConnections
 )
 
 # run a check on gamesList to ensure the flattening to a matrix/data frame

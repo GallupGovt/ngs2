@@ -238,6 +238,7 @@ if('cookies.txt' %in% list.files(paste(dd, sep = '/'))) {
                                                'consumableKey', 
                                                'settingsNum')],
                          by.x = "matchid", by.y = "matchID", all.x = TRUE)
+    gamesData <- subset(gamesData, consumableKey != "boomtown_demo")
     write.csv(gamesData, file = paste(od, 'gamesData.csv', sep = '/'),
               row.names = FALSE)
 } else {

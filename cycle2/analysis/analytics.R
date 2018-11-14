@@ -9,7 +9,38 @@ if('gamesData.csv' %in% list.files(paste(od, sep = '/'))) {
 }
 factorial<-data.frame(lapply(factorial, factor))
 
-# Controls
+# Number of valid games
+length(unique(factorial$matchid))
+
+# Number of players connected
+factorial$nConnected<-as.numeric(levels(factorial$nConnected))[factorial$nConnected]
+nConnected<-aggregate(nConnected ~ matchid, data=factorial, mean)
+sum(nConnected$nConnected)
+
+# Game dates
+factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]
+dates<-aggregate(date.time ~ matchid, data=factorial, mean)
+barplot(table(dates$date.time))
+
+# Number of unique experimental conditions played
+factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$settingsNum]
+length(unique(factorial$settingsNum))
+
+# List of conditions played
+settingsNum<-aggregate(settingsNum ~ matchid, data=factorial, mean)
+settingsNumTab<-as.data.frame(table(settingsNum$settingsNum))
+colnames(settingsNumTab)<-c("settingsNum", "gamesPlayed")
+write.csv(settingsNumTab, paste(od, "settingsNumTab.csv", sep = '/'))
+
+# List of conditions pending
+allConditions<-1:208
+playedConditions<-unique(factorial$settingsNum)
+pendingConditions<-setdiff(allConditions, playedConditions)
+pendingConditions<-as.data.frame(pendingConditions)
+colnames(pendingConditions)<-c("settingsNum")
+write.csv(pendingConditions, paste(od, "pendingConditions.csv", sep = '/'))
+
+# Positive Controls
 # When offered choice given by tools == 9, should always choose "TNTbarrel"
 table (subset(factorial, tools == 9)$leaderChoice)
 # When offered choice given by tools == 10, 11, or 12, should always choose "SatchelCharge"

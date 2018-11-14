@@ -29,7 +29,7 @@ set.seed(12345)
 
 # run scripts in order
 # source effects
-source(paste(dd, "effects.R", sep = "/"))
+#source(paste(dd, "effects.R", sep = "/"))
 
 # source data cleaning
 source(paste(dd, "wrangle.R", sep = "/"))

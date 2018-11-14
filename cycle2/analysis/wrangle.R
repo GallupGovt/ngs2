@@ -63,13 +63,24 @@ datalist <- lapply(files[!(files %in% 'cookies.txt')], function(x) {
     readLines(paste(dd, x, sep = '/'))
 })
                   
-# Select games that had at least one choice (had at least one "LeaderSelection") event
-# Select games played during fielding period (StartMatch date >= 10/25/2018)
-leaderSelection <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
+# LeaderSelection events before game suspended
+leaderSelectionAll <- lapply(datalist, function(x) x[grep("LeaderSelection|GameSuspended", x)])
+leaderSelection <- lapply(leaderSelectionAll, 
+                          function(x) if ('TRUE' %in% grepl("GameSuspended", x)) {
+                            x[0:(grep("GameSuspended", x)-1)]
+                          } else {
+                            x
+                          })
 leaderSelectionYes <- lapply(leaderSelection, function(x) length(as.character(x))>0 & length(as.character(x))<14)
+
+# Identify games played during fielding period (StartMatch date >= 10/25/2018)
 StartMatch <- lapply(datalist, function(x) gsub(" .*$", "", x[grep("StartMatch", x)]))
 dates <- lapply(StartMatch, function(x) as.Date((gsub("StartMatch,", "", x)), "%m/%d/%Y"))
 datesFIELD <- lapply(dates, function(x) x >= as.Date('2018-10-25'))
+
+# Subset datalist according to the two conditions above:
+# 1. Had at least one "LeaderSelection") event before the game was suspended
+# 2. Played during fielding period (StartMatch date >= 10/25/2018)
 datalist<-datalist[leaderSelectionYes==TRUE & datesFIELD==TRUE]
 
 # Count number of games

@@ -41,4 +41,4 @@ source('analytics.R')
 source('Active_Learning.R')
 
 # Test hypothesis 1.1
-source('h1.1.R')
+#source('h1.1.R')

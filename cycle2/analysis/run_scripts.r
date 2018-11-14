@@ -29,16 +29,16 @@ set.seed(12345)
 
 # run scripts in order
 # source effects
-source('effects.R')
+source(paste(dd, "effects.R", sep = "/"))
 
 # source data cleaning
-source('wrangle.R')
+source(paste(dd, "wrangle.R", sep = "/"))
 
 # source analysis
-source('analytics.R')
+source(paste(dd, "analytics.R", sep = "/"))
 
 # active learning
-source('Active_Learning.R')
+source(paste(dd, "Active_Learning.R", sep = "/"))
 
 # Test hypothesis 1.1
 #source('h1.1.R')

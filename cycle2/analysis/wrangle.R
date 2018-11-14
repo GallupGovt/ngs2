@@ -8,7 +8,7 @@ URL <- 'https://volunteerscience.com/gallup/boomtown_metadata'
 # define constants
 gamedata_names <- c("matchid", "round", "h1.1", "h1.3", "h2.1", "h2.2", "h2.3",
                     "h2.4", "h2.5", "h2.6", "h3.2", "h3.3", "h3.4", "h3.5",
-                    "tools", "innovation", "CSE", "leaderChoice")
+                    "tools", "innovation", "CSE", "leaderChoice", "nConnected")
 str1.1 <- c("None", "Weak", "Normal", "Strong")
 str2.1 <- c("False", "True")
 str3.2 <- c("LowTolerance", "HighTolerance")
@@ -62,11 +62,37 @@ files <- list.files(dd, pattern = "*.txt")
 datalist <- lapply(files[!(files %in% 'cookies.txt')], function(x) {
     readLines(paste(dd, x, sep = '/'))
 })
+                  
+# LeaderSelection events before game suspended
+leaderSelectionAll <- lapply(datalist, function(x) x[grep("LeaderSelection|GameSuspended", x)])
+leaderSelection <- lapply(leaderSelectionAll, 
+                          function(x) if ('TRUE' %in% grepl("GameSuspended", x)) {
+                            x[0:(grep("GameSuspended", x)-1)]
+                          } else {
+                            x
+                          })
+leaderSelectionYes <- lapply(leaderSelection, function(x) length(as.character(x))>0 & length(as.character(x))<14)
+
+# Identify games played during fielding period (StartMatch date >= 10/25/2018)
+StartMatch <- lapply(datalist, function(x) gsub(" .*$", "", x[grep("StartMatch", x)]))
+dates <- lapply(StartMatch, function(x) as.Date((gsub("StartMatch,", "", x)), "%m/%d/%Y"))
+datesFIELD <- lapply(dates, function(x) x >= as.Date('2018-10-25'))
+
+# Subset datalist according to the two conditions above:
+# 1. Had at least one "LeaderSelection") event before the game was suspended
+# 2. Played during fielding period (StartMatch date >= 10/25/2018)
+datalist<-datalist[leaderSelectionYes==TRUE & datesFIELD==TRUE]
+
+# Count number of games
 nElements <- length(datalist)
 
+# Count number of rounds (leaderSelection events)
+leaderVotes <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
+nRounds <- lapply(leaderVotes, function(x) length(x))                     
+                     
 # Extract choices in the shop
-toolChoices <- lapply(datalist, function(x) x[grep("StartVotation", x)])
-nRounds <- lapply(toolChoices, function(x) length(x))
+toolChoicesAll <- lapply(datalist, function(x) x[grep("StartVotation", x)])
+toolChoices <- mapply(function(x,y) {return(x[1:y])}, x=toolChoicesAll, y=nRounds)
 
 # Extract match id to create group variable
 matchid <- lapply(datalist, function(x) x[grep("StartMatch", x)])
@@ -75,6 +101,12 @@ matchid <- mapply(function(x, n) {
     rep(x, n)
 }, matchid, nRounds, SIMPLIFY = FALSE)
 
+# Count number of connected players
+PlayerConnection <- lapply(datalist, function(x) length(x[grep("PlayerConnection", x)]))
+PlayerConnections <- mapply(function(nConnected, n) {
+  return(rep(nConnected, n))
+}, PlayerConnection, nRounds, SIMPLIFY = FALSE)              
+                  
 # Extract values for block-randomized hypotheses
 gameSettings <- lapply(datalist, function(x) x[grep("SetupMatch", x)])
 
@@ -86,10 +118,13 @@ h3.3 <- h_values(gameSettings, str3.3, nRounds)
 h3.4 <- h_values(gameSettings, str3.4, nRounds)
 
 # Assign values of h1.3 (Fixed at Rounds 4 & 9 = 1, Rounds = 5 & 7 = 2, else = 0)
-h1.3 <-rep(list(c(0, 0, 0, 1, 2, 0, 2, 0, 1, 0, 0, 0, 0)), nElements)
+h1.3Fixed <-rep(list(c(0, 0, 0, 1, 2, 0, 2, 0, 1, 0, 0, 0, 0)), nElements)
+h1.3 <- mapply(function(x,y) {return(x[1:y])}, x=h1.3Fixed, y=nRounds)
+
 
 # Assign values of h3.5 (Fixed at Round 1 = 0, Rounds 6, 8 = 2, else = 1)
-h3.5 <- rep(list(c(0, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1)), nElements)
+h3.5Fixed <- rep(list(c(0, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1)), nElements)
+h3.5 <- mapply(function(x,y) {return(x[1:y])}, x=h3.5Fixed, y=nRounds)
 
 # Extract value of tool choice for each round
 tools <- lapply(toolChoices, function(x) {
@@ -117,7 +152,6 @@ control1 <- h_values_complex(nRounds, toolChoices, tool_dict, 9, 10)
 control2 <- h_values_complex(nRounds, toolChoices, tool_dict, 11, 12)
 
 # Extract innovation outcome, based on tool choice.
-leaderVotes <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
 leaderChoice <- lapply(leaderVotes, function(x) strsplit(x, ',', fixed = TRUE))
 leaderChoice <- lapply(leaderChoice, function(x) sapply(x, "[[", 3))
 
@@ -174,7 +208,8 @@ gamesList <- list(
     tools,
     innovation,
     CSE,
-    leaderChoice
+    leaderChoice, 
+    PlayerConnections
 )
 
 # run a check on gamesList to ensure the flattening to a matrix/data frame
@@ -214,8 +249,14 @@ if('cookies.txt' %in% list.files(paste(dd, sep = '/'))) {
     names(metadata) <- metadata_names
 
     metadata$h3.1 <- ifelse(metadata$group == 'Ambiguity Low', 0, 1)
-    gamesData  <-  merge(gamesData, metadata[, c('matchID', 'h3.1')],
+    gamesData  <-  merge(gamesData, metadata[, c('matchID', 
+                                               'h3.1', 
+                                               'date/time', 
+                                               'replay', 
+                                               'consumableKey', 
+                                               'settingsNum')],
                          by.x = "matchid", by.y = "matchID", all.x = TRUE)
+    gamesData <- subset(gamesData, consumableKey != "boomtown_demo")
     write.csv(gamesData, file = paste(od, 'gamesData.csv', sep = '/'),
               row.names = FALSE)
 } else {

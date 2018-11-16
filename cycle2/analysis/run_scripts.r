@@ -41,4 +41,4 @@ source(paste(dd, "analytics.R", sep = "/"))
 source(paste(dd, "Active_Learning.R", sep = "/"))
 
 # Test hypothesis 1.1
-#source('h1.1.R')
+source('h1.1.R')

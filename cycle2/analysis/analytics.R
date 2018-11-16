@@ -10,21 +10,25 @@ if('gamesData.csv' %in% list.files(paste(od, sep = '/'))) {
 factorial<-data.frame(lapply(factorial, factor))
 
 # Number of valid games
-length(unique(factorial$matchid))
+nGames<-length(unique(factorial$matchid))
+nGames
 
 # Number of players connected
 factorial$nConnected<-as.numeric(levels(factorial$nConnected))[factorial$nConnected]
 nConnected<-aggregate(nConnected ~ matchid, data=factorial, mean)
-sum(nConnected$nConnected)
+nPlayers<-sum(nConnected$nConnected)
+nPlayers
 
 # Game dates
 factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]
 dates<-aggregate(date.time ~ matchid, data=factorial, mean)
-barplot(table(dates$date.time))
+datesPlot<-barplot(table(dates$date.time))
+datesPlot
 
 # Number of unique experimental conditions played
 factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$settingsNum]
-length(unique(factorial$settingsNum))
+nConditions<-length(unique(factorial$settingsNum))
+nConditions
 
 # List of conditions played
 settingsNum<-aggregate(settingsNum ~ matchid, data=factorial, mean)

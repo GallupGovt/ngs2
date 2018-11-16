@@ -43,3 +43,36 @@ bridge_1.1.alt <- bridge_sampler(glmm1.1.alt)
 # Estimate Bayes Factors for the comparison of prediction 1 over prediction 3 
 bf(bridge_1.1.test, bridge_1.1.alt)
 # A bf>10 is considered strong evidence in favor of prediction 1
+
+# Plot the "test" vs. "null" BF
+
+draws <- as.data.frame(glmm1.1.test)
+a <- rnorm(1500, mean=logodds$h1.1.locomp, sd=test.SD)
+b <- rnorm(1500, mean=logodds$h1.1.medcomp, sd=test.SD)
+c <- rnorm(1500, mean=logodds$h1.1.hicomp, sd=test.SD)
+d <- draws$h1.11
+e <- draws$h1.12
+f <- draws$h1.13
+frame <- data.frame(value=c(a, b, c, d, e, f), 
+                    Distribution=c(rep("Prior", 4500),
+                            rep("Posterior", 4500)), 
+                    Level=c(rep("Lo Comp", 1500),
+                               rep("Med Comp", 1500),
+                               rep("Hi Comp", 1500), 
+                               rep("Lo Comp", 1500),
+                               rep("Med Comp", 1500),
+                               rep("Hi Comp", 1500)))
+frame.posterior<-subset(frame, Distribution=="Posterior")
+h1.1.post<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
+  geom_density(alpha=0.4) + 
+  scale_x_continuous(limits = c(-4.5, 4.5)) + 
+  scale_y_continuous(limits = c(0, 2))
+
+h1.1.prior<-ggplot(frame, aes(value, fill=Level, linetype=Distribution)) + 
+  geom_density(alpha=0.4) + 
+  scale_x_continuous(limits = c(-4.5, 4.5)) + 
+  scale_y_continuous(limits = c(0, 2)) +
+  annotate("text", x = 1.5, y = 1.7, label = paste ("H1.1.1 vs. null BF =", round(bf1.1.test.null$bf, 2))) +
+  geom_vline(xintercept = 0, linetype="dashed")
+
+

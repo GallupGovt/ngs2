@@ -47,9 +47,9 @@ bf(bridge_1.1.test, bridge_1.1.alt)
 # Plot the "test" vs. "null" BF
 
 draws <- as.data.frame(glmm1.1.test)
-a <- rnorm(1500, mean=logodds$h1.1.locomp, sd=test.SD)
-b <- rnorm(1500, mean=logodds$h1.1.medcomp, sd=test.SD)
-c <- rnorm(1500, mean=logodds$h1.1.hicomp, sd=test.SD)
+a <- rcauchy(1500, location=logodds$h1.1.locomp, scale=test.SD)
+b <- rcauchy(1500, location=logodds$h1.1.locomp, scale=test.SD)
+c <- rcauchy(1500, location=logodds$h1.1.locomp, scale=test.SD)
 d <- draws$h1.11
 e <- draws$h1.12
 f <- draws$h1.13

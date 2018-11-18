@@ -19,7 +19,7 @@ AL <- getURL(paste(githubRepo, "Active_Learning.R", sep = "/"), ssl.verifypeer =
  close(fileConn)
 h1.1 <- getURL(paste(githubRepo, "h1.1.R", sep = "/"), ssl.verifypeer = FALSE)
  fileConn<-file("h1.1.R")
- writeLines(AL, fileConn)
+ writeLines(h1.1, fileConn)
  close(fileConn)
 
 # Set environment

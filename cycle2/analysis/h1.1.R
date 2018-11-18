@@ -44,8 +44,12 @@ glmm1.1.alt<- bayesGlmer(main.formula, alt_prior)
 bridge_1.1.alt <- bridge_sampler(glmm1.1.alt)
 
 # Estimate Bayes Factors for the comparison of prediction 1 over prediction 3 
-bf(bridge_1.1.test, bridge_1.1.alt)
-# A bf>10 is considered strong evidence in favor of prediction 1
+testalt<-bf(bridge_1.1.test, bridge_1.1.alt)
+testaltBF<-testalt$bf
+
+# Estimate Bayes Factors for the comparison of prediction 2 over prediction 3 
+testalt2<-bf(bridge_1.1.null, bridge_1.1.alt)
+testalt2BF<-testalt2$bf
 
 # Plot the "test" vs. "null" BF
 plotIters<-nIter*1.5
@@ -77,5 +81,5 @@ h1.1.prior<-ggplot(frame, aes(value, fill=Level, linetype=Distribution)) +
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
   scale_y_continuous(limits = c(0, 2)) +
-  annotate("text", x=1.5, y=1.7, label = paste("H1.1.1 vs. null BF = ", sprintf("%0.2f", testnullBF))) +
+  annotate("text", x=2, y=1.7, label = paste("H1.1.1 vs. H1.1.2 (null) BF = ", sprintf("%0.2f", testnullBF))) +
   geom_vline(xintercept = 0, linetype="dashed")

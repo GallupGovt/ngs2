@@ -48,7 +48,7 @@ AL <- getURL(paste(githubRepo, "Active_Learning.R", sep = "/"), ssl.verifypeer =
 
 # run scripts in order
 # source effects
-source("effects.R"))
+source("effects.R")
 
 # source data cleaning
 source("wrangle.R")

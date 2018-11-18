@@ -28,6 +28,7 @@ if(Sys.info()['sysname'] == "Windows") {
 set.seed(12345)
 
 # download scripts
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
 effects <- getURL(paste(githubRepo, "effects.R", sep = "/"), ssl.verifypeer = FALSE)
  fileConn<-file("effects.R")
  writeLines(effects, fileConn)
@@ -47,10 +48,10 @@ AL <- getURL(paste(githubRepo, "Active_Learning.R", sep = "/"), ssl.verifypeer =
 
 # run scripts in order
 # source effects
-source(paste(dd, "effects.R", sep = "/"))
+source("effects.R"))
 
 # source data cleaning
-source(paste(dd, "wrangle.R", sep = "/"))
+source("wrangle.R")
 
 #Set default number of iterations for Bayesian estimation
 nIter = 10000

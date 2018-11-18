@@ -27,7 +27,9 @@ glmm1.1.null<- bayesGlmer(main.formula, null_prior)
 bridge_1.1.null <- bridge_sampler(glmm1.1.null)
 
 # Estimate Bayes Factors for the comparison of prediction 1 over prediction 2 
-bf(bridge_1.1.test, bridge_1.1.null)
+testnull<-bf(bridge_1.1.test, bridge_1.1.null)
+testnull
+testnullBF<-testnull$bf
 # A bf>10 is considered strong evidence in favor of prediction 1
 
 # Prediction 3

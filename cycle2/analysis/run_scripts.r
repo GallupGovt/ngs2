@@ -52,11 +52,5 @@ source(paste(dd, "effects.R", sep = "/"))
 # source data cleaning
 source(paste(dd, "wrangle.R", sep = "/"))
 
-# source analysis
-source(paste(dd, "analytics.R", sep = "/"))
-
-# active learning
-source(paste(dd, "Active_Learning.R", sep = "/"))
-
-# Test hypothesis 1.1
-source('h1.1.R')
+#Set default number of iterations for Bayesian estimation
+nIter = 10000

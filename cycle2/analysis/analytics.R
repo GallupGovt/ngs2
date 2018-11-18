@@ -20,7 +20,7 @@ bayesGlmer<-function(formula, priors) {
                            family = binomial(link = "logit"),
                            prior = priors,
                            prior_intercept = weak_prior,
-                           chains = 3, iter = 1000,
+                           chains = 3, iter = nIter,
                            diagnostic_file = "df1.csv")
   return(fittedGlmer)
 }

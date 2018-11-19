@@ -11,6 +11,8 @@ factorial<-data.frame(lapply(factorial, factor))
 
 # Number of valid games
 nGames<-length(unique(factorial$matchid))
+groups<- factorial[!duplicated(factorial$matchid),]
+replays<-table(groups$consumableKey)
 
 # Number of players connected
 factorial$nConnected<-as.numeric(levels(factorial$nConnected))[factorial$nConnected]

@@ -62,7 +62,7 @@ nCoef<-lengths(dimnames(glmmoverall$covmat)[1])
 
 posterior <- as.array(glmmoverall)
 posteriorAreas <- mcmc_areas(posterior, pars = c("h1.11","h1.12","h1.13","h1.31","h1.32",
-                               "h2.11","h3.11","h3.21","h3.31","h3.32","h3.33",
+                               "h2.11","h3.11","h3.21","h3.32","h3.33","h3.34",
                                "h3.41","h3.51","h3.52","tools2","tools3","tools4",
                                "tools5","tools6","tools7","tools8"), 
            prob = 0.8, # 80% intervals

@@ -45,7 +45,8 @@ main.formula <- innovation~h1.1+h1.3+h2.1+h3.1+h3.2+h3.3+h3.4+h3.5+tools+(1|matc
 weak_prior <- cauchy(0, 2.5)
 
 bayesGlmer<-function(formula, priors) {
-  fittedGlmer<- stan_glmer(formula,
+    set.seed(12345)
+    fittedGlmer<- stan_glmer(formula,
                            data=factorial,
                            family = binomial(link = "logit"),
                            prior = priors,

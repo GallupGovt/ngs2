@@ -43,13 +43,17 @@ glmm1.1.alt<- bayesGlmer(main.formula, alt_prior)
 # Estimate marginal log likelihood of Prediction 3 given data via bridge_sampler
 bridge_1.1.alt <- bridge_sampler(glmm1.1.alt)
 
-# Estimate Bayes Factors for the comparison of prediction 1 over prediction 3 
+# Estimate Bayes Factors for the comparison of prediction 1 over prediction 3
 testalt<-bf(bridge_1.1.test, bridge_1.1.alt)
 testaltBF<-testalt$bf
 
 # Estimate Bayes Factors for the comparison of prediction 2 over prediction 3 
 testalt2<-bf(bridge_1.1.null, bridge_1.1.alt)
 testalt2BF<-testalt2$bf
+
+# Estimate Bayes Factors for the comparison of prediction 3 over prediction 2 (Null)
+testnull2<-bf(bridge_1.1.alt, bridge_1.1.null)
+testnull2BF<-testnull2$bf
 
 # Plot the "test" vs. "null" BF
 plotIters<-nIter*1.5

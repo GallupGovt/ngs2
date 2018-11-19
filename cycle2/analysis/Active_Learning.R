@@ -1,27 +1,26 @@
 ## Created by John Paisley and Ghazal Fazelnia, Columbia University, in October 2018
-
 ## Generate all of the possible combinations of variables, we call that test.data
 
-test.data1 <- expand.grid(h1.1=1, 
+test.data1 <- expand.grid(h1.1=0, 
                           h2.1=c(0,1), 
                           h3.1=c(0,1), 
                           h3.2=c(0,1), 
                           h3.3=9,
                           h3.4=c(0,1),
                           h3.5 = c(0,1,2),
-                          tools = seq(1:11))
+                          tools = seq(1:8))
 
-test.data2 <- expand.grid(h1.1=c(2, 3, 4), 
+test.data2 <- expand.grid(h1.1=c(1, 2, 3), 
                           h2.1=c(0,1), 
                           h3.1=c(0,1), 
                           h3.2=c(0,1), 
-                          h3.3=seq(1:4), 
+                          h3.3=seq(0:3), 
                           h3.4=c(0,1),
                           h3.5 = c(0,1,2),
-                          tools = seq(1:11))
+                          tools = seq(1:8))
 test.data<-rbind(test.data1, test.data2)
 
-test.data$matchid <- rep(seq(1:(208)),33) # we set all group values to be the same so it would not have any effects
+test.data$settingsNum <- rep(seq(1:(208)),24) # we set all matchid values to be the same so it would not have any effects
 
 test.data$h1.3<-0
 
@@ -31,10 +30,8 @@ levels(test.data$h1.1) <- levels(factorial$h1.1)
 levels(test.data$h3.3) <- levels(factorial$h3.3)
 levels(test.data$tools) <- levels(factorial$tools)
 # 4*2*2*2*5*2*3
-
-levels(test.data$group) <- levels(factorial$group)
-
-test.data$group = test.data$group[1]
+sum(table(factorial$h1.1))
+test.data$matchid = 1
 
 ##### Now we are ready to run active learning process:
 ################################################################################
@@ -46,15 +43,14 @@ x = test.data
 ppdx = posterior_linpred(glmmoverall,newdata = x,transform = TRUE)[1:S,]
 
 prob = (1/S * colSums(ppdx))*(1-1/S * colSums(ppdx))
-
+plot(prob)
 rank.var <- order(prob,decreasing = TRUE)
-
 x.ranked.var = x[rank.var,]
 
-## Group assignments:
+## matchid assignments:
 
 print("here are the top 20 suggestions based on the first active learning process")
-print(x.ranked.var[1:20,1:8])
+print(x.ranked.var[1:20,1:9])
 
 ################################################################################
 ## Active Learning Criterion Number 2: Choosing based on entropy of posterior
@@ -75,4 +71,4 @@ rank.post.entropy <- order(post.entropy,decreasing = FALSE)
 x.ranked.post.entropy = x[rank.post.entropy,]
 
 print("here are the top 20 suggestions based on the second active learning process")
-print(x.ranked.post.entropy[1:20,1:8])
+print(x.ranked.post.entropy[1:20,1:9])

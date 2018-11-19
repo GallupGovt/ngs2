@@ -227,6 +227,12 @@ gamesList <- lapply(gamesList, function(x) {
 
 gamesData <- as.data.frame(matrix(unlist(gamesList), nrow = sum(unlist(nRounds))))
 colnames(gamesData) <- gamedata_names
+              
+# Recode h3.3 to 9 if h1.1 = 0. 
+
+gamesData$h3.3<-as.numeric(gamesData$h3.3)
+gamesData$h3.3[gamesData$h1.1==0] <- 9
+gamesData$h3.3<-as.factor(gamesData$h3.3)
 
 # Load metadata
 # Downloads automatically when visting this URL https://volunteerscience.com/gallup/boomtown_metadata/

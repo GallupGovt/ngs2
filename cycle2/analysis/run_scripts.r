@@ -21,6 +21,10 @@ h1.1 <- getURL(paste(githubRepo, "h1.1.R", sep = "/"), ssl.verifypeer = FALSE)
  fileConn<-file("h1.1.R")
  writeLines(h1.1, fileConn)
  close(fileConn)
+h1.2 <- getURL(paste(githubRepo, "h1.2.R", sep = "/"), ssl.verifypeer = FALSE)
+ fileConn<-file("h1.2.R")
+ writeLines(h1.2, fileConn)
+ close(fileConn)
 
 # Set environment
 rm(list = ls(all = TRUE))

@@ -43,7 +43,6 @@ x = test.data
 ppdx = posterior_linpred(glmmoverall,newdata = x,transform = TRUE)[1:S,]
 
 prob = (1/S * colSums(ppdx))*(1-1/S * colSums(ppdx))
-plot(prob)
 rank.var <- order(prob,decreasing = TRUE)
 x.ranked.var = x[rank.var,]
 

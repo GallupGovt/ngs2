@@ -1,30 +1,5 @@
-
-# Download scripts
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
-effects <- getURL(paste(githubRepo, "effects.R", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("effects.R")
- writeLines(effects, fileConn)
- close(fileConn)
-wrangle <- getURL(paste(githubRepo, "wrangle.R", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("wrangle.R")
- writeLines(wrangle, fileConn)
- close(fileConn)
-analytics <- getURL(paste(githubRepo, "analytics.R", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("analytics.R")
- writeLines(analytics, fileConn)
- close(fileConn)
-AL <- getURL(paste(githubRepo, "Active_Learning.R", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("Active_Learning.R")
- writeLines(AL, fileConn)
- close(fileConn)
-h1.1 <- getURL(paste(githubRepo, "h1.1.R", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("h1.1.R")
- writeLines(h1.1, fileConn)
- close(fileConn)
-h1.2 <- getURL(paste(githubRepo, "h1.2.R", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("h1.2.R")
- writeLines(h1.2, fileConn)
- close(fileConn)
+## Created by Pablo Diego-Rosell, PhD, for Gallup inc.
+## For any questions, contact pablo_diego-rosell@gallup.co.uk
 
 # Set environment
 rm(list = ls(all = TRUE))

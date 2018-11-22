@@ -16,8 +16,8 @@ if(Sys.info()['sysname'] == "Windows") {
         dd <- 'C:/Users/c_pablo_diego-rosell/Desktop/Projects/DARPA/Cycle 2/Analytics/data'
         od <- 'C:/Users/c_pablo_diego-rosell/Desktop/Projects/DARPA/Cycle 2/Analytics/output'
     } else {
-        dd <- 'W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/data'
-        od <- 'W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/output'
+        dd <- '//gallup/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/data'
+        od <- '//gallup/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/output'
     }
 } else if(Sys.info()['sysname'] == 'Darwin') {
     if(LOCAL) {

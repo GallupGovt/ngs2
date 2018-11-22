@@ -8,6 +8,7 @@ if('gamesData.csv' %in% list.files(paste(od, sep = '/'))) {
     stop('WARNING - Metadata is missing; download by hand and merge to continue.')
 }
 factorial<-data.frame(lapply(factorial, factor))
+factorial$round<-as.numeric(factorial$round)
 
 # Number of valid games
 nGames<-length(unique(factorial$matchid))

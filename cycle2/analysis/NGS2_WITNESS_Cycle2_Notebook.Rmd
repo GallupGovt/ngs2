@@ -17,16 +17,19 @@ output:
 ```{r setup, include=FALSE}
 rm(list = ls(all = TRUE))
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
-start.time=Sys.time()
 ```
 ```{r get_scripts, include=F}
 if (!require("RCurl")) install.packages("RCurl")
 library ("RCurl")
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+  }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
-script <- getURL(paste(githubRepo, "run_scripts.r", sep = "/"), ssl.verifypeer = FALSE)
- fileConn<-file("run_scripts.r")
- writeLines(script, fileConn)
- close(fileConn)
+scriptNames <- c("effects.R", "wrangle.R", "analytics.R", "Active_Learning.R", "h1.1.R", "h1.2.R")
+lapply(scriptNames, dlScripts)
 ```
 
 ```{r run_scripts, include=F}

@@ -59,6 +59,69 @@ bayesGlmer<-function(formula, priors) {
   return(fittedGlmer)
 }
 
+# Bayesian plotting function
+
+bayesPlotter <- function (plotdf, plotBF) {
+frame.posterior<-subset(plotdf, Distribution=="Posterior")
+postPlot<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
+  geom_density(alpha=0.4) + 
+  scale_x_continuous(limits = c(-5, 5)) + 
+  scale_y_continuous(limits = c(0, 2))
+bfPlot<-ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
+  geom_density(alpha=0.4) + 
+  scale_x_continuous(limits = c(-5, 5)) + 
+  scale_y_continuous(limits = c(0, 2)) +
+  annotate("text", x=2, y=1.7, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
+  geom_vline(xintercept = 0, linetype="dashed")
+return(list(postPlot, bfPlot))
+}
+
+# Bayesian plotting - frame processing function (Predictions with two coefficients)
+
+bayesPlotter2 <- function (model, priors1, priors2, priorScale, coef1, coef2, plotBF) {
+  plotIters<-nIter*1.5  
+  draws <- as.data.frame(model)
+  a <- rcauchy(plotIters, location=logodds[[priors1]], scale=priorScale)
+  b <- rcauchy(plotIters, location=logodds[[priors2]], scale=priorScale)
+  d <- draws[[coef1]]
+  e <- draws[[coef2]]
+  plotdf <- data.frame(value=c(a, b, d, e), 
+                      Distribution=c(rep("Prior", plotIters*2),
+                                     rep("Posterior", plotIters*2)), 
+                      Level=c(rep(priors1, plotIters),
+                              rep(priors2, plotIters),
+                              rep(priors1, plotIters),
+                              rep(priors2, plotIters)))
+  plots<-bayesPlotter(plotdf, plotBF)
+  return(plots)
+}
+
+# Bayesian plotting - frame processing function (Predictions with three coefficients)
+
+bayesPlotter3 <- function (model, priors1, priors2, priors3, priorScale, coef1, coef2, coef3, plotBF) {
+  plotIters<-nIter*1.5  
+  draws <- as.data.frame(model)
+  a <- rcauchy(plotIters, location=logodds[[priors1]], scale=priorScale)
+  b <- rcauchy(plotIters, location=logodds[[priors2]], scale=priorScale)
+  c <- rcauchy(plotIters, location=logodds[[priors3]], scale=priorScale)
+  d <- draws[[coef1]]
+  e <- draws[[coef2]]
+  f <- draws[[coef3]]
+  frame <- data.frame(value=c(a, b, c, d, e, f), 
+                      Distribution=c(rep("Prior", plotIters*3),
+                                     rep("Posterior", plotIters*3)), 
+                      Level=c(rep(priors1, plotIters),
+                              rep(priors2, plotIters),
+                              rep(priors3, plotIters), 
+                              rep(priors1, plotIters),
+                              rep(priors2, plotIters),
+                              rep(priors3, plotIters)))
+  plots<-bayesPlotter(plotdf, plotBF)
+  return(plots)
+}
+
+# Overall glmm for main effects in full-factorial space
+
 glmmoverall <- bayesGlmer(main.formula, weak_prior)
 glmmoverall
 nCoef<-lengths(dimnames(glmmoverall$covmat)[1])

@@ -54,36 +54,3 @@ testalt2BF<-testalt2$bf
 # Estimate Bayes Factors for the comparison of prediction 3 over prediction 2 (Null)
 testnull2<-bf(bridge_1.1.alt, bridge_1.1.null)
 testnull2BF<-testnull2$bf
-
-# Plot the "test" vs. "null" BF
-plotIters<-nIter*1.5
-draws <- as.data.frame(glmm1.1.test)
-a <- rcauchy(plotIters, location=logodds$h1.1.locomp, scale=test.SD)
-b <- rcauchy(plotIters, location=logodds$h1.1.medcomp, scale=test.SD)
-c <- rcauchy(plotIters, location=logodds$h1.1.hicomp, scale=test.SD)
-d <- draws$h1.11
-e <- draws$h1.12
-f <- draws$h1.13
-frame <- data.frame(value=c(a, b, c, d, e, f), 
-                    Distribution=c(rep("Prior", plotIters*3),
-                            rep("Posterior", plotIters*3)), 
-                    Level=c(rep("Lo Comp", plotIters),
-                               rep("Med Comp", plotIters),
-                               rep("Hi Comp", plotIters), 
-                               rep("Lo Comp", plotIters),
-                               rep("Med Comp", plotIters),
-                               rep("Hi Comp", plotIters)))
-
-frame.posterior<-subset(frame, Distribution=="Posterior")
-
-h1.1.post<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
-  geom_density(alpha=0.4) + 
-  scale_x_continuous(limits = c(-5, 5)) + 
-  scale_y_continuous(limits = c(0, 2))
-
-h1.1.prior<-ggplot(frame, aes(value, fill=Level, linetype=Distribution)) + 
-  geom_density(alpha=0.4) + 
-  scale_x_continuous(limits = c(-5, 5)) + 
-  scale_y_continuous(limits = c(0, 2)) +
-  annotate("text", x=2, y=1.7, label = paste("H1.1.1 vs. H1.1.2 (null) BF = ", sprintf("%0.2f", testnullBF))) +
-  geom_vline(xintercept = 0, linetype="dashed")

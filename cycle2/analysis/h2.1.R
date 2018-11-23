@@ -60,8 +60,8 @@ alt1null.2.1<-bf(bridge_2.1.alt1, bridge_2.1.null)$bf
 
 # Store BFs
 
-BFs1.1 <- data.frame(2.1, testalt1.2.1, NA, NA, testnull.2.1, alt1null.2.1, NA)
-colnames(BFs) <- c("Hypothesis", 
+BFs2.1 <- data.frame(2.1, testalt1.2.1, NA, NA, testnull.2.1, alt1null.2.1, NA)
+colnames(BFs2.1) <- c("Hypothesis", 
                    "Prediction 1 vs. Prediction 2", 
                    "Prediction 1 vs. Prediction 3", 
                    "Prediction 2 vs. Prediction 3", 

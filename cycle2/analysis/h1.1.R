@@ -54,3 +54,14 @@ testalt2BF<-testalt2$bf
 # Estimate Bayes Factors for the comparison of prediction 3 over prediction 2 (Null)
 testnull2<-bf(bridge_1.1.alt, bridge_1.1.null)
 testnull2BF<-testnull2$bf
+
+BFs1.1 <- data.frame(1.1, testnullBF, testaltBF, testalt2BF, testnullBF, c(NA), testnull2BF)
+colnames(BFs) <- c("Hypothesis", 
+                   "Prediction 1 vs. Prediction 2", 
+                   "Prediction 1 vs. Prediction 3", 
+                   "Prediction 2 vs. Prediction 3", 
+                   "Prediction 1 vs. Null", 
+                   "Prediction 2 vs. Null", 
+                   "Prediction 3 vs. Null")
+
+

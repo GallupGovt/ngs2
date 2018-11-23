@@ -56,7 +56,7 @@ testnull2<-bf(bridge_1.1.alt, bridge_1.1.null)
 testnull2BF<-testnull2$bf
 
 BFs1.1 <- data.frame(1.1, testnullBF, testaltBF, testalt2BF, testnullBF, c(NA), testnull2BF)
-colnames(BFs) <- c("Hypothesis", 
+colnames(BFs1.1) <- c("Hypothesis", 
                    "Prediction 1 vs. Prediction 2", 
                    "Prediction 1 vs. Prediction 3", 
                    "Prediction 2 vs. Prediction 3", 

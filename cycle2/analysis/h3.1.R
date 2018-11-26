@@ -37,7 +37,7 @@ coefficients.h3.1alt <- stan_glmer(h3.1alt.formula, data=factorial, family = bin
 ndim.3.1alt <- length(coefficients.h3.1alt$prior.info$prior$location)
 
 h3.1.alt1 <- cauchy(location = c(rep(0,ndim.3.1alt-1), log.odds.medium), 
-                    scale = c(rep(2.5,ndim.3.1-1), test.SD), autoscale = FALSE)
+                    scale = c(rep(2.5,ndim.3.1alt-1), test.SD), autoscale = FALSE)
 
 # Estimate and save all models
 

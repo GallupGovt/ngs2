@@ -1,0 +1,58 @@
+## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2018
+## For any questions, contact pablo_diego-rosell@gallup.co.uk
+
+# Test of Hypothesis 3.1 and all associated predictions
+# Manually set priors for all h3.1. predictions
+
+ndim.3.1 <- nCoef-8
+# Assume SD = half of a small effect
+
+test.SD<-log.odds.medium/2
+
+# Null hypothesis: Leader tolerance of ambiguity does not affect matchid motivation to innovate.
+
+h3.1.null <- cauchy(location = 0, 
+                    scale = c(rep(2.5,6), test.SD, rep(2.5,ndim.3.1)), autoscale = FALSE)
+
+# Test hypothesis: Average levels of tolerance of ambiguity in a group will increase motivation to innovate.
+
+
+h3.1.test <- cauchy(location = c(rep(0,6), log.odds.medium, rep(0,ndim.3.1)), 
+                    scale = c(rep(2.5,6), test.SD, rep(2.5,ndim.3.1)), autoscale = FALSE)
+
+# Alternative hypothesis: Average levels of tolerance of ambiguity in a group will decrease motivation to innovate for complex innovations
+# TA interacts with tool complexity (new formula required)
+
+factorial$complex <- 0
+factorial$complex[factorial$tools==5 | factorial$tools==6 | factorial$tools==7 | factorial$tools==8]<-1
+
+h3.1alt.formula <- innovation~h1.1+h1.3+h2.1+h3.1*complex+h3.2+
+  h3.3+h3.4+h3.5+tools+(1|matchid)
+
+coefficients.h3.1alt <- stan_glmer(h3.1alt.formula, data=factorial, family = binomial(link = "logit"), 
+                                   chains = 1, iter = 100)
+
+# Identify location of relevant coefficients for alternative formula
+
+ndim.3.1alt <- length(coefficients.h3.1alt$prior.info$prior$location)
+
+h3.1.alt1 <- cauchy(location = c(rep(0,ndim.3.1alt-1), log.odds.medium), 
+                    scale = c(rep(2.5,ndim.3.1-1), test.SD), autoscale = FALSE)
+
+# Estimate and save all models
+
+glmm3.1.test <- bayesGlmer(main.formula, h3.1.test)
+glmm3.1.null <- bayesGlmer(main.formula, h3.1.null)
+glmm3.1.alt1 <- bayesGlmer(h3.1alt.formula, h3.1.alt1)
+
+# Estimate marginal likelihood
+
+bridge_3.1.null <- bridge_sampler(glmm3.1.null)
+bridge_3.1.test <- bridge_sampler(glmm3.1.test)
+bridge_3.1.alt1 <- bridge_sampler(glmm3.1.alt1)
+
+# Calculate BFs for all comparisons
+
+testalt1.3.1<-bf(bridge_3.1.test, bridge_3.1.alt1)$bf
+testnull.3.1<-bf(bridge_3.1.test, bridge_3.1.null)$bf
+alt1null.3.1<-bf(bridge_3.1.alt1, bridge_3.1.null)$bf

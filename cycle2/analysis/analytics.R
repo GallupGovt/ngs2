@@ -66,17 +66,31 @@ frame.posterior<-subset(plotdf, Distribution=="Posterior")
 postPlot<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
-  scale_y_continuous(limits = c(0, 2))
+  scale_y_continuous(limits = c(0, 15))
 bfPlot<-ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
-  scale_y_continuous(limits = c(0, 2)) +
+  scale_y_continuous(limits = c(0, 15)) +
   annotate("text", x=2, y=1.7, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
   geom_vline(xintercept = 0, linetype="dashed")
 return(list(postPlot, bfPlot))
 }
 
 # Bayesian plotting - frame processing function (Predictions with two coefficients)
+
+bayesPlotter1 <- function (model, priors1, priorScale, coef1, plotBF) {
+  plotIters<-nIter*1.5  
+  draws <- as.data.frame(model)
+  a <- rcauchy(plotIters, location=logodds[[priors1]], scale=priorScale)
+  d <- draws[[coef1]]
+  plotdf <- data.frame(value=c(a, d), 
+                       Distribution=c(rep("Prior", plotIters),
+                                      rep("Posterior", plotIters)), 
+                       Level=c(rep(priors1, plotIters), 
+                               rep(priors1, plotIters)))
+  plots<-bayesPlotter(plotdf, plotBF)
+  return(plots)
+}
 
 bayesPlotter2 <- function (model, priors1, priors2, priorScale, coef1, coef2, plotBF) {
   plotIters<-nIter*1.5  

@@ -56,3 +56,15 @@ bridge_3.1.alt1 <- bridge_sampler(glmm3.1.alt1)
 testalt1.3.1<-bf(bridge_3.1.test, bridge_3.1.alt1)$bf
 testnull.3.1<-bf(bridge_3.1.test, bridge_3.1.null)$bf
 alt1null.3.1<-bf(bridge_3.1.alt1, bridge_3.1.null)$bf
+
+# Store BFs
+
+BFs3.1 <- data.frame(3.1, testalt1.3.1, NA, NA, testnull.3.1, alt1null.3.1, NA)
+colnames(BFs) <- c("Hypothesis", 
+                   "Prediction 1 vs. Prediction 2", 
+                   "Prediction 1 vs. Prediction 3", 
+                   "Prediction 2 vs. Prediction 3", 
+                   "Prediction 1 vs. Null", 
+                   "Prediction 2 vs. Null", 
+                   "Prediction 3 vs. Null")
+

@@ -24,29 +24,29 @@ ndim.1.2 <- length(coefficients$prior.info$prior$location)
 # set dimension placeholder
 
 # Manually set priors for all h1.2. predictions
-# Assume SD = half of a large effect
+# Assume SD = one third of a large effect
 
-test.SD<-log.odds.large/2
-test.SDinter<-(log.odds.large*log.odds.large)/2
+test.SD<-log.odds.large/3
+test.SDinter<-(log.odds.large*log.odds.large)/3
 
 # Null hypothesis: Competition levels and prospects have 0 effect on risk-seeking behavior 
 
-h1.2.null <- cauchy(location = rep(0,ndim.1.2), 
+h1.2.null <- normal(location = rep(0,ndim.1.2), 
                     scale = c(0.01,0.01,rep(2.5,ndim.1.2-3), 0.01), autoscale = FALSE)
 
 # Test hypothesis: Groups will be more risk-seeking in a competitive environment than in a non-competitive environment.  
 
-h1.2.test <- cauchy(location = c(0, log.odds.large, rep(0,ndim.1.2-3), log.odds.large), 
+h1.2.test <- normal(location = c(0, log.odds.large, rep(0,ndim.1.2-3), log.odds.large), 
                     scale = c(test.SD,test.SD,rep(2.5,ndim.1.2-3), test.SDinter), autoscale = FALSE)
 
 # Alt hypothesis 1: Groups will be equally risk-seeking, irrespective of competition levels. 
 
-h1.2.alt1 <- cauchy(location = c(0, log.odds.large, rep(0,ndim.1.2-3), 0), 
+h1.2.alt1 <- normal(location = c(0, log.odds.large, rep(0,ndim.1.2-3), 0), 
                     scale = c(test.SD,test.SD,rep(2.5,ndim.1.2-3), test.SDinter), autoscale = FALSE)
 
 # Alt hypothesis 2: Group motivation to innovate will increase linearly with the expected value of the innovation, irrespective of competition levels.
 
-h1.2.alt2 <- cauchy(location = c(0, 0, rep(0,ndim.1.2-3), 0), 
+h1.2.alt2 <- normal(location = c(0, 0, rep(0,ndim.1.2-3), 0), 
                     scale = c(test.SD,test.SD,rep(2.5,ndim.1.2-3), test.SDinter), autoscale = FALSE)
 
 # Estimate and save all models

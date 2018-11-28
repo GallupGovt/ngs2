@@ -51,10 +51,21 @@ h1.2.alt2 <- normal(location = c(0, 0, rep(0,ndim.1.2-3), 0),
 
 # Estimate and save all models
 
-glmm1.2.null<- bayesGlmer(formula.h1.2, h1.2.null)
-glmm1.2.test<- bayesGlmer(formula.h1.2, h1.2.test)
-glmm1.2.alt1<- bayesGlmer(formula.h1.2, h1.2.alt1)
-glmm1.2.alt2<- bayesGlmer(formula.h1.2, h1.2.alt2)
+glmm1.2.null<- stan_glmer(formula.h1.2, factorial, binomial(link = "logit"),
+                          prior = h1.2.null, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm1.2.null.csv")
+
+glmm1.2.test<- stan_glmer(formula.h1.2, factorial, binomial(link = "logit"),
+                          prior = h1.2.test, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm1.2.test.csv")
+
+glmm1.2.alt1<- stan_glmer(formula.h1.2, factorial, binomial(link = "logit"),
+                          prior = h1.2.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm1.2.alt1.csv")
+
+glmm1.2.alt2<- stan_glmer(formula.h1.2, factorial, binomial(link = "logit"),
+                          prior = h1.2.alt2, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm1.2.alt2.csv")
 
 # Estimate marginal likelihood
 

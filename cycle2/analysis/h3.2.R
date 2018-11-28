@@ -7,17 +7,17 @@
 ndim.3.2 <- nCoef-9
 # Assume SD = half of a small effect
 
-test.SD<-log.odds.large/2
+test.SD<-log.odds.large/3
 
 # Null hypothesis: Leader tolerance of ambiguity does not affect matchid motivation to innovate.
 
-h3.2.null <- cauchy(location = 0, 
+h3.2.null <- normal(location = 0, 
                     scale = c(rep(2.5,7), test.SD, rep(2.5,ndim.3.2)), autoscale = FALSE)
 
 # Test hypothesis: Average levels of tolerance of ambiguity in a group will increase motivation to innovate.
 
 
-h3.2.test <- cauchy(location = c(rep(0,7), log.odds.large, rep(0,ndim.3.2)), 
+h3.2.test <- normal(location = c(rep(0,7), log.odds.large, rep(0,ndim.3.2)), 
                     scale = c(rep(2.5,7), test.SD, rep(2.5,ndim.3.2)), autoscale = FALSE)
 
 # Alternative hypothesis: Groups with leaders high in TA will be less willing to innovate as the game progresses.
@@ -35,14 +35,22 @@ coefficients.h3.2alt <- stan_glmer(h3.2alt.formula, data=factorial, family = bin
 
 ndim.3.2alt <- length(coefficients.h3.2alt$prior.info$prior$location)
 
-h3.2.alt1 <- cauchy(location = c(rep(0,ndim.3.2alt-1), log.odds.large), 
+h3.2.alt1 <- normal(location = c(rep(0,ndim.3.2alt-1), log.odds.large), 
                     scale = c(rep(2.5,ndim.3.2-1), test.SD), autoscale = FALSE)
 
 # Estimate and save all models
 
-glmm3.2.test <- bayesGlmer(main.formula, h3.2.test)
-glmm3.2.null <- bayesGlmer(main.formula, h3.2.null)
-glmm3.2.alt1 <- bayesGlmer(h3.2alt.formula, h3.2.alt1)
+glmm3.2.test<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.2.test, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.2.test.csv")
+
+glmm3.2.null<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.2.null, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.2.null.csv")
+
+glmm3.2.alt1<- stan_glmer(h3.2alt.formula, factorial, binomial(link = "logit"),
+                          prior = h3.2.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.2.alt1.csv")
 
 # Estimate marginal likelihood
 

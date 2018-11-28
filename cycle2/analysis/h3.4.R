@@ -5,8 +5,7 @@
 # Manually set priors for all h3.4. predictions
 # Assume SD = half of a medium effect
 
-test.SD<-log.odds.large/2
-nCoef
+test.SD<-log.odds.large/3
 
 # Preliminary analysis: 
 # We anticipate that groups assigned to the low competition condition will develop high Collective Efficacy (CE), 
@@ -59,7 +58,7 @@ ndim.3.4<-length(h3.4.coef$prior.info$prior$location)
 
 # Null hypothesis: Collective Efficacy will not affect willingness to innovate
 
-h3.4.null <- cauchy(location = rep(0, ndim.3.4),
+h3.4.null <- normal(location = rep(0, ndim.3.4),
                     scale = c(rep(test.SD, 4), 
                               rep(2.5,ndim.3.4-7), 
                               rep(test.SD, 3)), 
@@ -67,7 +66,7 @@ h3.4.null <- cauchy(location = rep(0, ndim.3.4),
 
 # Test hypothesis: Groups with high collective efficacy will be more willing to innovate.
 
-h3.4.test <- cauchy(location = c(1.45, 0, -1.45, 0,
+h3.4.test <- normal(location = c(1.45, 0, -1.45, 0,
                                  rep(0,ndim.3.4-4)),
                     scale = c(rep(test.SD, 4), 
                               rep(2.5,ndim.3.4-7), 
@@ -77,7 +76,7 @@ h3.4.test <- cauchy(location = c(1.45, 0, -1.45, 0,
 # Alternative hypothesis: Groups with transformative leaders who foster high collective self-efficacy will be more willing to innovate
 # Competition interacts with leadership style (new formula required)
 
-h3.4.alt1 <- cauchy(location = c(1.45, 0, -1.45, 0,
+h3.4.alt1 <- normal(location = c(1.45, 0, -1.45, 0,
                                  rep(0,ndim.3.4-7),
                                  1.45, 0, 0),
                     scale = c(rep(test.SD, 4), 
@@ -87,9 +86,17 @@ h3.4.alt1 <- cauchy(location = c(1.45, 0, -1.45, 0,
 
 # Estimate and save all models
 
-glmm3.4.null <- bayesGlmer(h3.4.formula, h3.4.null)
-glmm3.4.test <- bayesGlmer(h3.4.formula, h3.4.test)
-glmm3.4.alt1 <- bayesGlmer(h3.4.formula, h3.4.alt1)
+glmm3.4.null<- stan_glmer(h3.4.formula, factorial, binomial(link = "logit"),
+                          prior = h3.4.null, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.4.null.csv")
+
+glmm3.4.test<- stan_glmer(h3.4.formula, factorial, binomial(link = "logit"),
+                          prior = h3.4.test, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.4.test.csv")
+
+glmm3.4.alt1<- stan_glmer(h3.4.formula, factorial, binomial(link = "logit"),
+                          prior = h3.4.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.4.alt1.csv")
 
 # Estimate marginal likelihood
 

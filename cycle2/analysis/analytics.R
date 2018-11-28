@@ -90,7 +90,7 @@ return(list(postPlot, bfPlot))
 bayesPlotter1 <- function (model, priors1, priorScale, coef1, plotBF) {
   plotIters<-nIter*1.5  
   draws <- as.data.frame(model)
-  a <- rcauchy(plotIters, location=logodds[[priors1]], scale=priorScale)
+  a <- rnormal(plotIters, mean=logodds[[priors1]], sd=priorScale)
   d <- draws[[coef1]]
   plotdf <- data.frame(value=c(a, d), 
                        Distribution=c(rep("Prior", plotIters),
@@ -104,8 +104,8 @@ bayesPlotter1 <- function (model, priors1, priorScale, coef1, plotBF) {
 bayesPlotter2 <- function (model, priors1, priors2, priorScale, coef1, coef2, plotBF) {
   plotIters<-nIter*1.5  
   draws <- as.data.frame(model)
-  a <- rcauchy(plotIters, location=logodds[[priors1]], scale=priorScale)
-  b <- rcauchy(plotIters, location=logodds[[priors2]], scale=priorScale)
+  a <- rnormal(plotIters, mean=logodds[[priors1]], sd=priorScale)
+  b <- rnormal(plotIters, mean=logodds[[priors2]], sd=priorScale)
   d <- draws[[coef1]]
   e <- draws[[coef2]]
   plotdf <- data.frame(value=c(a, b, d, e), 
@@ -124,9 +124,9 @@ bayesPlotter2 <- function (model, priors1, priors2, priorScale, coef1, coef2, pl
 bayesPlotter3 <- function (model, priors1, priors2, priors3, priorScale, coef1, coef2, coef3, plotBF) {
   plotIters<-nIter*1.5  
   draws <- as.data.frame(model)
-  a <- rcauchy(plotIters, location=logodds[[priors1]], scale=priorScale)
-  b <- rcauchy(plotIters, location=logodds[[priors2]], scale=priorScale)
-  c <- rcauchy(plotIters, location=logodds[[priors3]], scale=priorScale)
+  a <- rnormal(plotIters, mean=logodds[[priors1]], sd=priorScale)
+  b <- rnormal(plotIters, mean=logodds[[priors2]], sd=priorScale)
+  c <- rnormal(plotIters, mean=logodds[[priors3]], sd=priorScale)
   d <- draws[[coef1]]
   e <- draws[[coef2]]
   f <- draws[[coef3]]

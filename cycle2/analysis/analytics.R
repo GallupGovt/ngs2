@@ -130,7 +130,7 @@ bayesPlotter3 <- function (model, priors1, priors2, priors3, priorScale, coef1, 
   d <- draws[[coef1]]
   e <- draws[[coef2]]
   f <- draws[[coef3]]
-  frame <- data.frame(value=c(a, b, c, d, e, f), 
+  plotdf <- data.frame(value=c(a, b, c, d, e, f), 
                       Distribution=c(rep("Prior", plotIters*3),
                                      rep("Posterior", plotIters*3)), 
                       Level=c(rep(priors1, plotIters),

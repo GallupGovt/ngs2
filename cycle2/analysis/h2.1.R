@@ -8,16 +8,16 @@ ndim.2.1 <- nCoef-7
 
 # Assume SD = half of a small effect
 
-test.SD<-log.odds.small/2
+test.SD<-log.odds.small/3
 
 # Null hypothesis: Exogenous uncertainty (ignorance) does not affect matchid motivation to innovate.
 
-h2.1.null <- cauchy(location = 0, 
+h2.1.null <- normal(location = 0, 
                     scale = c(rep(2.5,5), test.SD, rep(2.5,ndim.2.1)), autoscale = FALSE)
 
 # Test hypothesis: Increased exogenous uncertainty (ignorance) will enhance group motivation to innovate. 
 
-h2.1.test <- cauchy(location = c(rep(0,5), log.odds.small, rep(0,ndim.2.1)), 
+h2.1.test <- normal(location = c(rep(0,5), log.odds.small, rep(0,ndim.2.1)), 
                     scale = c(rep(2.5,5), test.SD, rep(2.5,ndim.2.1)), autoscale = FALSE)
 
 # Alternative hypothesis: Exogenous uncertainty (ignorance) will decrease motivation to innovate in the early stages of the game.
@@ -37,14 +37,22 @@ ndim.2.1alt <- length(coefficients.h2.1alt$prior.info$prior$location)
 
 effect.alt2.1<- log(exp(log.odds.small^1/13))
 
-h2.1.alt1 <- cauchy(location = c(rep(0,ndim.2.1alt-1), effect.alt2.1), 
+h2.1.alt1 <- normal(location = c(rep(0,ndim.2.1alt-1), effect.alt2.1), 
                     scale = c(rep(2.5,ndim.2.1alt-1), effect.alt2.1/2), autoscale = FALSE)
 
 # Estimate and save all models
 
-glmm2.1.null<- bayesGlmer(main.formula, h2.1.null)
-glmm2.1.test<- bayesGlmer(main.formula, h2.1.test)
-glmm2.1.alt1<-bayesGlmer(h2.1alt.formula, h2.1.alt1)
+glmm2.1.null<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h2.1.null, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm2.1.null.csv")
+
+glmm2.1.test<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h2.1.test, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm2.1.test.csv")
+
+glmm2.1.alt1<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h2.1.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm2.1.alt1.csv")
 
 # Estimate marginal likelihood
 

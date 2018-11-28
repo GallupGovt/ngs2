@@ -45,7 +45,7 @@ write.csv(pendingConditions, paste(od, "pendingConditions.csv", sep = '/'))
 # Bayesian GLMM function
 
 main.formula <- innovation~h1.1+h1.3+h2.1+h3.1+h3.2+h3.3+h3.4+h3.5+tools+(1|matchid)
-weak_prior <- cauchy(0, 2.5)
+weak_prior <- normal(0, 2.5)
 
 bayesGlmer<-function(formula, priors) {
     set.seed(12345)

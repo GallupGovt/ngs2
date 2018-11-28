@@ -20,25 +20,30 @@ ndim.2.2<-length(h2.2.coef$prior.info$prior$location)
 # Manually set priors for all h2.2. predictions
 # Assume SD = half of a medium effect
 
-test.SD<-log.odds.large/2
+test.SD<-log.odds.large/3
 
 # Null hypothesis: Group willingness to innovate will increase linearly with the expected value of the innovation, irrespective of uncertainty.
 
-h2.2.null <- cauchy(location = rep(0, ndim.2.2),
+h2.2.null <- normal(location = rep(0, ndim.2.2),
                     scale = c(test.SD, 
                               rep(2.5,ndim.2.2-1)), 
                     autoscale = FALSE)
 
 # Test hypothesis: If groups are allowed to communicate, they will take greater risks. 
 
-h2.2.test <- cauchy(location = c(logodds$h2.2, rep(0, ndim.2.2-1)),
+h2.2.test <- normal(location = c(logodds$h2.2, rep(0, ndim.2.2-1)),
                     scale = c(test.SD, 
                               rep(2.5,ndim.2.2-1)), 
                     autoscale = FALSE)
 
 # Estimate and save all models
-glmm2.2.null <- bayesGlmer(h2.2.formula, h2.2.null)
-glmm2.2.test <- bayesGlmer(h2.2.formula, h2.2.test)
+glmm2.2.null<- stan_glmer(h2.2.formula, factorial, binomial(link = "logit"),
+                         prior = h2.2.null, prior_intercept = weak_prior,
+                         chains = 3, iter = nIter, diagnostic_file = "glmm2.2.null.csv")
+
+glmm2.2.test<- stan_glmer(h2.2.formula, factorial, binomial(link = "logit"),
+                         prior = h2.2.test, prior_intercept = weak_prior,
+                         chains = 3, iter = nIter, diagnostic_file = "glmm2.2.test.csv")
 
 # Estimate marginal likelihood
 

@@ -76,5 +76,3 @@ colnames(BFs3.5) <- c("Hypothesis",
                       "Prediction 3 vs. Null")
 
 modelPlotter(glmm3.5.null, overallIvs)
-modelPlotter(glmm3.5.test, overallIvs)
-modelPlotter(glmm3.5.alt1, overallIvs)

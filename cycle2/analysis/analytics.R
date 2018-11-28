@@ -49,13 +49,15 @@ weak_prior <- cauchy(0, 2.5)
 
 bayesGlmer<-function(formula, priors) {
     set.seed(12345)
+    pathdf<-file.path(tempdir(), 
+            paste(deparse(substitute(priors)),".csv", sep=""))
     fittedGlmer<- stan_glmer(formula,
                            data=factorial,
                            family = binomial(link = "logit"),
                            prior = priors,
                            prior_intercept = weak_prior,
                            chains = 3, iter = nIter,
-                           diagnostic_file = "df1.csv")
+                           diagnostic_file = eval(pathdf))
   return(fittedGlmer)
 }
 

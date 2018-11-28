@@ -3,12 +3,12 @@
 
 # Set SD of predicted effect size to half of the predicted effect size (log.odds.large/2)
 # Reflecting directional certainty (positive effect), but wide uncertainty on true effect size
-test.SD<-log.odds.large/2
+test.SD<-log.odds.large/3
 nCoef1.1<-nCoef-4
 
 # Prediction 1
 # Set priors according to prediction 1: No comp (ref), Lo comp (-1.45), Med comp (1.45), Hi comp (-1.45)
-h1.1.test <- cauchy(location = c(logodds$h1.1.locomp,logodds$h1.1.medcomp,logodds$h1.1.hicomp,rep(0,nCoef1.1)), 
+h1.1.test <- normal(location = c(logodds$h1.1.locomp,logodds$h1.1.medcomp,logodds$h1.1.hicomp,rep(0,nCoef1.1)), 
                      scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
 # Update posterior model parameters via bayesGlmer function, based on priors for Prediction 1
 glmm1.1.test<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
@@ -20,7 +20,7 @@ bridge_1.1.test <- bridge_sampler(glmm1.1.test)
 
 # Prediction 2
 # Set priors according to prediction 2: No comp (ref), Lo comp (0.00), Med comp (0.00), Hi comp (0.00)
-h1.1.null <- cauchy(location = 0, 
+h1.1.null <- normal(location = 0, 
                      scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
 
 # Update posterior model parameters via bayesGlmer function, based on priors for Prediction 2
@@ -39,7 +39,7 @@ testnullBF<-testnull$bf
 
 # Prediction 3
 # Set priors according to prediction 3: No comp (ref), Lo comp (-1.45), Med comp (0.00), Hi comp (1.45)
-h1.1.alt <- cauchy(location = c(logodds$h1.1.locomp,0, logodds$h1.1.medcomp,rep(0,nCoef1.1)), 
+h1.1.alt <- normal(location = c(logodds$h1.1.locomp,0, logodds$h1.1.medcomp,rep(0,nCoef1.1)), 
                     scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
 
 # Update posterior model parameters via bayesGlmer function, based on priors for Prediction 3

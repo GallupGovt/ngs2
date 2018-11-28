@@ -50,7 +50,7 @@ glmm2.1.test<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
                           prior = h2.1.test, prior_intercept = weak_prior,
                           chains = 3, iter = nIter, diagnostic_file = "glmm2.1.test.csv")
 
-glmm2.1.alt1<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+glmm2.1.alt1<- stan_glmer(h2.1alt.formula, factorial, binomial(link = "logit"),
                           prior = h2.1.alt1, prior_intercept = weak_prior,
                           chains = 3, iter = nIter, diagnostic_file = "glmm2.1.alt1.csv")
 

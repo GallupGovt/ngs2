@@ -5,7 +5,7 @@
 # Manually set priors for all h3.3. predictions
 # Assume SD = half of a medium effect
 
-test.SD<-log.odds.medium/2
+test.SD<-log.odds.medium/3
 
 # Null hypothesis: Group status will not affect willingness to innovate, irrespective of competition levels (new formula)
 
@@ -18,7 +18,7 @@ coefficients.h3.3null <- stan_glmer(h3.3main.formula, data=factorial, family = b
                                     chains = 1, iter = 100)
 ndim.3.3null <- length(coefficients.h3.3null$prior.info$prior$location)
 
-h3.3.null <- cauchy(location = 0,
+h3.3.null <- normal(location = 0,
                     scale = c(rep(2.5,5), 
                               rep(test.SD, 4), 
                               rep(2.5,ndim.3.3null-12), 
@@ -27,7 +27,7 @@ h3.3.null <- cauchy(location = 0,
 # Test hypothesis: Higher-status groups will be less willing to innovate under low competition than under balanced or strong competition.
 # Group status interacts with competition level (new formula required)
 
-h3.3.test <- cauchy(location = c(rep(0,ndim.3.3null-3), 
+h3.3.test <- normal(location = c(rep(0,ndim.3.3null-3), 
                                  0, -0.91, -0.91), 
                     scale = c(rep(2.5,5), 
                               rep(test.SD, 4), 
@@ -38,7 +38,7 @@ h3.3.test <- cauchy(location = c(rep(0,ndim.3.3null-3),
 # Alternative hypothesis: When status is perceived as illegitimate, low-status groups will be more willing to innovate.
 # Legitimacy interacts with status (new formula required)
 
-h3.3.alt1 <- cauchy(location = c(rep(0,7), 
+h3.3.alt1 <- normal(location = c(rep(0,7), 
                                  1.45, rep(0,ndim.3.3null-8)), 
                     scale = c(rep(2.5,5), 
                               rep(test.SD, 4), 
@@ -47,10 +47,18 @@ h3.3.alt1 <- cauchy(location = c(rep(0,7),
                     autoscale = FALSE)
 
 # Estimate and save all models
-nIter<- 10000
-glmm3.3.null <- bayesGlmer(h3.3main.formula, h3.3.null)
-glmm3.3.test <- bayesGlmer(h3.3main.formula, h3.3.test)
-glmm3.3.alt1 <- bayesGlmer(h3.3main.formula, h3.3.alt1)
+
+glmm3.3.null<- stan_glmer(h3.3main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.3.null, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.3.null.csv")
+
+glmm3.3.test<- stan_glmer(h3.3main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.3.test, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.3.test.csv")
+
+glmm3.3.alt1<- stan_glmer(h3.3main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.3.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.3.alt1.csv")
 
 # Estimate marginal likelihood
 
@@ -78,7 +86,3 @@ colnames(BFs3.3) <- c("Hypothesis",
 h3.3.Ivs<-c("h3.32","h3.33","h3.34", "competition1", 
             "h3.32:competition1", "h3.33:competition1", "h3.34:competition1")
 modelPlotter(glmm3.3.null, h3.3.Ivs)
-modelPlotter(glmm3.3.test, h3.3.Ivs)
-modelPlotter(glmm3.3.alt1, h3.3.Ivs)
-
-

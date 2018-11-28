@@ -7,17 +7,17 @@
 ndim.3.1 <- nCoef-8
 # Assume SD = half of a small effect
 
-test.SD<-log.odds.medium/2
+test.SD<-log.odds.medium/3
 
 # Null hypothesis: Leader tolerance of ambiguity does not affect matchid motivation to innovate.
 
-h3.1.null <- cauchy(location = 0, 
+h3.1.null <- normal(location = 0, 
                     scale = c(rep(2.5,6), test.SD, rep(2.5,ndim.3.1)), autoscale = FALSE)
 
 # Test hypothesis: Average levels of tolerance of ambiguity in a group will increase motivation to innovate.
 
 
-h3.1.test <- cauchy(location = c(rep(0,6), log.odds.medium, rep(0,ndim.3.1)), 
+h3.1.test <- normal(location = c(rep(0,6), log.odds.medium, rep(0,ndim.3.1)), 
                     scale = c(rep(2.5,6), test.SD, rep(2.5,ndim.3.1)), autoscale = FALSE)
 
 # Alternative hypothesis: Average levels of tolerance of ambiguity in a group will decrease motivation to innovate for complex innovations
@@ -36,14 +36,22 @@ coefficients.h3.1alt <- stan_glmer(h3.1alt.formula, data=factorial, family = bin
 
 ndim.3.1alt <- length(coefficients.h3.1alt$prior.info$prior$location)
 
-h3.1.alt1 <- cauchy(location = c(rep(0,ndim.3.1alt-1), log.odds.medium), 
+h3.1.alt1 <- normal(location = c(rep(0,ndim.3.1alt-1), log.odds.medium), 
                     scale = c(rep(2.5,ndim.3.1alt-1), test.SD), autoscale = FALSE)
 
 # Estimate and save all models
 
-glmm3.1.test <- bayesGlmer(main.formula, h3.1.test)
-glmm3.1.null <- bayesGlmer(main.formula, h3.1.null)
-glmm3.1.alt1 <- bayesGlmer(h3.1alt.formula, h3.1.alt1)
+glmm3.1.test<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.1.test, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.1.test.csv")
+
+glmm3.1.null<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
+                          prior = h3.1.null, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.1.null.csv")
+
+glmm3.1.alt1<- stan_glmer(h3.1alt.formula, factorial, binomial(link = "logit"),
+                          prior = h3.1.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm3.1.alt1.csv")
 
 # Estimate marginal likelihood
 

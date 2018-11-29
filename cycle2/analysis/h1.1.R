@@ -77,7 +77,7 @@ testnull<-bf(bridge_1.1.test, bridge_1.1.null)$bf
 alt1null<-bf(bridge_1.1.alt1, bridge_1.1.null)$bf
 alt2null<-bf(bridge_1.1.alt2, bridge_1.1.null)$bf
 
-BFs1.1 <- data.frame(1.1, testalt1BF, testalt2BF, alt1alt2BF, testnullBF, alt1nullBF, alt2nullBF)
+BFs1.1 <- data.frame(1.1, testalt1, testalt2, alt1alt2, testnull, alt1null, alt2null)
 colnames(BFs1.1) <- c("Hypothesis", 
                       "Prediction 1 vs. Prediction 2", 
                       "Prediction 1 vs. Prediction 3", 

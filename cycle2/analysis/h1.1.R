@@ -9,7 +9,7 @@ nCoef1.1<-nCoef-4
 # Null
 # Set priors according to prediction 2: No comp (ref), Lo comp (0.00), Med comp (0.00), Hi comp (0.00)
 h1.1.null <- normal(location = 0, 
-                     scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
+                    scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
 
 # Update posterior model parameters via bayesGlmer function, based on priors for Prediction 2
 glmm1.1.null<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
@@ -23,7 +23,7 @@ bridge_1.1.null <- bridge_sampler(glmm1.1.null)
 # Prediction 1:Perceived inter-group competition will show an inverse u-shaped relationship with motivation to innovate: when competition is either too strong or too weak, motivation to innovate will decrease. 
 # Set priors according to prediction 1: No comp (ref), Lo comp (-1.45), Med comp (1.45), Hi comp (-1.45)
 h1.1.test <- normal(location = c(logodds$h1.1.locomp,logodds$h1.1.medcomp,logodds$h1.1.hicomp,rep(0,nCoef1.1)), 
-                     scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
+                    scale = c(test.SD,test.SD,test.SD,rep(2.5,nCoef1.1)), autoscale = FALSE)
 # Update posterior model parameters via bayesGlmer function, based on priors for Prediction 1
 glmm1.1.test<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
                           prior = h1.1.test, prior_intercept = weak_prior,
@@ -45,14 +45,13 @@ h1.1.alt1 <- normal(location = c(logodds$h1.1.medcomp,0, logodds$h1.1.hicomp,rep
 
 # Update posterior model parameters via bayesGlmer function, based on priors for Prediction 2
 glmm1.1.alt1<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
-                         prior = h1.1.alt1, prior_intercept = weak_prior,
-                         chains = 3, iter = nIter, diagnostic_file = "glmm1.1.alt.csv")
+                          prior = h1.1.alt1, prior_intercept = weak_prior,
+                          chains = 3, iter = nIter, diagnostic_file = "glmm1.1.alt.csv")
 
 bridge_1.1.alt1 <- bridge_sampler(glmm1.1.alt1)
 
 # Estimate Bayes Factors for the comparison of prediction 1 over prediction 2
-testalt1<-bf(bridge_1.1.test, bridge_1.1.alt1)
-testalt1BF<-testalt1$bf
+testalt1<-bf(bridge_1.1.test, bridge_1.1.alt1)$bf
 
 # Prediction 3
 # Set priors according to prediction 3: No comp (ref), Lo comp (-1.45), Med comp (0.00), Hi comp (1.45)
@@ -68,27 +67,22 @@ glmm1.1.alt2<- stan_glmer(main.formula, factorial, binomial(link = "logit"),
 bridge_1.1.alt2 <- bridge_sampler(glmm1.1.alt2)
 
 # Estimate Bayes Factors for the comparison of prediction 1 over prediction 3
-testalt2<-bf(bridge_1.1.test, bridge_1.1.alt2)
-testalt2BF<-testalt2$bf
+testalt2<-bf(bridge_1.1.test, bridge_1.1.alt2)$bf
 
 # Estimate Bayes Factors for the comparison of prediction 2 over prediction 3 
-alt1alt2<-bf(bridge_1.1.alt1, bridge_1.1.alt2)
-alt1alt2BF<-alt1alt2$bf
+alt1alt2<-bf(bridge_1.1.alt1, bridge_1.1.alt2)$bf
 
 # Estimate Bayes Factors for the comparison with Null
-testnull<-bf(bridge_1.1.test, bridge_1.1.null)
-testnull2BF<-testnull2$bf
-alt1null<-bf(bridge_1.1.alt1, bridge_1.1.null)
-alt1nullBF<-alt1null$bf
-alt2null<-bf(bridge_1.1.alt2, bridge_1.1.null)
-alt2nullBF<-alt2null$bf
+testnull<-bf(bridge_1.1.test, bridge_1.1.null)$bf
+alt1null<-bf(bridge_1.1.alt1, bridge_1.1.null)$bf
+alt2null<-bf(bridge_1.1.alt2, bridge_1.1.null)$bf
 
 BFs1.1 <- data.frame(1.1, testalt1BF, testalt2BF, alt1alt2BF, testnullBF, alt1nullBF, alt2nullBF)
 colnames(BFs1.1) <- c("Hypothesis", 
-                   "Prediction 1 vs. Prediction 2", 
-                   "Prediction 1 vs. Prediction 3", 
-                   "Prediction 2 vs. Prediction 3", 
-                   "Prediction 1 vs. Null", 
-                   "Prediction 2 vs. Null", 
-                   "Prediction 3 vs. Null"
-
+                      "Prediction 1 vs. Prediction 2", 
+                      "Prediction 1 vs. Prediction 3", 
+                      "Prediction 2 vs. Prediction 3", 
+                      "Prediction 1 vs. Null", 
+                      "Prediction 2 vs. Null", 
+                      "Prediction 3 vs. Null")
+                      

@@ -75,11 +75,11 @@ frame.posterior<-subset(plotdf, Distribution=="Posterior")
 postPlot<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
-  scale_y_continuous(limits = c(0, 15))
+  scale_y_continuous(limits = c(0, 5))
 bfPlot<-ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
-  scale_y_continuous(limits = c(0, 15)) +
+  scale_y_continuous(limits = c(0, 5)) +
   annotate("text", x=2, y=1.7, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
   geom_vline(xintercept = 0, linetype="dashed")
 return(list(postPlot, bfPlot))

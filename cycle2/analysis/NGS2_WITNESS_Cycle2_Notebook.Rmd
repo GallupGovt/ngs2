@@ -28,14 +28,15 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
   }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
-scriptNames <- c("effects.R", "wrangle.R", "analytics.R", "Active_Learning.R", "h1.1.R", "h1.2.R")
+scriptNames <- c("effects.R", "wrangle.R", "analytics.R", "Active_Learning.R", "h1.1.R", "h1.2.R", 
+                 "h1.3.R", "h2.1.R", "h2.2.R", "h2.3.R", "h3.1.R", "h3.2.R", "h3.3.R", "h3.4.R", "h3.5.R")
 lapply(scriptNames, dlScripts)
 ```
 
 ```{r run_scripts, include=F}
 # run scripts in order
 source("run_scripts.R")
-nIter<-2000
+nIter<-500
 source("analytics.R")
 nIter<-10000
 ```
@@ -167,32 +168,84 @@ As an example of hypothesis testing via Bayes Factors, we examine prediction 1.1
 + 1.1.1. Perceived inter-group competition will show an inverse u-shaped relationship with motivation to innovate: when competition is either too strong or too weak, motivation to innovate will decrease.
 
 ```{r h1.1, echo=F, include=F}
+nIter<-5000
 source("h1.1.R")
-BFs <- data.frame(1.1, testnullBF, testaltBF, testalt2BF, testnullBF, c(NA), testnull2BF)
-colnames(BFs) <- c("Hypothesis", 
-                   "Prediction 1 vs. Prediction 2", 
-                   "Prediction 1 vs. Prediction 3", 
-                   "Prediction 2 vs. Prediction 3", 
-                   "Prediction 1 vs. Null", 
-                   "Prediction 2 vs. Null", 
-                   "Prediction 3 vs. Null")
 ```
 The posterior distribution of the coefficients is plotted below, including the three competition levels (Low, Medium, High). The "no competition" condition serves as the reference category. 
 
 ```{r h1.1.post, echo=T, include=T}
-h1.1.post
+plotsh1.1.1<-bayesPlotter3 (glmm1.1.test, "h1.1.locomp", "h1.1.medcomp", "h1.1.hicomp", test.SD, "h1.11", "h1.12", "h1.13", testnull)
+plotsh1.1.1[[1]]
 ```
 
-We then estimate the likelihood that the observed data were produced by the hypothesized generating model (1.1.1. inverse u-shaped relationship), and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of prediction 1.1.1. to the alternative prediction. The resulting Bayes Factor (BF = `r testnullBF`) indicates the support for h1.1.1 over h1.1.2 (BF = 1 indicates no preference, BF>10 indicates strong preference for h1.1.1, BF<0.1 indicates strong preference for h1.1.2). 
+We then estimate the likelihood that the observed data were produced by the hypothesized generating model (1.1.1. inverse u-shaped relationship), and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of prediction 1.1.1. to the alternative prediction. The resulting Bayes Factor (BF = `r testnullBF`) indicates the support for h1.1.1 over the null (BF = 1 indicates no preference, BF>10 indicates strong preference for h1.1.1, BF<0.1 indicates strong preference for h1.1.2). 
 
 ```{r h1.1.test, include=T}
-h1.1.prior
+plotsh1.1.1[[2]]
 ```
 
-The comparisons indicate mounting support for the null hypothesis of no effect of competition on motivation to innovate. 
++ 1.1.2. Increased levels of perceived intergroup competition will decrease group motivation to innovate.
 
-```{r h1.1.BFs, include=T}
-kable(BFs, caption = "Bayes Factors for H1.1 - All Predictions")
+```{r h1.1.alt1, include=T}
+plotIters<-nIter*1.5
+draws <- as.data.frame(glmm1.1.alt1)
+a <- rnorm(plotIters, mean=logodds[["h1.1.medcomp"]], sd=test.SD)
+b <- rnorm(plotIters, mean=0, sd=test.SD)
+c <- rnorm(plotIters, mean=logodds[["h1.1.locomp"]], sd=test.SD)
+d <- draws[["h1.11"]]
+e <- draws[["h1.12"]]
+f <- draws[["h1.13"]]
+plotdf <- data.frame(value=c(a, b, c, d, e, f), 
+                     Distribution=c(rep("Prior", plotIters*3),
+                                    rep("Posterior", plotIters*3)), 
+                     Level=c(rep("h1.1.locomp", plotIters),
+                             rep("h1.1.medcomp", plotIters),
+                             rep("h1.1.hicomp", plotIters), 
+                             rep("h1.1.locomp", plotIters),
+                             rep("h1.1.medcomp", plotIters),
+                             rep("h1.1.hicomp", plotIters)))
+frame.posterior<-subset(plotdf, Distribution=="Posterior")
+ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
+  geom_density(alpha=0.4) + 
+  scale_x_continuous(limits = c(-5, 5)) + 
+  scale_y_continuous(limits = c(0, 5)) +
+  annotate("text", x=2, y=1.7, label = paste(" Alt1 vs Null BF = ", sprintf("%0.2f", alt1null))) +
+  geom_vline(xintercept = 0, linetype="dashed")
+```
++ 1.1.3. Increased levels of perceived intergroup competition will increase group motivation to innovate.
+
+```{r h1.1.alt2, include=T}
+draws <- as.data.frame(glmm1.1.alt2)
+a <- rnorm(plotIters, mean=logodds[["h1.1.locomp"]], sd=test.SD)
+b <- rnorm(plotIters, mean=0, sd=test.SD)
+c <- rnorm(plotIters, mean=logodds[["h1.1.medcomp"]], sd=test.SD)
+d <- draws[["h1.11"]]
+e <- draws[["h1.12"]]
+f <- draws[["h1.13"]]
+plotdf <- data.frame(value=c(a, b, c, d, e, f), 
+                     Distribution=c(rep("Prior", plotIters*3),
+                                    rep("Posterior", plotIters*3)), 
+                     Level=c(rep("h1.1.locomp", plotIters),
+                             rep("h1.1.medcomp", plotIters),
+                             rep("h1.1.hicomp", plotIters), 
+                             rep("h1.1.locomp", plotIters),
+                             rep("h1.1.medcomp", plotIters),
+                             rep("h1.1.hicomp", plotIters)))
+frame.posterior<-subset(plotdf, Distribution=="Posterior")
+ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
+  geom_density(alpha=0.4) + 
+  scale_x_continuous(limits = c(-5, 5)) + 
+  scale_y_continuous(limits = c(0, 5)) +
+  annotate("text", x=2, y=1.7, label = paste(" Alt2 vs Null BF = ", sprintf("%0.2f", alt2null))) +
+  geom_vline(xintercept = 0, linetype="dashed")
+```
+
+The comparisons indicate overwhelming support for the null hypothesis of no effect of competition on motivation to innovate. 
+
+# Summary of Hypothesis Tests
+
+```{r BFs, include=T}
+kable(BFs1.1, caption = "Bayes Factors - All Predictions")
 ```
 
 # Active Learning
@@ -204,6 +257,3 @@ source("Active_Learning.R")
 ```
 
 Active learning will be particularly useful to optimize sample allocation to adequately power those hypotheses with the greatest information gains. 
-
-
-

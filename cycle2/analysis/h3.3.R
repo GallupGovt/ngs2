@@ -83,6 +83,6 @@ colnames(BFs3.3) <- c("Hypothesis",
                    "Prediction 2 vs. Null", 
                    "Prediction 3 vs. Null")
 
-h3.3.Ivs<-c("h3.32","h3.33","h3.34", "competition1", 
-            "h3.32:competition1", "h3.33:competition1", "h3.34:competition1")
+h3.3.Ivs<-c("h3.32","h3.33","h3.34", "competition", 
+            "h3.32:competition", "h3.33:competition", "h3.34:competition")
 modelPlotter(glmm3.3.null, h3.3.Ivs)

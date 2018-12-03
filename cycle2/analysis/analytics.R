@@ -29,9 +29,17 @@ factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$setti
 nConditions<-length(unique(factorial$settingsNum))
 
 # List of conditions played
-settingsNum<-aggregate(settingsNum ~ matchid, data=factorial, mean)
-settingsNumTab<-as.data.frame(table(settingsNum$settingsNum))
-colnames(settingsNumTab)<-c("settingsNum", "gamesPlayed")
+settingsNum<-aggregate(settingsNum ~ matchid, data=factorial, first)
+factorial$replay<-"Replay"
+factorial$replay[factorial$consumableKey=="prod_high_0_firsttime" | 
+                   factorial$consumableKey=="prod_high_1_firsttime" |
+                   factorial$consumableKey=="prod_low_0_firsttime"  |
+                   factorial$consumableKey=="prod_low_1_firsttime"]<-"first time"
+replays<-aggregate(replay ~ matchid, data=factorial, first)
+settingsReplayed <- merge(settingsNum,replays,by="matchid")
+settingsNumTab<-table(settingsReplayed$settingsNum, settingsReplayed$replay)
+settingsNumTab<-as.data.frame.matrix(settingsNumTab) 
+settingsNumTab<-tibble::rownames_to_column(settingsNumTab, var = "settingsNum")
 write.csv(settingsNumTab, paste(od, "settingsNumTab.csv", sep = '/'))
 
 # List of conditions pending

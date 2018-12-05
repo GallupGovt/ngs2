@@ -58,7 +58,7 @@ factorial$matchid2<-as.integer(as.character(factorial$matchid))
 factorial$round2<-as.integer(as.character(factorial$round))
 empanelment_and_log$matchid2<-as.integer(empanelment_and_log$matchid)
 empanelment_and_log$round2<-as.integer(empanelment_and_log$round)
-empanelment_and_log <- subset(empanelment_and_log, select = -c("round", "matchid"))
+empanelment_and_log <- empanelment_and_log[!(names(empanelment_and_log) %in% c("round", "matchid"))]
 factorial <- merge(factorial, empanelment_and_log, by = c("matchid2", "round2"))
 write.csv(factorial, paste(od, "factorial.csv", sep = '/'))
 

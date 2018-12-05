@@ -29,6 +29,11 @@ factorial.tests$choice[factorial.tests$tools=="9" & factorial.tests$leaderChoice
 factorial.tests$choice[factorial.tests$tools=="11" & factorial.tests$leaderChoice=="SatchelCharge"] <- "Correct"
 factorial.tests$choice[factorial.tests$tools=="12" & factorial.tests$leaderChoice=="SatchelCharge"] <- "Correct"
 
+factorial.tests$choice2 <- 1
+factorial.tests$choice2[factorial.tests$tools=="9" & factorial.tests$leaderChoice=="TNTbarrel"] <- 1
+factorial.tests$choice2[factorial.tests$tools=="11" & factorial.tests$leaderChoice=="SatchelCharge"] <- 1
+factorial.tests$choice2[factorial.tests$tools=="12" & factorial.tests$leaderChoice=="SatchelCharge"] <- 1
+
 tool_rate2 <- factorial.tests %>%
   group_by(tools, choice) %>%
   summarise(counts  = n()) 
@@ -43,8 +48,8 @@ toolControls<-ggplot(tool_rate2, aes(x = tools, y = counts)) +
                                 "12" = "65% of 76 vs 35% of 22"))
 tool_rate3 <- factorial.tests %>%
   group_by(matchid) %>%
-  summarise(mean(correct)) 
-allWrong<-as.data.frame(tool_rate3  %>% filter(`mean(correct)` == 0))
+  summarise(mean(choice2)) 
+allWrong<-as.data.frame(tool_rate3  %>% filter(`mean(choice2)` == 0))
 
 # Group composition
 

@@ -2,6 +2,8 @@
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk
 
 ## Positive controls for experimental manipulations
+pacman::p_load(plyr)
+
 # Competition
 # We anticipate that groups assigned to the low competition condition will develop high Collective Efficacy (CSE), 
 # whereas groups assigned to the high competition condition will develop low CE

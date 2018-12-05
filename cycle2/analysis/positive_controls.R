@@ -29,8 +29,6 @@ factorial.tests$choice[factorial.tests$tools=="9" & factorial.tests$leaderChoice
 factorial.tests$choice[factorial.tests$tools=="11" & factorial.tests$leaderChoice=="SatchelCharge"] <- "Correct"
 factorial.tests$choice[factorial.tests$tools=="12" & factorial.tests$leaderChoice=="SatchelCharge"] <- "Correct"
 
-detach("package:plyr", unload=TRUE) 
-library(dplyr)
 tool_rate2 <- factorial.tests %>%
   group_by(tools, choice) %>%
   summarise(counts  = n()) 

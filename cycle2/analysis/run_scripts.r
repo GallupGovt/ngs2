@@ -8,7 +8,7 @@ LOCAL <- TRUE # change to FALSE if you want to run from data on the network driv
 # load libraries
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, plyr)
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr)
 
 # set directories
 if(Sys.info()['sysname'] == "Windows") {

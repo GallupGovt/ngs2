@@ -1,3 +1,8 @@
+
+# Load plyr package
+
+pacman::p_load(plyr)
+
 # Define constants
 dd_emp <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/empanelment"
 events <- c("StartMatch", "LeaderSelection", "NewLeader", "PlayerConnection", "PlayerDisconnection")

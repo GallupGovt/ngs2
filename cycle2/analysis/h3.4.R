@@ -8,15 +8,6 @@
 test.SD<-log.odds.large/3
 
 # Preliminary analysis: 
-# We anticipate that groups assigned to the low competition condition will develop high Collective Efficacy (CE), 
-# whereas groups assigned to the high competition condition will develop low CE
-
-factorial$CSEnum<-scale(as.numeric(as.character(factorial$CSE)))
-h3.4.table<-aggregate(factorial$CSEnum, list(factorial$h1.1), mean, na.rm=T)
-xx<-barplot(h3.4.table[,2], ylab=c("Average CSE Score"), xaxt='n', ylim=c(-0.5,1), main="Collective Self-efficacy by Competition Levels")
-text(x = xx, y = h3.4.table[,2], label = round(h3.4.table[,2], 3), pos = 3, cex = 0.8, col = "red")
-axis(1, at=xx, labels=c("None","Low", "Medium", "High"), tick=FALSE, las=2, line=-0.5)
-
 # Test manipulation in multivariate
 
 #h3.4CSE.formula <- CSEnum~h1.1+h1.3+h2.1+h3.1+h3.2+h3.3+h3.4+h3.5+tools+(1|matchid)

@@ -54,6 +54,7 @@ empanelment_and_log$matchid2<-as.integer(empanelment_and_log$matchid)
 empanelment_and_log$round2<-as.integer(empanelment_and_log$round)
 empanelment_and_log <- subset(empanelment_and_log, select = -c("round", "matchid"))
 factorial <- merge(factorial, empanelment_and_log, by = c("matchid2", "round2"))
+write.csv(factorial, paste(od, "factorial.csv", sep = '/'))
 
 factorial$leaderTA[factorial$h3.2==0]<- "Low TA"
 factorial$leaderTA[factorial$h3.2==1]<- "High TA"

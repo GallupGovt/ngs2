@@ -27,7 +27,7 @@ ndim.1.2 <- length(coefficients$prior.info$prior$location)
 # Assume SD = one third of a large effect
 
 test.SD<-log.odds.large/3
-test.SDinter<-(log.odds.large*log.odds.large)/3
+test.SDinter<-(log.odds.large/3)*(log.odds.large/3)
 
 # Null hypothesis: Competition levels and prospects have 0 effect on risk-seeking behavior 
 

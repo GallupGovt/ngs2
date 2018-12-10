@@ -9,7 +9,7 @@ h2.6.table<-prop.table (table(factorial2.6$innovation, factorial2.6$tools), 2)
 h2.6.table<-h2.6.table[,c(7,8)]
 xx<-barplot(h2.6.table[2,], ylab=c("Innovation Rate"), xaxt='n', ylim=c(0,1), main="Innovation Rate for H2.6")
 text(x = xx, y = h2.6.table[2,], label = round(h2.6.table[2,], 3), pos = 3, cex = 0.8, col = "red")
-axis(1, at=xx, labels=c("High instrumentality","Low instrumentality"), tick=FALSE, las=2, line=-0.5)
+axis(1, at=xx, labels=c("Hi Inst","Lo Inst"), tick=FALSE, las=2, line=-0.5)
 
 # Set formula
 

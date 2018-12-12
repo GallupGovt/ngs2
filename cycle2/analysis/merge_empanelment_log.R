@@ -110,11 +110,11 @@ empanelment <- read.csv(paste(dd_emp, "cycle2_empanelment_26nov2018.csv", sep="/
 empanelment <- empanelment[empanelment$Status==0 & empanelment$Q3 == 1, ]
 
 # missing data imputation 
-#empanelment[,"Q25"] <- ifelse(empanelment[,"Q25"]==",5", 5, empanelment[,"Q25"])
-#empanelment[,"Q25"] <- as.numeric(empanelment[,"Q25"])
+empanelment[,"Q25"] <- ifelse(empanelment[,"Q25"]==",5", 0.5, empanelment[,"Q25"])
+empanelment[,"Q25"] <- as.numeric(empanelment[,"Q25"])
 
 empanelment[,"Q26"] <- ifelse(empanelment[,"Q26"]==",0", 0, empanelment[,"Q26"])
-#empanelment[,"Q26"] <- ifelse(empanelment[,"Q26"]==",1", 1, empanelment[,"Q26"])  
+empanelment[,"Q26"] <- ifelse(empanelment[,"Q26"]==",1", 1, empanelment[,"Q26"])  
 empanelment[,"Q26"] <- as.numeric(empanelment[,"Q26"])
 
 empanelment[,"nid"] <- 1:nrow(empanelment)

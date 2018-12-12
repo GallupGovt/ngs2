@@ -69,8 +69,3 @@ x.ranked.post.entropy$h1.3 <- NULL
 colnames(x.ranked.post.entropy) <- c("h1.1","h2.1","h3.1","h3.2","h3.3","h3.4","entropy")
 data.frame(x.ranked.post.entropy)
 write.csv(x.ranked.post.entropy, file = "gamesData_ranked-criterion2_noTools.csv")
-
-
-BFs<-read.csv(paste(od, "BFs.csv", sep = '/'))
-kable(BFs, caption = "Bayes Factors - All Predictions", digits = c(2, 2, 2, 2, 2, 2))
-

@@ -17,8 +17,9 @@ replays<-table(groups$consumableKey)
 
 # Number of players connected
 factorial$nConnected<-as.numeric(levels(factorial$nConnected))[factorial$nConnected]
-nConnected<-aggregate(nConnected ~ matchid, data=factorial, mean)
+nConnected<-aggregate(nConnected ~ matchid + replay, data=factorial, mean)
 nPlayers<-sum(nConnected$nConnected)
+nPlayersUnq<-sum(nConnected$nConnected[nConnected$replay=="False"])
 
 # Game dates
 factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]

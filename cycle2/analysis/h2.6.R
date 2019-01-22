@@ -64,3 +64,4 @@ colnames(BFs2.6) <- c("Hypothesis",
                       "Prediction 1 vs. Null", 
                       "Prediction 2 vs. Null", 
                       "Prediction 3 vs. Null")
+write.csv(BFs2.6, paste(od, "BFs2.6.csv", sep = '/'))

@@ -115,3 +115,4 @@ Ivs3.4<-c("h1.11","h1.12","h1.13","h3.41","h1.11:h3.41", "h1.12:h3.41", "h1.13:h
 modelPlotter(glmm3.4.null, Ivs3.4)
 modelPlotter(glmm3.4.test, Ivs3.4)
 modelPlotter(glmm3.4.alt1, Ivs3.4)
+write.csv(BFs3.4, paste(od, "BFs3.4.csv", sep = '/'))

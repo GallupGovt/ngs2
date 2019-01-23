@@ -77,3 +77,6 @@ colnames(BFs3.5) <- c("Hypothesis",
 
 modelPlotter(glmm3.5.null, overallIvs)
 write.csv(BFs3.5, paste(od, "BFs3.5.csv", sep = '/'))
+save (glmm3.5.null, file ="glmm3.5.null")
+save (glmm3.5.test, file ="glmm3.5.test")
+save (glmm3.5.alt1, file ="glmm3.5.alt1")

@@ -65,3 +65,5 @@ colnames(BFs2.6) <- c("Hypothesis",
                       "Prediction 2 vs. Null", 
                       "Prediction 3 vs. Null")
 write.csv(BFs2.6, paste(od, "BFs2.6.csv", sep = '/'))
+save (glmm2.6.null, file ="glmm2.6.null")
+save (glmm2.6.test, file ="glmm2.6.test")

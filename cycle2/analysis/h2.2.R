@@ -71,3 +71,5 @@ Ivs2.2<-c("h2.11","h1.11","h1.12","h1.13","h1.31","h1.32",
 modelPlotter(glmm2.2.null, Ivs2.2)
 modelPlotter(glmm2.2.test, Ivs2.2)
 write.csv(BFs2.2, paste(od, "BFs2.2.csv", sep = '/'))
+save (glmm2.2.null, file ="glmm2.2.null")
+save (glmm2.2.test, file ="glmm2.2.test")

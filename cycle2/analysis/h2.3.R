@@ -94,3 +94,7 @@ colnames(BFs2.3) <- c("Hypothesis",
 Ivs2.3<-c("(Intercept)","h2.31")
 modelPlotter(glmm2.3.null, Ivs2.3)
 write.csv(BFs2.3, paste(od, "BFs2.3.csv", sep = '/'))
+save (glmm2.3.null, file ="glmm2.3.null")
+save (glmm2.3.test, file ="glmm2.3.test")
+save (glmm2.3.alt1, file ="glmm2.3.alt1")
+save (glmm2.3.alt2, file ="glmm2.3.alt2")

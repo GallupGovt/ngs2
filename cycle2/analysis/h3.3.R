@@ -87,3 +87,6 @@ h3.3.Ivs<-c("h3.32","h3.33","h3.34", "competition",
             "h3.32:competition", "h3.33:competition", "h3.34:competition")
 modelPlotter(glmm3.3.null, h3.3.Ivs)
 write.csv(BFs3.3, paste(od, "BFs3.3.csv", sep = '/'))
+save (glmm3.3.null, file ="glmm3.3.null")
+save (glmm3.3.test, file ="glmm3.3.test")
+save (glmm3.3.alt1, file ="glmm3.3.alt1")

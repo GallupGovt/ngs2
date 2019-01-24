@@ -32,7 +32,7 @@ test.SDinter<-(log.odds.large/3)*(log.odds.large/3)
 # Null hypothesis: Competition levels and prospects have 0 effect on risk-seeking behavior 
 
 h1.2.null <- normal(location = rep(0,ndim.1.2), 
-                    scale = c(0.01,0.01,rep(2.5,ndim.1.2-3), 0.01), autoscale = FALSE)
+                    scale = c(test.SD,test.SD,rep(2.5,ndim.1.2-3), test.SDinter), autoscale = FALSE)
 
 # Test hypothesis: Groups will be more risk-seeking in a competitive environment than in a non-competitive environment.  
 

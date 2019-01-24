@@ -17,7 +17,7 @@ h2.1.null <- normal(location = 0,
 
 # Test hypothesis: Increased exogenous uncertainty (ignorance) will enhance group motivation to innovate. 
 
-h2.1.test <- normal(location = c(rep(0,5), log.odds.small, rep(0,ndim.2.1)), 
+h2.1.test <- normal(location = c(rep(0,5), -1*log.odds.small, rep(0,ndim.2.1)), 
                     scale = c(rep(2.5,5), test.SD, rep(2.5,ndim.2.1)), autoscale = FALSE)
 
 # Alternative hypothesis: Exogenous uncertainty (ignorance) will decrease motivation to innovate in the early stages of the game.
@@ -35,7 +35,7 @@ coefficients.h2.1alt <- stan_glmer(h2.1alt.formula, data=factorial, family = bin
 
 ndim.2.1alt <- length(coefficients.h2.1alt$prior.info$prior$location)
 
-effect.alt2.1<- log(exp(log.odds.small^1/13))
+effect.alt2.1<- -1*(log(exp(log.odds.small^1/13)))
 
 h2.1.alt1 <- normal(location = c(rep(0,ndim.2.1alt-1), effect.alt2.1), 
                     scale = c(rep(2.5,ndim.2.1alt-1), effect.alt2.1/3), autoscale = FALSE)

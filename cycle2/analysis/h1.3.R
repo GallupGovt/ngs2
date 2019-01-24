@@ -56,8 +56,8 @@ bridge_1.3.test <- bridge_sampler(glmm1.3.test)
 # Alternative hypothesis 1:  
 
 h1.3.alt1 <- normal(location = c(rep(0, ndim.1.3-2), 
-                                 logodds$h1.3.negprime, 
-                                 logodds$h1.3.posprime),
+                                 logodds$h1.3.posprime, 
+                                 logodds$h1.3.negprime),
                     scale = c(test.SD, test.SD, 
                               rep(2.5,ndim.1.3-4), 
                               test.SD, test.SD), 

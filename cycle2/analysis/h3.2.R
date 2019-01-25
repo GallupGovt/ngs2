@@ -35,8 +35,11 @@ coefficients.h3.2alt <- stan_glmer(h3.2alt.formula, data=factorial, family = bin
 
 ndim.3.2alt <- length(coefficients.h3.2alt$prior.info$prior$location)
 
-h3.2.alt1 <- normal(location = c(rep(0,ndim.3.2alt-1), log.odds.large), 
-                    scale = c(rep(2.5,ndim.3.2alt-1), test.SD), autoscale = FALSE)
+effect.alt3.2<- log(exp(log.odds.medium^1/13))
+
+h3.2.alt1 <- normal(location = c(rep(0,ndim.3.2alt-1), effect.alt3.2), 
+                    scale = c(rep(2.5,7), test.SD, test.SD, rep(2.5,13), effect.alt3.2/3), 
+                    autoscale = FALSE)
 
 # Estimate and save all models
 

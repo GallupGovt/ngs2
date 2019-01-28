@@ -155,6 +155,7 @@ bayesPlotter3 <- function (model, priors1, priors2, priors3, priorScale, coef1, 
 # Overall glmm for main effects in full-factorial space
 
 glmmoverall <- bayesGlmer(main.formula, weak_prior)
+save (glmmoverall, file ="glmmoverall")
 glmmoverall
 nCoef<-lengths(dimnames(glmmoverall$covmat)[1])
 

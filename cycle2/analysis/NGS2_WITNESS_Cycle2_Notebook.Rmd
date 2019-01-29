@@ -1,8 +1,8 @@
 ---
 title: |
-  | Group Innovation under Competition and Uncertaity
+  | Group Innovation under Competition and Uncertanity
 author: "Pablo Diego-Rosell, PhD  - Gallup"
-date: "November 20, 2018"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     number_sections: yes
@@ -19,8 +19,11 @@ rm(list = ls(all = TRUE))
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 ```
 ```{r get_scripts, include=F}
-if (!require("RCurl")) install.packages("RCurl")
-library ("RCurl")
+# load libraries
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, caret, pROC, RCurl)
+# download scripts and data
 dlScripts <- function (scriptNames) {
   fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
   fileConn<-file(scriptNames)
@@ -28,17 +31,25 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
   }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
-scriptNames <- c("effects.R", "wrangle.R", "analytics.R", "Active_Learning.R", "h1.1.R", "h1.2.R", 
-                 "h1.3.R", "h2.1.R", "h2.2.R", "h2.3.R", "h3.1.R", "h3.2.R", "h3.3.R", "h3.4.R", "h3.5.R")
+scriptNames <- c("run_scripts.r", "effects.R", "wrangle.R", "analytics.R", "merge_empanelment_log.R", 
+                 "ActiveLearning_Blocks.R", "positive_controls.R", "h1.1.R", "h1.2.R", "h1.3.R", 
+                 "h2.1.R", "h2.2.R", "h2.3.R", "h2.4.R", "h3.1.R", "h3.2.R", "h3.3.R", 
+                 "h3.4.R", "h3.5.R", "gamesData.csv", "empanelment_and_log.csv")
 lapply(scriptNames, dlScripts)
 ```
 
 ```{r run_scripts, include=F}
 # run scripts in order
-source("run_scripts.R")
-nIter<-500
-source("analytics.R")
+# source("run_scripts.r")
+# ("run_scripts.r" only run in data wrangling mode - locally)
+dd <- getwd()
+od <- getwd()
+# source effects
+source("effects.R")
+# set random seed
+set.seed(12345)
 nIter<-10000
+source("analytics.R")
 ```
 
 # Introduction
@@ -49,6 +60,17 @@ To demonstrate and validate these advances, we propose an experimental approach 
 
 + Pre-registration form is available at https://osf.io/6frkt/
 + Design and analytic details are available at https://osf.io/g8uv3/
+
+# Active Learning
+
+We deploy and Active Learning approach to minimize posterior uncertainty, where, given a dataset $(x_1,y_1),. ,(x_n,y_n )$, pick a new location $x \epsilon D$ to query the corresponding $x$ such that a large amount of information is gained according to some measure. We prioritize experimental condition based on  measures of variance and entropy. 
+
+```{r active_learning, echo=FALSE}
+#source("ActiveLearning_Blocks.R")
+```
+
+Sample allocation for subsequent data collection rounds was optimized based on the ranked entropy criterion to adequately power those hypotheses with the greatest information gains. 
+
 
 # Hypotheses, variables and expected effect sizes
 
@@ -102,7 +124,7 @@ ggplot(data=nByround, aes(x=round, y=counts)) +
 # By tool choice
 factorial.tools<-subset(factorial, tools!="9" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)-1
-tool_rate1=factorial.tools%>%
+tool_rate1<-factorial.tools%>%
   group_by(tools)%>%
   summarise(rate_inn=mean(innovation2, na.rm=TRUE))
 ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
@@ -110,36 +132,56 @@ ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
   ggtitle("Innovative Choices by Tool Choice") + 
   xlab("Tool Choice") +
   ylab("Innovative Choice Rate")
-
-# Check Test Items
-
-factorial.tests<-subset(factorial, tools=="9" | tools=="11" | tools=="12")
-factorial.tests$correct <- 0
-factorial.tests$correct[factorial.tests$tools=="9" & factorial.tests$leaderChoice=="TNTbarrel"] <- 1
-factorial.tests$correct[factorial.tests$tools=="11" & factorial.tests$leaderChoice=="SatchelCharge"] <- 1
-factorial.tests$correct[factorial.tests$tools=="12" & factorial.tests$leaderChoice=="SatchelCharge"] <- 1
-tool_rate2 <- factorial.tests %>%
-  group_by(tools, correct) %>%
-  summarise(counts  = n()) 
-ggplot(tool_rate2, aes(x = tools, y = counts)) +
-  geom_bar(
-  aes(color = correct, fill = correct),
-  stat = "identity", position = position_stack()) +
-  theme(legend.position='none') +
-  ggtitle("Correct Choices for Check Test Items") + 
-  xlab("Check Test Item") +
-  ylab("Number of Correct Choices")
-tool_rate3 <- factorial.tests %>%
-  group_by(matchid) %>%
-  summarise(mean(correct)) 
-allWrong<-as.data.frame(tool_rate3  %>% filter(`mean(correct)` == 0))
 ```
 
+# Positive Controls
+
+```{r controls}
+#source("merge_empanelment_log.R")
+source("positive_controls.R")
+```
+
+## Competition
+
++ We hypothesized that groups playing easy games (low competition) would develop a sense of high Collective Self-Efficacy (CSE), while groups playing hard games (high competition) would develop low CSE. + This manipulation showed the desired effect, based on post-game CSE values for each condition. 
+  
+```{r competitionPlots}
+competitionPlots
+#glmm3.4.CSE
+```
+
+## Uncertainty/Risk
+
++ Check test items propose obvious choices to test whether participants are paying attention.   
 + Check test items show that tool choices were adequately understood by participants. 
+
+```{r toolControls}
+toolControls
+```
+
 + Only `r length(allWrong$matchid)` games failed all three check test items. 
 
 ```{r allwrong}
 allWrong
+```
+
+## Group Composition
+
+We finally check that group randomization was effective in creating groups with the required experimental charachteristics. Our post-hoc analysis of group composition shows that:
++ Average group Tolerance of Ambiguity (TA) was higher in the "high group TA" condition.
+
+```{r groupTAPlots}
+groupTAplot
+```
++ Average leader TA was higher in the "high leader TA" condition. 
+
+```{r leaderTAPlots}
+leaderTAplot
+```
++ Average leader Transformational Leadership (TL) score was higher in the "high TL" condition.
+
+```{r leaderTLPlots}
+leaderTLplot
 ```
 
 # General effects
@@ -163,22 +205,100 @@ We estimate causal effects for all the predictions under each hypothesis using B
 
 Posterior predictive distributions and posterior parameter distributions are sampled using Hamiltonian MCMC (e.g. Hoffman & Gelman, 2014), with 3 Markov chains and 10,000 iterations. The posterior probability distributions for each prediction are summarized using the mean and the central 95% interval. Since we are primarily concerned with effect size estimation and model optimization within a Bayesian framework, correction for multiple comparisons do not apply (Gelman, Hill, & Yajima, 2012). 
 
+```{r runload, echo=F, include=F}
+source("h1.1.R")
+source("h1.2.R")
+source("h1.3.R")
+source("h2.1.R")
+source("h2.2.R")
+source("h2.3.R")
+source("h2.4.R")
+source("h2.5.R")
+source("h2.6.R")
+source("h3.1.R")
+source("h3.2.R")
+source("h3.3.R")
+source("h3.4.R")
+source("h3.5.R")
+BFs1.1<-read.csv(paste(od, "BFs1.1.csv", sep = '/'))
+BFs1.2<-read.csv(paste(od, "BFs1.2.csv", sep = '/'))
+BFs1.3<-read.csv(paste(od, "BFs1.3.csv", sep = '/'))
+BFs2.1<-read.csv(paste(od, "BFs2.1.csv", sep = '/'))
+BFs2.2<-read.csv(paste(od, "BFs2.2.csv", sep = '/'))
+BFs2.3<-read.csv(paste(od, "BFs2.3.csv", sep = '/'))
+BFs2.4<-read.csv(paste(od, "BFs2.4.csv", sep = '/'))
+BFs2.5<-read.csv(paste(od, "BFs2.5.csv", sep = '/'))
+BFs2.6<-read.csv(paste(od, "BFs2.6.csv", sep = '/'))
+BFs3.1<-read.csv(paste(od, "BFs3.1.csv", sep = '/'))
+BFs3.2<-read.csv(paste(od, "BFs3.2.csv", sep = '/'))
+BFs3.3<-read.csv(paste(od, "BFs3.3.csv", sep = '/'))
+BFs3.4<-read.csv(paste(od, "BFs3.4.csv", sep = '/'))
+BFs3.5<-read.csv(paste(od, "BFs3.5.csv", sep = '/'))
+BFs<-rbind(BFs1.1, BFs1.2, BFs1.3, BFs2.1, BFs2.2, BFs2.3, BFs2.4, BFs2.5, BFs2.6, 
+           BFs3.1, BFs3.2, BFs3.3, BFs3.4, BFs3.5)
+write.csv(BFs, paste(od, "BFs.csv", sep = '/'))
+BFs<-read.csv(paste(od, "BFs.csv", sep = '/'))
+load (file ="glmm1.1.null")
+load (file ="glmm1.1.test")
+load (file ="glmm1.1.alt1")
+load (file ="glmm1.1.alt2")
+load (file ="glmm1.2.null")
+load (file ="glmm1.2.test")
+load (file ="glmm1.2.alt1")
+load (file ="glmm1.2.alt2")
+load (file ="glmm1.3.null")
+load (file ="glmm1.3.test")
+load (file ="glmm1.3.alt1")
+load (file ="glmm2.1.null")
+load (file ="glmm2.1.test")
+load (file ="glmm2.1.alt1")
+load (file ="glmm2.2.null")
+load (file ="glmm2.2.test")
+load (file ="glmm2.3.null")
+load (file ="glmm2.3.test")
+load (file ="glmm2.3.alt1")
+load (file ="glmm2.3.alt2")
+load (file ="glmm2.4.null")
+load (file ="glmm2.4.test")
+load (file ="glmm2.4.alt1")
+load (file ="glmm2.4.alt2")
+load (file ="glmm2.5.null")
+load (file ="glmm2.5.test")
+load (file ="glmm2.6.null")
+load (file ="glmm2.6.test")
+load (file ="glmm3.1.null")
+load (file ="glmm3.1.test")
+load (file ="glmm3.1.alt1")
+load (file ="glmm3.2.null")
+load (file ="glmm3.2.test")
+load (file ="glmm3.2.alt1")
+load (file ="glmm3.3.null")
+load (file ="glmm3.3.test")
+load (file ="glmm3.3.alt1")
+load (file ="glmm3.4.null")
+load (file ="glmm3.4.test")
+load (file ="glmm3.4.alt1")
+load (file ="glmm3.5.null")
+load (file ="glmm3.5.test")
+load (file ="glmm3.5.alt1")
+```
+
+## Hypothesis 1.1. Intergroup Competition
+
 As an example of hypothesis testing via Bayes Factors, we examine prediction 1.1.1: 
 
 + 1.1.1. Perceived inter-group competition will show an inverse u-shaped relationship with motivation to innovate: when competition is either too strong or too weak, motivation to innovate will decrease.
 
-```{r h1.1, echo=F, include=F}
-nIter<-5000
-source("h1.1.R")
-```
 The posterior distribution of the coefficients is plotted below, including the three competition levels (Low, Medium, High). The "no competition" condition serves as the reference category. 
 
 ```{r h1.1.post, echo=T, include=T}
+testnull<-BFs1.1[6]
+test.SD<-1.45/3
 plotsh1.1.1<-bayesPlotter3 (glmm1.1.test, "h1.1.locomp", "h1.1.medcomp", "h1.1.hicomp", test.SD, "h1.11", "h1.12", "h1.13", testnull)
 plotsh1.1.1[[1]]
 ```
 
-We then estimate the likelihood that the observed data were produced by the hypothesized generating model (1.1.1. inverse u-shaped relationship), and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of prediction 1.1.1. to the alternative prediction. The resulting Bayes Factor (BF = `r testnullBF`) indicates the support for h1.1.1 over the null (BF = 1 indicates no preference, BF>10 indicates strong preference for h1.1.1, BF<0.1 indicates strong preference for h1.1.2). 
+We then estimate the likelihood that the observed data were produced by the hypothesized generating model (1.1.1. inverse u-shaped relationship), and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of prediction 1.1.1. to the alternative prediction. The resulting Bayes Factor (BF = `r testnull`) indicates the support for h1.1.1 over the null (BF = 1 indicates no preference, BF>10 indicates strong preference for h1.1.1, BF<0.1 indicates strong preference for h1.1.2). 
 
 ```{r h1.1.test, include=T}
 plotsh1.1.1[[2]]
@@ -205,6 +325,7 @@ plotdf <- data.frame(value=c(a, b, c, d, e, f),
                              rep("h1.1.medcomp", plotIters),
                              rep("h1.1.hicomp", plotIters)))
 frame.posterior<-subset(plotdf, Distribution=="Posterior")
+alt1null<-BFs1.1[7]
 ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
@@ -232,6 +353,7 @@ plotdf <- data.frame(value=c(a, b, c, d, e, f),
                              rep("h1.1.medcomp", plotIters),
                              rep("h1.1.hicomp", plotIters)))
 frame.posterior<-subset(plotdf, Distribution=="Posterior")
+alt2null<-BFs1.1[8]
 ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
   geom_density(alpha=0.4) + 
   scale_x_continuous(limits = c(-5, 5)) + 
@@ -240,20 +362,846 @@ ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) +
   geom_vline(xintercept = 0, linetype="dashed")
 ```
 
-The comparisons indicate overwhelming support for the null hypothesis of no effect of competition on motivation to innovate. 
+The comparisons indicate overwhelming support for the null hypothesis of no effect of competition on motivation to innovate. The "Low competition" condition was however associated with a consistent decrease in group motivation to innovate, although the effect was smaller than any of our predictions. 
 
-# Summary of Hypothesis Tests
-
-```{r BFs, include=T}
-kable(BFs1.1, caption = "Bayes Factors - All Predictions")
+```{r BFs1.1, include=T}
+BFs1.1<-t(BFs1.1[3:8])
+colnames(BFs1.1)<- c("Bayes Factor")
+kable(BFs1.1, caption = "Bayes Factors - h1.1", digits = 2)
 ```
 
-# Active Learning
+## Hypothesis 1.2. Risk-Seeking Under Competition
 
-We finally deploy and Active Learning approach to minimize posterior uncertainty, where, given a dataset $(x_1,y_1),. ,(x_n,y_n )$, pick a new location $x \epsilon D$ to query the corresponding $x$ such that a large amount of information is gained according to some measure. We prioritize experimental condition based on  measures of variance and entropy. 
++ 1.2.Null: Perceived intergroup competition ('competition2') will have no effect on group motivation to innovate
 
-```{r active_learning, echo=FALSE}
-source("Active_Learning.R")
+Key Model Priors - Null
+
+  Variable          | mean | SD
+  ------------------|------|------
+  competition2 (strong competition)     | 0.00 | 0.48
+  h1.2 (high risk)              | 0.00 | 0.48
+  competition2:h1.2 | 0.00 | 0.23 
+
+Key Posterior Coefficients - Null
+```{r 1.2.nullCoefs , include=T}
+summary(glmm1.2.null, digits = 2, pars=c("competition2", "h1.2", "competition2:h1.2"))
 ```
 
-Active learning will be particularly useful to optimize sample allocation to adequately power those hypotheses with the greatest information gains. 
++ 1.2.1. Perceived intergroup competition will moderate the effect of risk on group motivation to innovate: Groups will be more risk-seeking in a competitive environment than in a non-competitive environment ('competition2:h1.2'). 
+
+
+Key Model Priors - h1.2.1
+
+  Variable          | mean | SD
+  ------------------|------|------
+  competition2      | 0.00 | 0.48
+  h1.2              | 1.45 | 0.48
+  competition2:h1.2 | 1.45 | 0.23 
+
+
+Key Posterior Coefficients - h1.2.1
+```{r 1.2.testCoefs , include=T}
+summary(glmm1.2.test, digits = 2, pars=c("competition2", "h1.2", "competition2:h1.2"))
+```
+
++ 1.2.2. Groups will be equally risk-seeking, irrespective of competition levels ('competition2:h1.2'). 
+
+
+Key Model Priors - h1.2.2
+
+  Variable          | mean | SD
+  ------------------|------|------
+  competition2      | 0.00 | 0.48
+  h1.2              | 1.45 | 0.48
+  competition2:h1.2 | 0.00 | 0.23 
+
+
+Relevant Posterior Coefficients - h1.2.2
+```{r 1.2.alt1Coefs , include=T}
+summary(glmm1.2.alt1, digits = 2, pars=c("competition2", "h1.2", "competition2:h1.2"))
+```
+
++ 1.2.3. Group motivation to innovate will increase linearly with the expected value of the innovation, irrespective of competition levels.
+
+Key Model Priors - h1.2.3
+
+
+  Variable          | mean | SD
+  ------------------|------|------
+  competition2      | 0.00 | 0.48
+  h1.2              | 0.00 | 0.48
+  competition2:h1.2 | 0.00 | 0.23 
+
+Relevant Posterior Coefficients - h1.2.3
+```{r 1.2.alt2Coefs , include=T}
+summary(glmm1.2.alt2, digits = 2, pars=c("competition2", "h1.2", "competition2:h1.2"))
+```
+
+Bayes factor analysis is inconclusive. h1.2.1 is clearly inferior to the other hypotheses and the null, but both h1.2.2 and h1.2.3 enjoy similar support, either when compared against each other or the null. The predictions of prospect theory and probability theory are similarly compatible with these results.  
+
+Bayes Factors Comparing h1.2 Predictions 
+```{r h1.2.BF, include=T}
+BFs1.2<-t(BFs1.2[3:8])
+colnames(BFs1.2)<- c("Bayes Factor")
+kable(BFs1.2, digits = 2)
+```
+
+## Hypothesis 1.3. Availability Heuristic
+
++ 1.3.null. Groups will be equally willing to innovate after a competitor has successfully innovated.
+
+Key Model Priors - Null
+
+  Variable          | mean | SD
+  ------------------|------|------
+  h1.31 (negative framing)          | 0.00 | 0.48
+  h1.32 (positive framing)          | 0.00 | 0.48
+  h1.31:h2.11 (negative framing*Certain number of rounds)      | 0.00 | 0.48
+  h1.32:h2.11 (positive framing*Certain number of rounds)       | 0.00 | 0.48 
+
+Key Posterior Coefficients - Null
+```{r 1.3.nullCoefs , include=T}
+summary(glmm1.3.null, digits = 2, pars=c("h1.31", "h1.32", "h1.31:h2.11", "h1.32:h2.11"))
+```
+
++ 1.3.1. Groups will be more willing to innovate after a competitor has successfully innovated.
+
+
+Key Model Priors -  h1.3.1
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  h1.31             | -1.45 | 0.48
+  h1.32             | 1.45  | 0.48
+  h1.31:h2.11       | 0.00  | 0.48
+  h1.32:h2.11       | 0.00  | 0.48 
+
+
+Key Posterior Coefficients - h1.3.1
+```{r 1.3.testCoefs , include=T}
+summary(glmm1.3.test, digits = 2, pars=c("h1.31", "h1.32", "h1.31:h2.11", "h1.32:h2.11"))
+```
+
+
++ 1.3.2. Groups will be more willing to innovate after a competitor has successfully innovated, but only under conditions of high external uncertainty.
+
+Key Model Priors -  h1.3.2
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  h1.31             | 0.00  | 0.48
+  h1.32             | 0.00  | 0.48
+  h1.31:h2.11       | 1.45 | 0.48
+  h1.32:h2.11       | -1.45  | 0.48 
+
+
+Key Posterior Coefficients - h1.3.2
+```{r 1.3.alt1Coefs , include=T}
+summary(glmm1.3.alt1, digits = 2, pars=c("h1.31", "h1.32", "h1.31:h2.11", "h1.32:h2.11"))
+```
+
+Bayes factor analysis indicates a preference for the null over both predictions. There is a small but consistent effect of negative framing on willingness to innovate. 
+
+Bayes Factors Comparing h1.3 Predictions 
+```{r h1.3.BF, include=T}
+BFs1.3<-t(BFs1.3[3:8])
+colnames(BFs1.3)<- c("Bayes Factor")
+kable(BFs1.3, caption = "Bayes Factors - h1.3", digits = 2)
+```
+
+
+## Hypothesis 2.1. Exogenous Uncertainty
+
++ 2.1.null. Increased exogenous uncertainty (ignorance) will NOT enhance group motivation to innovate.
+
+Key Model Priors -  null
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  h2.11 (Certain rounds)             | 0.00 | 0.12
+
+Key Posterior Coefficients - h2.1.null
+```{r 2.1.nullCoefs , include=T}
+summary(glmm2.1.null, digits = 2, pars=c("h2.11"))
+```
+
++ 2.1.1. Increased exogenous uncertainty (ignorance) will enhance group motivation to innovate.
+
+Key Model Priors -  h2.1.1
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  h2.11 (certain rounds)             | -0.36  | 0.12
+
+Key Posterior Coefficients - h2.1.1
+```{r 2.1.testCoefs , include=T}
+summary(glmm2.1.test, digits = 2, pars=c("h2.11"))
+```
+
+
++ 2.1.2. Exogenous uncertainty (ignorance) will decrease motivation to innovate in the early stages of the game.
+
+Key Model Priors -  h2.1.2
+
+  Variable                        |  mean  | SD
+  --------------------------------|--------|------
+  h2.11 (certain rounds)          |  0.00  | 2.50
+  roundCent(game round, centered) |  0.00  | 2.50
+  h2.11:roundCent                 | -0.03  | 0.01
+
+Key Posterior Coefficients - h2.1.2
+```{r 2.1.alt1Coefs , include=T}
+summary(glmm2.1.alt1, digits = 2, pars=c("h2.11"))
+```
+
+Bayes factor analysis indicates a preference for h.2.1.1 over h.2.1.2. There is a small effect of exogenous uncertainty on willingness to innovate under the favored hypothesis, although it is too small to indicate a strong preference for h.2.1.1 over the null. 
+
+Bayes Factors Comparing h2.1 Predictions
+```{r h2.1.BF, include=T}
+BFs2.1<-t(BFs2.1[3:8])
+colnames(BFs2.1)<- c("Bayes Factor")
+kable(BFs2.1, caption = "Bayes Factors - h2.1", digits = 2)
+```
+
+## Hypothesis 2.2. Expected Utility
+
++ 2.2.1. Increased innovation risk will decrease group motivation to innovate.
+
+Key Model Priors -  h2.2.1
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  h2.21 (Higher risk) | -1.45 | 0.48
+
+
+Key Posterior Coefficients - h2.2.1
+```{r 2.2.testCoefs , include=T}
+summary(glmm2.2.test, digits = 2, pars=c("alpha", "h2.21"))
+```
+
+
++ 2.2.2. Group motivation to innovate will increase linearly with the expected value of the innovation, irrespective of uncertainty.
+
+Key Model Priors -  h2.2.2
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  h2.21 (Higher risk) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.2.2
+```{r 2.2.nullCoefs , include=T}
+summary(glmm2.2.null, digits = 2, pars=c("alpha", "h2.21"))
+```
+
+Bayes factor analysis shows a preference for h2.2.2, indicating that group motivation to innovate  increases with the expected value of the innovation, in alignment with probability theory.
+
+Bayes Factors Comparing h2.2 Predictions 
+```{r h2.2.BF, include=T}
+BFs2.2<-t(BFs2.2[3:8])
+colnames(BFs2.2)<- c("Bayes Factor")
+kable(BFs2.2, caption = "Bayes Factors - h2.2", digits = 2)
+```
+
+## Hypothesis 2.3. Risk Seeking Prospects
+
++ 2.3.1. Groups will be risk seeking for gains of low probability.
+
+Key Model Priors -  h2.3.1
+
+  Variable          | mean  | SD
+  ------------------|-------|------
+  intercept | 0.00 | 2.5
+  h2.31 (Higher risk) | 1.45 | 0.48
+
+Key Posterior Coefficients - h2.3.1
+```{r 2.3.testCoefs , include=T}
+summary(glmm2.3.test, digits = 2, pars=c("alpha", "h2.31"))
+```
+
++ 2.3.2. Groups will show a constant rate of risk aversion, irrespective of the probability of success. 
+
+Key Model Priors -  h2.3.2
+
+Variable          | mean  | SD
+  ------------------|-------|------
+  intercept | -1.45 | 0.48
+  h2.31 (Higher risk) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.3.2
+```{r 2.3.alt1Coefs , include=T}
+summary(glmm2.3.alt1, digits = 2, pars=c("alpha", "h2.31"))
+```
+
+
++ 2.3.3. Groups will choose tactics with the highest expected value.
+
+
+Key Model Priors -  h2.3.3
+
+Variable          | mean  | SD
+  ------------------|-------|------
+  intercept | 1.45 | 0.48
+  h2.31 (Higher risk) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.3.3
+```{r 2.3.alt2Coefs , include=T}
+summary(glmm2.3.alt2, digits = 2, pars=c("alpha", "h2.31"))
+```
+
+The results clearly show support for expected utility theory: when faced with risky choices, groups show a constant rate of risk aversion, irrespective of the probability of success. However the effect is much larger than anticipated, and so the Bayes Factor analysis is inconclusive. There is a small but consistent effect that is compatible with the Prospect Theory prediction that groups are risk seeking for gains of low probability.
+
+Bayes Factors Comparing h2.3 Predictions 
+```{r h2.3.BF, include=T}
+BFs2.3<-t(BFs2.3[3:8])
+colnames(BFs2.3)<- c("Bayes Factor")
+kable(BFs2.3, caption = "Bayes Factors - h2.3", digits = 2)
+```
+
+## Hypothesis 2.4. Risk - Risk Averse Prospects
+
++ 2.4.null. Risk levels will not affect group motivation to innovate
+
+Key Model Priors -  h2.4.null
+
+  Variable           | mean | SD
+  -------------------|------|------
+  h2.41 (Lower risk) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.4.null
+```{r 2.4.nullCoefs , include=T}
+summary(glmm2.4.null, digits = 2, pars=c("alpha", "h2.41"))
+```
+
++ 2.4.1. Groups will be risk averse for gains of high probability.
+
+Key Model Priors -  h2.4.1
+
+  Variable           | mean | SD
+  -------------------|------|------
+  h2.41 (Lower risk) | -1.45 | 0.48
+
+
+Key Posterior Coefficients - h2.4.test
+```{r 2.4.testCoefs , include=T}
+summary(glmm2.4.test, digits = 2, pars=c("alpha", "h2.41"))
+```
+
++ 2.4.2. Groups will choose tactics with the highest expected value.
+
+Key Model Priors -  h2.4.2
+
+  Variable           | mean | SD
+  -------------------|------|------
+  intercept          | 1.45 | 0.48
+  h2.41 (Lower risk) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.4.2
+```{r 2.4.alt1Coefs , include=T}
+summary(glmm2.4.alt1, digits = 2, pars=c("alpha", "h2.41"))
+```
+
++ 2.4.3. Groups will show a constant rate of risk aversion, irrespective of the probability of success. 
+
+Key Model Priors -  h2.4.2
+
+  Variable           | mean | SD
+  -------------------|------|------
+  intercept          | -1.45 | 0.48
+  h2.41 (Lower risk) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.4.3
+```{r 2.4.alt2Coefs , include=T}
+summary(glmm2.4.alt1, digits = 2, pars=c("alpha", "h2.41"))
+```
+
+Bayes factor analysis favors prediction 2.4.3 over predictions 2.4.1 and 2.4.2, and over the null hypothesis, supporting the expected utility hypothesis. The effect of h2.41 is in the direction predicted by prospect theory, but it is smaller than predicted. 
+
+Bayes Factors Comparing h2.4 Predictions 
+```{r h2.4.BF, include=T}
+BFs2.4<-t(BFs2.4[3:8])
+colnames(BFs2.4)<- c("Bayes Factor")
+kable(BFs2.4, caption = "Bayes Factors - h2.4", digits = 2)
+```
+
+## Hypothesis 2.5. Expectancy
+
++ 2.5.1. Motivation to innovate will increase as the confidence in the correlation between effort and performance increases. 
+
+Key Model Priors -  h2.5.1
+
+  Variable                 | mean  | SD
+  -------------------------|-------|------
+  h2.51 (Lower expectancy) | -1.45 | 0.48
+
+
+Key Posterior Coefficients - h2.5.1
+```{r 2.5.testCoefs , include=T}
+summary(glmm2.5.test, digits = 2, pars=c("h2.51"))
+```
+
++ 2.5.2. Motivation to innovate will be independent of the confidence in the correlation between effort and performance.
+
+Key Model Priors -  h2.5.2
+
+  Variable                 | mean  | SD
+  -------------------------|-------|------
+  h2.51 (Lower expectancy) | 0.00  | 0.48
+
+
+Key Posterior Coefficients - h2.5.2
+```{r 2.5.nullCoefs , include=T}
+summary(glmm2.5.null, digits = 2, pars=c("h2.51"))
+```
+
+Bayes factor analysis favors the null over both predictions 2.5.1 and 2.5.2. The effect of the low expectancy alternative is in fact large, but in the opposite direction than predicted by expectancy theory, suggesting groups may only be reacting to part of the information available (e.g. focusing on the expected gains of 177 nuggets in the low expectancy option, discounting a probability between 40% and 100%, averaging 70%). 
+
+Bayes Factors Comparing h2.5 Predictions 
+```{r h2.5.BF, include=T}
+BFs2.5<-t(BFs2.5[3:8])
+colnames(BFs2.5)<- c("Bayes Factor")
+kable(BFs2.5, caption = "Bayes Factors - h2.5", digits = 2)
+```
+
+## Hypothesis 2.6. Instrumentality
+
++ 2.6.1. Motivation to innovate will be the product of valence, expectancy and instrumentality. When Instrumentality is zero, motivation to innovate will be zero.
+
+Key Model Priors -  h2.6.1
+
+  Variable                      | mean  | SD
+  ------------------------------|-------|------
+  h2.61 (Lower instrumentality) | -1.45 | 0.48
+
+
+Key Posterior Coefficients - h2.6.1
+```{r 2.6.testCoefs , include=T}
+summary(glmm2.6.test, digits = 2, pars=c("h2.61"))
+```
+
+
++ 2.6.2. Motivation to innovate will be the sum of valence, expectancy and instrumentality
+
+
+Key Model Priors -  h2.6.2
+
+  Variable                      | mean | SD
+  ------------------------------|------|------
+  h2.61 (Lower instrumentality) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h2.6.2
+```{r 2.6.nullCoefs , include=T}
+summary(glmm2.6.null, digits = 2, pars=c("h2.61"))
+```
+
+Bayes factor analysis is inconclusive, showing  indifference between hypothesis h2.6.1 and h2.6.2. This is because the posterior effect of low instrumentality, while consistently different than zero and in the direction predicted by h.2.6.1, is smaller than anticipated, somewhere in between -1.45 and the null. 
+
+
+Bayes Factors Comparing h2.6 Predictions 
+```{r h2.6.BF, include=T}
+BFs2.6<-t(BFs2.6[3:8])
+colnames(BFs2.6)<- c("Bayes Factor")
+kable(BFs2.6, caption = "Bayes Factors - h2.6", digits = 2)
+```
+
+## Hypothesis 3.1. Group Tolerance of Ambiguity
+
++ 3.1.null. Average levels of tolerance of ambiguity in a group will NOT increase motivation to innovate.
+
+Key Model Priors - h3.1.null
+
+  Variable                            | mean | SD
+  ------------------------------------|------|------
+  h3.11 (High Tolerance of Ambiguity) | 0.00 | 0.30
+
+
+Key Posterior Coefficients - h3.1.null
+```{r 3.1.nullCoefs , include=T}
+summary(glmm3.1.null, digits = 2, pars=c("h3.11"))
+```
+
++ 3.1.1. Average levels of tolerance of ambiguity in a group will increase motivation to innovate.
+
+Key Model Priors - h3.1.1
+
+  Variable                            | mean | SD
+  ------------------------------------|------|------
+  h3.11 (High Tolerance of Ambiguity) | 0.91 | 0.30
+
+Key Posterior Coefficients - h3.1.1
+```{r 3.1.testCoefs , include=T}
+summary(glmm3.1.test, digits = 2, pars=c("h3.11"))
+```
+
++ 3.1.2. Average levels of tolerance of ambiguity in a group will decrease motivation to innovate for complex innovations.
+
+Key Model Priors - h3.1.2
+
+  Variable                            | mean  | SD
+  ------------------------------------|-------|------
+  h3.11 (High Tolerance of Ambiguity) |  0.00 | 0.30
+  complex (Complex tools)             |  0.00 | 0.30
+  h3.11:complex                       | -0.91 | 0.30
+
+
+Key Posterior Coefficients - h3.1.2
+```{r 3.1.alt1Coefs , include=T}
+summary(glmm3.1.alt1, digits = 2, pars=c("h3.11", "complex", "h3.11:complex"))
+```
+
+
+Bayes factor analysis shows that the null is favored over both hypotheses, while h3.1.1 is clearly superior to h3.1.2. There is some evidence that group tolerance of ambiguity increases motivation to innovate, but the effect size is smaller than predicted by h3.1.1. 
+
+
+Bayes Factors Comparing h3.1 Predictions 
+```{r h3.1.BF, include=T}
+BFs3.1<-t(BFs3.1[3:8])
+colnames(BFs3.1)<- c("Bayes Factor")
+kable(BFs3.1, caption = "Bayes Factors - h3.1", digits = 2)
+```
+
+## Hypothesis 3.2. Leader Tolerance of Ambiguity
+
++ 3.2.null. Groups with leaders high in TA will NOT be more willing to innovate.
+
+Key Model Priors - h3.2.null
+
+  Variable                            | mean | SD
+  ------------------------------------|------|------
+  h3.21 (High Tolerance of Ambiguity) | 0.00 | 0.48
+
+
+Key Posterior Coefficients - h3.2.null
+```{r 3.2.nullCoefs , include=T}
+summary(glmm3.2.null, digits = 2, pars=c("h3.21"))
+```
+
++ 3.2.1. Groups with leaders high in TA will be more willing to innovate.
+
+
+Key Model Priors - h3.2.1
+
+  Variable                            | mean | SD
+  ------------------------------------|------|------
+  h3.21 (High Tolerance of Ambiguity) | 1.45 | 0.48
+
+
+Key Posterior Coefficients - h3.2.1
+```{r 3.2.testCoefs , include=T}
+summary(glmm3.2.test, digits = 2, pars=c("h3.21"))
+```
+
++ 3.2.2. Groups with leaders high in TA will be less willing to innovate as the game progresses.
+
+Key Model Priors - h3.2.2
+
+  Variable                            | mean | SD
+  ------------------------------------|------|------
+  h3.21 (High Tolerance of Ambiguity) | 0.00 | 0.48
+  roundCent (game round, centered)    | 0.00 | 0.48
+  h3.21:roundCent                     | 0.07 | 0.02
+
+Key Posterior Coefficients - h3.2.2
+```{r 3.2.alt1Coefs , include=T}
+summary(glmm3.2.alt1, digits = 2, pars=c("h3.21", "roundCent", "h3.21:roundCent"))
+```
+
+Bayes factor analysis shows that the null is favored over both hypotheses. The posterior effect of Leader Tolerance of Ambiguity on group motivation to innovate is close to zero under all hypotheses.  
+
+
+Bayes Factors Comparing h3.2 Predictions
+```{r h3.2.BF, include=T}
+BFs3.2<-t(BFs3.2[3:8])
+colnames(BFs3.2)<- c("Bayes Factor")
+kable(BFs3.2, caption = "Bayes Factors - h3.2", digits = 2)
+```
+
+## Hypothesis 3.3. Group Status
+
++ 3.3.null. Higher-status groups will NOT be less willing to innovate under low competition than under balanced or strong competition.
+
+Key Model Priors - h3.3.null
+
+  Variable                                  | mean | SD
+  ------------------------------------------|------|------
+  h3.32 (High Status/Low legitimacy)        | 0.00 | 0.30
+  h3.33 (Low Status/High legitimacy)        | 0.00 | 0.30
+  h3.34 (Low Status/Low legitimacy)         | 0.00 | 0.30
+  competition (balanced/strong competition) | 0.00 | 0.30
+  h3.32:competition                         | 0.00 | 0.30
+  h3.33:competition                         | 0.00 | 0.30
+  h3.34:competition                         | 0.00 | 0.30
+
+Key Posterior Coefficients - h3.3.null
+```{r 3.3.nullCoefs , include=T}
+summary(glmm3.3.null, digits = 2, pars=c("h3.32", "h3.33", "h3.34", "competition", "h3.32:competition", 
+                                         "h3.33:competition", "h3.34:competition "))
+```
+
++ 3.3.1. Higher-status groups will be less willing to innovate under low competition than under balanced or strong competition.
+
+Key Model Priors - h3.3.1
+
+  Variable                                  |  mean | SD
+  ------------------------------------------|-------|------
+  h3.32 (High Status/Low legitimacy)        |  0.00 | 0.30
+  h3.33 (Low Status/High legitimacy)        |  0.00 | 0.30
+  h3.34 (Low Status/Low legitimacy)         |  0.00 | 0.30
+  competition (balanced/strong competition) |  0.00 | 0.30
+  h3.32:competition                         |  0.00 | 0.30
+  h3.33:competition                         | -0.91 | 0.30
+  h3.34:competition                         | -0.91 | 0.30
+
+Key Posterior Coefficients - h3.3.1
+```{r 3.3.testCoefs , include=T}
+summary(glmm3.3.test, digits = 2, pars=c("h3.32", "h3.33", "h3.34", "competition", "h3.32:competition", 
+                                         "h3.33:competition", "h3.34:competition "))
+```
+
++ 3.3.2. When intergroup boundaries are impermeable and status is perceived as illegitimate, low-status groups will be more willing to innovate.
+
+Key Model Priors - h3.3.1
+
+  Variable                                  | mean | SD
+  ------------------------------------------|------|------
+  h3.32 (High Status/Low legitimacy)        | 0.00 | 0.30
+  h3.33 (Low Status/High legitimacy)        | 0.00 | 0.30
+  h3.34 (Low Status/Low legitimacy)         | 1.45 | 0.30
+  competition (balanced/strong competition) | 0.00 | 0.30
+  h3.32:competition                         | 0.00 | 0.30
+  h3.33:competition                         | 0.00 | 0.30
+  h3.34:competition                         | 0.00 | 0.30
+
+Key Posterior Coefficients - h3.3.2
+```{r 3.3.alt1Coefs , include=T}
+summary(glmm3.3.alt1, digits = 2, pars=c("h3.32", "h3.33", "h3.34", "competition", "h3.32:competition", 
+                                         "h3.33:competition", "h3.34:competition "))
+```
+
+Bayes factor analysis shows that the null is favored over both hypotheses. Only small effects are found for all predictions, none of them sufficiently different from the null prediction.  
+
+Bayes Factors Comparing h3.3 Predictions
+```{r h3.3.BF, include=T}
+BFs3.3<-t(BFs3.3[3:8])
+colnames(BFs3.3)<- c("Bayes Factor")
+kable(BFs3.3, caption = "Bayes Factors - h3.3", digits = 2)
+```
+
+## Hypothesis 3.4. Collective Efficacy
+
++ 3.4.null. Groups with high collective efficacy will NOT be more willing to innovate.
+
+Key Model Priors - h3.4.null
+
+  Variable                                  | mean | SD
+  ------------------------------------------|------|------
+  h1.11 (Weak competition - High CSE)       | 0.00 | 0.48
+  h1.12 (Balanced competition - Mid CSE)    | 0.00 | 0.48
+  h1.13 (Strong competition - Low CSE)      | 0.00 | 0.48
+  h3.41 (High transformational leadership)  | 0.00 | 0.48
+  h1.11:h3.41                               | 0.00 | 0.48
+  h1.12:h3.41                               | 0.00 | 0.48
+  h1.13:h3.41                               | 0.00 | 0.48
+
+```{r 3.4.nullCoefs , include=T}
+summary(glmm3.4.null, digits = 2, pars=c("h1.11", "h1.12", "h1.13", "h3.41", "h1.11:h3.41", 
+                                         "h1.12:h3.41", "h1.13:h3.41"))
+```
+
++ 3.4.1. Groups with high collective efficacy will be more willing to innovate.
+
+Key Model Priors - h3.4.1
+
+  Variable                                  |  mean | SD
+  ------------------------------------------|-------|------
+  h1.11 (Weak competition - High CSE)       |  1.45 | 0.48
+  h1.12 (Balanced competition - Mid CSE)    |  0.00 | 0.48
+  h1.13 (Strong competition - Low CSE)      | -1.45 | 0.48
+  h3.41 (High transformational leadership)  |  0.00 | 0.48
+  h1.11:h3.41                               |  0.00 | 0.48
+  h1.12:h3.41                               |  0.00 | 0.48
+  h1.13:h3.41                               |  0.00 | 0.48
+
+```{r 3.4.testCoefs , include=T}
+summary(glmm3.4.test, digits = 2, pars=c("h1.11", "h1.12", "h1.13", "h3.41", "h1.11:h3.41", 
+                                         "h1.12:h3.41", "h1.13:h3.41"))
+```
+
++ 3.4.2. Groups with transformational leaders who foster high collective efficacy will be more willing to innovate.
+
+Key Model Priors - h3.4.2
+
+  Variable                                  |  mean | SD
+  ------------------------------------------|-------|------
+  h1.11 (Weak competition - High CSE)       |  1.45 | 0.48
+  h1.12 (Balanced competition - Mid CSE)    |  0.00 | 0.48
+  h1.13 (Strong competition - Low CSE)      | -1.45 | 0.48
+  h3.41 (High transformational leadership)  |  0.00 | 0.48
+  h1.11:h3.41                               |  1.45 | 0.48
+  h1.12:h3.41                               |  0.00 | 0.48
+  h1.13:h3.41                               |  0.00 | 0.48
+
+```{r 3.4.alt1Coefs , include=T}
+summary(glmm3.4.alt1, digits = 2, pars=c("h1.11", "h1.12", "h1.13", "h3.41", "h1.11:h3.41", 
+                                         "h1.12:h3.41", "h1.13:h3.41"))
+```
+
+Bayes factor analysis shows that the null is favored over both hypotheses. Only small effects are found for all predictions, none of them sufficiently different from the null prediction.  
+
+Bayes Factors Comparing h3.4 Predictions
+```{r h3.4.BF, include=T}
+BFs3.4<-t(BFs3.4[3:8])
+colnames(BFs3.4)<- c("Bayes Factor")
+kable(BFs3.4, caption = "Bayes Factors - h3.4", digits = 2)
+```
+
+## Hypothesis 3.5. Group Communication
+
++ 3.5.null. If groups are allowed to communicate, they will NOT take greater risks. 
+
+Key Model Priors - h3.5.null
+
+  Variable                       | mean | SD
+  -------------------------------|------|------
+  h3.51 (Communication)          | 0.00 | 0.48
+  h3.52 (Communication + Prompt) | 0.00 | 0.48
+
+```{r 3.5.nullCoefs , include=T}
+summary(glmm3.5.null, digits = 2, pars=c("h3.51", "h3.52")) 
+```  
+
++ 3.5.1. If groups are allowed to communicate, they will take greater risks. 
+
+Key Model Priors - h3.5.1
+
+  Variable                       | mean | SD
+  -------------------------------|------|------
+  h3.51 (Communication)          | 0.91 | 0.30
+  h3.52 (Communication + Prompt) | 0.91 | 0.30
+
+```{r 3.5.testCoefs , include=T}
+summary(glmm3.5.test, digits = 2, pars=c("h3.51", "h3.52")) 
+```  
+
+
++ 3.5.2. Groups that are allowed to communicate AND discuss expected value will take greater risks.
+
+Key Model Priors - h3.5.2
+
+  Variable                       | mean | SD
+  -------------------------------|------|------
+  h3.51 (Communication)          | 0.00 | 0.30
+  h3.52 (Communication + Prompt) | 0.91 | 0.30
+
+```{r 3.5.alt1Coefs , include=T}
+summary(glmm3.5.alt1, digits = 2, pars=c("h3.51", "h3.52")) 
+```  
+
+Bayes factor analysis shows that both hypothesis are favored over the null, with an inconclusive preference for hypothesis 3.5.1. Allowing groups to communicate has a medium sized effect on the group's motivation to innovate.   
+
+
+Bayes Factors Comparing h3.5 Predictions
+```{r h3.5.BF, include=T}
+BFs3.5<-t(BFs3.5[3:8])
+colnames(BFs3.5)<- c("Bayes Factor")
+kable(BFs3.5, caption = "Bayes Factors - h3.5", digits = 2)
+```
+
+# Machine Learning
+
+Since the aim of the NGS2 program is being able to quickly and reliably single models that can predict and explain group innovation, we conduct a model robustness check by comparing the model-based predictions of a full Bayesian GLMM with the data-driven predictions of a machine learning (ML) approach. ML algorithms can efficiently discover complex dependencies in the data, including non-linear relationships and multiple-order interactions between predictors, which will lead to biased estimates of predictor coefficients and lower overall model fit if left ignored. 
+
+We train a Random Forests model using the caret package in R (R Core Team, 2018), using a random subset of the experimental data including 80% of the cases (stratified by game) to train the model with 5-fold cross-validation, with the remaining 20% of cases put aside in a testing dataset. Out of sample performance of both the ML and Bayesian models will be assessed through a comparison of Receiver Operating Characteristic (ROC) curves, as estimated from the testing dataset. 
+
+```{r RFs, include=F}
+# What matters most (random forests)
+
+factorialRF <- read.csv(file = paste(od, "gamesData.csv", sep = '/'))
+factorialRF$innovate[factorialRF$innovation==0] <- "BAU"
+factorialRF$innovate[factorialRF$innovation==1] <- "Innovate"
+factorialRF<-data.frame(lapply(factorialRF, factor))
+factorialRF <- factorialRF[,-c(6:10, 16:19, 21:24)]
+factorialRF <- factorialRF[complete.cases(factorialRF), ]
+
+# Create partition (80/20)
+set.seed(12345)
+inBuild <- createDataPartition(y=factorialRF$innovate, p=0.80, list=FALSE)
+training <- factorialRF[inBuild,]
+validation <- factorialRF[-inBuild,]
+
+# Train and tune model with cross-validation
+
+rf.control <- trainControl(method = "cv", number = 5, verboseIter=TRUE, 
+                           returnData = TRUE, returnResamp = "all", 
+                           summaryFunction=twoClassSummary, classProbs=TRUE)
+tunegrid <- expand.grid(.mtry=c(8))
+rf.tuned<-train(innovate~., data=training, method="rf", tuneGrid=tunegrid,
+                trControl=rf.control, tuneLength=8)
+predictions <- predict(object=rf.tuned, validation, type='prob')
+
+# Predictions from Bayesian GLMER model
+
+predsBayesian<-colMeans(posterior_linpred(glmmoverall, transform=TRUE, newdata=validation))
+```
+
+The areas under the two correlated ROC curves are shown below. According to the Delong test (1988), as implemented by the roc.test procedure of the pROC package (Robin et al., 2011), the ML approach  outperforms the GLMM approach. 
+
+```{r ROCs, include=T}
+combplot1 <- plot.roc(validation$innovate, 
+                      predsBayesian,
+                     main="Statistical Comparison of ROC Curves", 
+                      percent=TRUE, col="#1c61b6")
+combplot2 <- lines.roc(validation$innovate, predictions$Innovate, percent=TRUE, col="orange")
+
+testobj <- roc.test(combplot1, combplot2)
+legend("bottomright", 
+       legend=c("Bayesian GLMM", 
+                "Random Forests"), 
+       col=c("#1c61b6", 
+             "orange"), 
+       lwd=2, cex = 0.9)
+text(50, 40, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
+```
+The GLMM model shows `r combplot1$auc`, indicating substantial room for improvement in predictions. The ML model in turn obtained an `r combplot2$auc`, superior to the GLMM model suggesting some potential to enhance explanatory power by incorporating higher-order relationships (e.g. non-linearities and interactions) among the existing variables. Further gains in explanatory power would require new variables. 
+
+
+# Conclusions
+
+Our results show generally smaller effects than anticipated, with our Bayesian hypothesis testing often favoring the null. Although most effects were smaller than predicted, meaningful non-zero effects were identified for most of our experimental variables. 
+
+## Confirmed Predictions
+
++	H2.2: Probability Theory: When faced with medium-level risks, group motivation to innovate increases with the expected value of the innovation. 
++	H2.4: Expected Utility Theory: Groups are generally risk-averse, irrespective of differential prospects.
++	H3.5: Allowing groups to communicate has a medium sized effect on the group’s motivation to innovate.
+
+## Meaningful effects 
+
++	Low competition reduces group motivation to innovate (small effect, -0.4 to -0.6)
++	Negative framing reduces group motivation to innovate (small effect, -0.3 to -0.4)
++	Exogenous uncertainty increases group motivation to innovate (small effect, 0.2)
++	Groups are more risk seeking for gains of low probability (small effect, 0.4 to 0.6)
++	Groups are more risk averse for high probability gains (-0.5 to -0.6)
++	Low instrumentality reduces group motivation to innovate (small effect, -0.4 to -0.5)
++	Group tolerance of ambiguity increases group motivation to innovate (very small effect, 0.1-0.3)
+
+## Near-zero effects
+
++	Leader  Tolerance of Ambiguity
++	Group Status and Legitimacy
++	Collective Self-efficacy
+
+## Inconclusive effects
+
++	Expectancy: the effect of expectancy was in the opposite direction than predicted, suggesting groups may only be reacting to part of the information available. Stronger manipulations and positive controls are required.
++	Communication on expected value: the effect of prompting teams to consider the expected value of an innovation could not be discerned from the effect of  communication alone. Stronger manipulations and positive controls are required.
+
+## Explanatory power
+
+Our explanatory power was moderate, with an AUC of `r round(combplot1$auc, 1)`. The ML-based approach obtained a stronger fit, which suggests potential for improvement by exploring non-linear relationships, first-order interactions and higher-order interactions between predictors. Any further gains in predictive power would require new data collection with additional variables.

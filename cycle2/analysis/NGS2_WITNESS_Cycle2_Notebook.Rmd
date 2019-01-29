@@ -1168,7 +1168,8 @@ legend("bottomright",
        lwd=2, cex = 0.9)
 text(50, 40, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
 ```
-The GLMM model shows `r combplot1$auc`, indicating substantial room for improvement in predictions. The ML model in turn obtained an `r combplot2$auc`, superior to the GLMM model suggesting some potential to enhance explanatory power by incorporating higher-order relationships (e.g. non-linearities and interactions) among the existing variables. Further gains in explanatory power would require new variables. 
+
+The GLMM model shows an AUC of `r round(combplot1$auc, 1)`, indicating substantial room for improvement in predictions. The ML model in turn obtained an AUC of `r round(combplot2$auc, 1)`, superior to the GLMM model suggesting some potential to enhance explanatory power by incorporating higher-order relationships (e.g. non-linearities and interactions) among the existing variables. Further gains in explanatory power would require new variables. 
 
 
 # Conclusions

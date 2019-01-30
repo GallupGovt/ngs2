@@ -1190,7 +1190,7 @@ Our results show generally smaller effects than anticipated, with our Bayesian h
 +	Groups are more risk seeking for gains of low probability (small effect, 0.4 to 0.6)
 +	Groups are more risk averse for high probability gains (-0.5 to -0.6)
 +	Low instrumentality reduces group motivation to innovate (small effect, -0.3 to -0.4)
-+	Group tolerance of ambiguity increases group motivation to innovate (very small effect, 0.1-0.3)
++	Group tolerance of ambiguity increases group motivation to innovate (very small effect, 0.1 to 0.3)
 
 ## Near-zero effects
 

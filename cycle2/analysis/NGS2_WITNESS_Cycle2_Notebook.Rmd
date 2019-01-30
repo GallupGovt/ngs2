@@ -551,7 +551,7 @@ Key Model Priors -  h2.1.2
 
 Key Posterior Coefficients - h2.1.2
 ```{r 2.1.alt1Coefs , include=T}
-summary(glmm2.1.alt1, digits = 2, pars=c("h2.11"))
+summary(glmm2.1.alt1, digits = 2, pars=c("h2.11", "roundCent", "h2.11:roundCent"))
 ```
 
 Bayes factor analysis indicates a preference for h.2.1.1 over h.2.1.2. There is a small effect of exogenous uncertainty on willingness to innovate under the favored hypothesis, although it is too small to indicate a strong preference for h.2.1.1 over the null. 
@@ -576,7 +576,7 @@ Key Model Priors -  h2.2.1
 
 Key Posterior Coefficients - h2.2.1
 ```{r 2.2.testCoefs , include=T}
-summary(glmm2.2.test, digits = 2, pars=c("alpha", "h2.21"))
+summary(glmm2.2.test, digits = 2, pars=c("h2.21"))
 ```
 
 
@@ -591,7 +591,7 @@ Key Model Priors -  h2.2.2
 
 Key Posterior Coefficients - h2.2.2
 ```{r 2.2.nullCoefs , include=T}
-summary(glmm2.2.null, digits = 2, pars=c("alpha", "h2.21"))
+summary(glmm2.2.null, digits = 2, pars=c("h2.21"))
 ```
 
 Bayes factor analysis shows a preference for h2.2.2, indicating that group motivation to innovate  increases with the expected value of the innovation, in alignment with probability theory.
@@ -800,7 +800,7 @@ Key Posterior Coefficients - h2.6.2
 summary(glmm2.6.null, digits = 2, pars=c("h2.61"))
 ```
 
-Bayes factor analysis is inconclusive, showing  indifference between hypothesis h2.6.1 and h2.6.2. This is because the posterior effect of low instrumentality, while consistently different than zero and in the direction predicted by h.2.6.1, is smaller than anticipated, somewhere in between -1.45 and the null. 
+Bayes factor analysis is inconclusive, showing  indifference between hypothesis h2.6.1 and h2.6.2. This is because the posterior effect of low instrumentality, while consistently different than zero and in the direction predicted by h.2.6.1, is smaller than anticipated, somewhere in between -1.45 and the null. These findings are more consistent with the summative model of expectancy theory than the multiplicative model. 
 
 
 Bayes Factors Comparing h2.6 Predictions 
@@ -1185,11 +1185,11 @@ Our results show generally smaller effects than anticipated, with our Bayesian h
 ## Meaningful effects 
 
 +	Low competition reduces group motivation to innovate (small effect, -0.4 to -0.6)
-+	Negative framing reduces group motivation to innovate (small effect, -0.3 to -0.4)
-+	Exogenous uncertainty increases group motivation to innovate (small effect, 0.2)
++	Negative framing reduces group motivation to innovate (small effect, -0.2 to -0.3)
++	Exogenous uncertainty increases group motivation to innovate (very small effect,0.1 to 0.2)
 +	Groups are more risk seeking for gains of low probability (small effect, 0.4 to 0.6)
 +	Groups are more risk averse for high probability gains (-0.5 to -0.6)
-+	Low instrumentality reduces group motivation to innovate (small effect, -0.4 to -0.5)
++	Low instrumentality reduces group motivation to innovate (small effect, -0.3 to -0.4)
 +	Group tolerance of ambiguity increases group motivation to innovate (very small effect, 0.1-0.3)
 
 ## Near-zero effects

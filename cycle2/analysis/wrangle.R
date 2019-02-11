@@ -79,9 +79,14 @@ dates <- lapply(StartMatch, function(x) as.Date((gsub("StartMatch,", "", x)), "%
 datesFIELD <- lapply(dates, function(x) x >= as.Date('2018-10-25'))
 
 # Subset datalist according to the two conditions above:
-# 1. Had at least one "LeaderSelection") event before the game was suspended
-# 2. Played during fielding period (StartMatch date >= 10/25/2018)
-datalist<-datalist[leaderSelectionYes==TRUE & datesFIELD==TRUE]
+# 1. Played during fielding period (StartMatch date >= 10/25/2018)
+datalist<-datalist[datesFIELD==TRUE]
+# Count number of all connected players, even if no choice was made
+PlayerConnection <- lapply(datalist, function(x) length(x[grep("PlayerConnection", x)]))
+nConnectedAll<-lapply(PlayerConnection, function(x) x[1])
+nConnectedAll<-Reduce(`+`, nConnected)
+# 2. Had at least one "LeaderSelection") event before the game was suspended
+datalist<-datalist[leaderSelectionYes==TRUE]
 
 # Count number of games
 nElements <- length(datalist)

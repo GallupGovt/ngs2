@@ -84,7 +84,7 @@ datalist<-datalist[datesFIELD==TRUE]
 # Count number of all connected players, even if no choice was made
 PlayerConnection <- lapply(datalist, function(x) length(x[grep("PlayerConnection", x)]))
 nConnectedAll<-lapply(PlayerConnection, function(x) x[1])
-nConnectedAll<-Reduce(`+`, nConnected)
+nConnectedAll<-Reduce(`+`, nConnectedAll)
 # 2. Had at least one "LeaderSelection") event before the game was suspended
 datalist<-datalist[leaderSelectionYes==TRUE]
 

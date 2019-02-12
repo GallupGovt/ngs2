@@ -33,7 +33,7 @@ dlScripts <- function (scriptNames) {
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
 scriptNames <- c("run_scripts.r", "effects.R", "wrangle.R", "analytics.R", "merge_empanelment_log.R", 
                  "ActiveLearning_Blocks.R", "positive_controls.R", "h1.1.R", "h1.2.R", "h1.3.R", 
-                 "h2.1.R", "h2.2.R", "h2.3.R", "h2.4.R", "h3.1.R", "h3.2.R", "h3.3.R", 
+                 "h2.1.R", "h2.2.R", "h2.3.R", "h2.4.R", "h2.5.R", "h2.6.R", "h3.1.R", "h3.2.R", "h3.3.R", 
                  "h3.4.R", "h3.5.R", "gamesData.csv", "empanelment_and_log.csv")
 lapply(scriptNames, dlScripts)
 ```

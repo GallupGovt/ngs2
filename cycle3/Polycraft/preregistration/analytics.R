@@ -5,7 +5,7 @@
 rm(list = ls(all = TRUE))
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
-pacman::p_load(rstan, rstanarm, bridgesampling, blavaan, bayesplot, ggplot2,dplyr)
+pacman::p_load(rstan, rstanarm, bridgesampling, blavaan, bayesplot, ggplot2,dplyr, RCurl)
 options(mc.cores = parallel::detectCores()) # Use multiple cores for Stan (speeds up performance)
 
 ## Download scripts from Github
@@ -16,7 +16,7 @@ dlScripts <- function (scriptNames) {
   writeLines(fileHolder, fileConn)
   close(fileConn)
 }
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle2/analysis"
+githubRepo <- "https://github.com/GallupGovt/ngs2/blob/master/cycle3/Polycraft/preregistration"
 scriptNames <- c("functions.R", "dataprep.R", "Bayes_power.R")
 lapply(scriptNames, dlScripts)
 

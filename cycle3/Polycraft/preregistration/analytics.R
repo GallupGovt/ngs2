@@ -16,7 +16,7 @@ dlScripts <- function (scriptNames) {
   writeLines(fileHolder, fileConn)
   close(fileConn)
 }
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Polycraft/preregistration/analytics.R"
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Polycraft/preregistration"
 scriptNames <- c("functions.R", "dataprep.R", "Bayes_power.R")
 lapply(scriptNames, dlScripts)
 

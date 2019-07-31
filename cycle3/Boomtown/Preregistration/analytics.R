@@ -1,7 +1,6 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in July 2019
 ## Set system parameters
 
-rm(list = ls(all = TRUE))
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
 pacman::p_load(rstan, rstanarm, bridgesampling, blavaan, bayesplot, ggplot2,dplyr, lme4)

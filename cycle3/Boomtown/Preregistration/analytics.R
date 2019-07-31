@@ -49,7 +49,7 @@ nIter<-10000 # Iterations for MCMC sampler (Per standard recommendations. Number
 
 ## Bayesian Power (simulate BFs for null and true scenarios)
 # Long runtime (~48 hours locally), so commented out 
-source ("Bayes_power.R")
+#source ("Bayes_power.R")
 
 # Bayesian hypothesis testing
 

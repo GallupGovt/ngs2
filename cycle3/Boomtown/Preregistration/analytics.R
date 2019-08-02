@@ -27,16 +27,16 @@ formula.h1.1<-as.formula("inmot1.1~competition+risk+complexity+tools+tolerance+s
 # Run models (Pre-run and saved)
 
 bayesGlmer.1.1<- bayesGlmer(formula.h1.1, h1.1)
-bridge_1.1 <- bridge_sampler(bayesGlmer.1.1, silent=TRUE)
+#bridge_1.1 <- bridge_sampler(bayesGlmer.1.1, silent=TRUE)
 
 save (bayesGlmer.1.1, file ="bayesGlmer.1.1")
-save (bridge_1.1, file ="bridge_1.1")
+#save (bridge_1.1, file ="bridge_1.1")
 
 bayesGlmer.1.0<- bayesGlmer(formula.h1.1, h1.null)
-bridge_1.0 <- bridge_sampler(bayesGlmer.1.0, silent=TRUE)
+#bridge_1.0 <- bridge_sampler(bayesGlmer.1.0, silent=TRUE)
 
 save (bayesGlmer.1.0, file ="bayesGlmer.1.0")
-save (bridge_1.0, file ="bridge_1.0")
+#save (bridge_1.0, file ="bridge_1.0")
 
 ## Bayesian hypothesis testing (Group-level outcomes)
 ## Baseline priors based on simulated data: log-odds = 0.5, SD = 0.2

@@ -1,0 +1,192 @@
+---
+title: "Group Innovation under Competition and Uncertanity - Cycle 3 Pre-registration"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+options(mc.cores = parallel::detectCores()) # Use multiple cores for Stan (speeds up performance )
+```
+```{r get_scripts, include=F}
+# load libraries
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+options(mc.cores = parallel::detectCores()) # Use multiple cores for Stan to speed up performance
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC)
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+  }
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Preregistration"
+scriptNames <- c("analytics.R", "dataprep.R", "functions.R", "Bayes_power.R")
+lapply(scriptNames, dlScripts)
+```
+
+```{r run_scripts, include=F}
+# run scripts in order
+source("analytics.R")
+load(file ="C:/Users/C_Pablo_Diego-Rosell/Documents/bayesGlmer.1.1")
+load(file ="C:/Users/C_Pablo_Diego-Rosell/Documents/bayesGlmer.1.0")
+```
+
+# Introduction
+
+This document represents team NGS2 WITNESS's cycle 3 pre-registration of experiments on the Boomtown platform. The project's overall background, motivation, goals and theoretical rationale remains the same as in Cycle 21, with a continued focus on the effect of intergroup competition and uncertainty on group motivation to innovate. The main changes for Cycle 3 can be summarized into the following categories:
+
+* Abduction from Cycle 2: Observations from Cycle 2 data and are incorporated into Cycle 3 by either eliminating null variables from the design or formulating new hypotheses where existing predictions could not readily account for observed effects. Variables that had a null effect on group motivation to innovate were removed from the design, including:
+
++ Leader Tolerance of Ambiguity
++ Group Status and Legitimacy
++ Collective Self-efficacy
+
+Variables where existing predictions could not fully account for observed effects included:
+
++ Perceived intergroup competition
++ Innovation uncertainty (risk) and expected value
++ Heuristic reasoning
+
+* Expanded theoretical framework: The suite of independent variables is expanded, focusing on group-level dynamics and factors known to be central to group processes. The process included a traditional literature review formalized into causal graphs, followed by an expert crowd-sourcing exercise via DESIM (see description below) to validate the graphs and quantify expected effects. The following variables were added to the design:
+
++ Hierarchical role differentiation (boss, leads, miners)
++ Communication structures with varying levels of density and centralization
++ Varying voting weights
++ Voting rounds before and after group discussion
++ Social norms
++ Time Pressure
+
+* Enhanced Analytics: The analytical pipeline is boosted by enhancing the computing infrastructure and its reproducibility.
+
++ Multilevel Structural Equation Modelling to test the fit of entire causal graphs.
++ Containerization of the analytical environment via Docker to guarantee forward compatibility and one-click reproducibility.
++ Parallelized computing via AWS to reduce processing time from days to hours.
+
+# Data used for the prediction
+
+* Valid experimental instances included games with at least seven players and one tool choice. 
+* Each round of data collection will include:
+    + 96 experimental conditions in the full factorial space.
+    + 672 players (7 players per instance)
+    + 1,248 group choices (13 rounds per instance)
+    + 8,736 individual choices (7 players * 13 rounds per instance) 
+    
+Variables used and a random sample of rows from the final analytical dataset are summarized below. 
+
+```{r data header}
+names(factorial)
+datatable(sample_n(factorial, 5), 
+          caption = "Randomly selected rows of processed data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```
+
+# General effects
+
+All hypothesis tests and effect size estimations are conducted within a Bayesian framework, using Bayesian Generalized Linear Mixed Models (GLMMs). Because repeated measures from the same game are not independent, all estimations will include a group random effect for group-level outcomes, an individual random effect for individual-level outcomes, and fixed effects for the corresponding independent variables. 
+
+$ln(p/(1-p))_{ij} = \beta_{0} + \beta_{1}X_{j} + \beta_{2}Y_{ij} + \beta_{3} (X_{j}*Y_{ij}) +u_{j} + \epsilon_{ij}$
+
+Where the log odds of the probability of innovation for each decision $i$ in each game $j$ are a function of a constant term $\beta_0$ (intercept); an experimentally manipulated independent 2-level factor $X$ that varies for each game $j$, with unknown coefficients $\beta_1$; an experimentally manipulated independent variable $Y$, that varies for each game $j$ and each measure $i$, with unknown coefficients $\beta_2$; a two-way interaction $(X_j*Y_ij)$ between both experimental variables, with unknown coefficients $\beta_3$; a group random effect $u_j$, and a residual error term $\epsilon_{ij}$. 
+
+We present next the posterior distribution of the coefficients for the full-factorial model, using the equation above. 
+
+```{r glmmoverall}
+bayesGlmer.1.1
+#posteriorAreas
+```
+
+# Hypothesis Testing
+
+We estimate causal effects for all the predictions under each hypothesis using Bayesian applied regression modelling. We quantify the change from prior to posterior model odds based on observed data to compare competing predictions in terms of Bayes factors (see Alston et al., 2005, for a general discussion). 
+
+Posterior predictive distributions and posterior parameter distributions are sampled using Hamiltonian MCMC (e.g. Hoffman & Gelman, 2014), with 3 Markov chains and 10,000 iterations. The posterior probability distributions for each prediction are summarized using the mean and the central 95% interval. Since we are primarily concerned with effect size estimation and model optimization within a Bayesian framework, correction for multiple comparisons do not apply (Gelman, Hill, & Yajima, 2012). 
+
+# Machine Learning
+
+Since the aim of the NGS2 program is being able to quickly and reliably single models that can predict and explain group innovation, we conduct a model robustness check by comparing the model-based predictions of a full Bayesian GLMM with the data-driven predictions of a machine learning (ML) approach. ML algorithms can efficiently discover complex dependencies in the data, including non-linear relationships and multiple-order interactions between predictors, which will lead to biased estimates of predictor coefficients and lower overall model fit if left ignored. 
+
+We train a Random Forests model using the caret package in R (R Core Team, 2018), using a random subset of the experimental data including 80% of the cases (stratified by game) to train the model with 5-fold cross-validation, with the remaining 20% of cases put aside in a testing dataset. Out of sample performance of both the ML and Bayesian models will be assessed through a comparison of Receiver Operating Characteristic (ROC) curves, as estimated from the testing dataset. 
+
+```{r RFs, include=F}
+factorial$inmot1.1<-as.numeric(factorial$inmot1.1)
+factorial$inmot1.1.RF[factorial$inmot1.1==1] <- "BAU"
+factorial$inmot1.1.RF[factorial$inmot1.1==2] <- "Innovate"
+
+factorial <- factorial[,-which(names(factorial) %in% 
+                                 c("gagg1.null", 
+                                   "gagg2.null", 
+                                   "conformity.null", 
+                                   "inmot1.null", 
+                                   "inmot1.1", 
+                                   "batch", 
+                                   "innovate.null", 
+                                   "innovate"))]
+factorial <- factorial[complete.cases(factorial), ]
+
+# Create partition (80/20)
+set.seed(12345)
+inBuild <- createDataPartition(y=factorial$inmot1.1.RF, p=0.80, list=FALSE)
+training <- factorial[inBuild,]
+validation <- factorial[-inBuild,]
+
+# Train and tune model with cross-validation
+
+rf.control <- trainControl(method = "cv", number = 5, verboseIter=TRUE, 
+                           returnData = TRUE, returnResamp = "all", 
+                           summaryFunction=twoClassSummary, classProbs=TRUE)
+tunegrid <- expand.grid(.mtry=c(1))
+rf.tuned<-train(inmot1.1.RF~
+                  competition+risk+complexity+tools+tolerance+support+centralization+leaderWeight+pressure+framing+density, 
+                data=training, method="rf", tuneGrid=tunegrid,
+                trControl=rf.control, tuneLength=8)
+predictions <- predict(object=rf.tuned, validation, type='prob')
+
+# Predictions from Bayesian GLMER model
+
+predsBayesian<-colMeans(posterior_linpred(bayesGlmer.1.1, transform=TRUE, newdata=validation))
+```
+
+The areas under the two correlated ROC curves are shown below. According to the Delong test (1988), as implemented by the roc.test procedure of the pROC package (Robin et al., 2011), the ML approach  outperforms the GLMM approach. 
+
+```{r ROCs, include=T}
+# Plot
+
+combplot1 <- plot.roc(validation$inmot1.1.RF, 
+                      predsBayesian,
+                      main="Statistical Comparison of ROC Curves", 
+                      percent=TRUE, col="#1c61b6")
+combplot2 <- lines.roc(validation$inmot1.1, predictions$Innovate, percent=TRUE, col="orange")
+
+testobj <- roc.test(combplot1, combplot2)
+legend("bottomright", 
+       legend=c("Bayesian GLMM", 
+                "Random Forests"), 
+       col=c("#1c61b6", 
+             "orange"), 
+       lwd=2, cex = 0.9)
+text(50, 40, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
+```
+
+
+---
+End Time: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+<br />
+<br />
+<br />

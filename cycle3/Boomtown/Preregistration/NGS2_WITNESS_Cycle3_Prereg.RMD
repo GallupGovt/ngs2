@@ -40,8 +40,12 @@ lapply(scriptNames, dlScripts)
 ```{r run_scripts, include=F}
 # run scripts in order
 source("analytics.R")
-load(file ="C:/Users/C_Pablo_Diego-Rosell/Documents/bayesGlmer.1.1")
-load(file ="C:/Users/C_Pablo_Diego-Rosell/Documents/bayesGlmer.1.0")
+load (file ="bayesGlmer.1.0")
+load (file ="bayesGlmer.1.1")
+load (file ="bridge_1.0")
+load (file ="bridge_1.1")
+testnull<-bf(bridge_1.1, bridge_1.0)
+
 ```
 
 # Introduction
@@ -116,6 +120,19 @@ We estimate causal effects for all the predictions under each hypothesis using B
 
 Posterior predictive distributions and posterior parameter distributions are sampled using Hamiltonian MCMC (e.g. Hoffman & Gelman, 2014), with 3 Markov chains and 10,000 iterations. The posterior probability distributions for each prediction are summarized using the mean and the central 95% interval. Since we are primarily concerned with effect size estimation and model optimization within a Bayesian framework, correction for multiple comparisons do not apply (Gelman, Hill, & Yajima, 2012). 
 
+We then estimate the likelihood that the observed data were produced by the hypothesized generating model (1.1. motivation to innovate increases with competition), and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of prediction 1.1. to the null with the following priors:  
+
+```{r h1priors, include=T}
+# Null priors
+prior_summary(bayesGlmer.1.0)
+
+# H1.1. priors
+prior_summary(bayesGlmer.1.1)
+```
+
+The resulting Bayes Factor (BF = `r testnull[1]`) indicates the support for h1.1 over the null (BF = 1 indicates no preference, BF>10 indicates strong preference for h1.1, BF<0.1 indicates strong preference for h1.2). 
+
+
 # Machine Learning
 
 Since the aim of the NGS2 program is being able to quickly and reliably single models that can predict and explain group innovation, we conduct a model robustness check by comparing the model-based predictions of a full Bayesian GLMM with the data-driven predictions of a machine learning (ML) approach. ML algorithms can efficiently discover complex dependencies in the data, including non-linear relationships and multiple-order interactions between predictors, which will lead to biased estimates of predictor coefficients and lower overall model fit if left ignored. 
@@ -181,11 +198,7 @@ legend("bottomright",
        lwd=2, cex = 0.9)
 text(50, 40, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
 ```
-
-
----
-End Time: "`r format(Sys.time(), '%d %B, %Y')`"
----
+End Time: `r format(Sys.time(), '%d %B, %Y')`
 
 <br />
 <br />

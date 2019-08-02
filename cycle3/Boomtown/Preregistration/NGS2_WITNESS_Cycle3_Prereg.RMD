@@ -40,6 +40,8 @@ lapply(scriptNames, dlScripts)
 ```{r run_scripts, include=F}
 # run scripts in order
 source("analytics.R")
+load (file ="bridge_1.0")
+load (file ="bridge_1.1")
 ```
 
 # Introduction

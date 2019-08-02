@@ -57,9 +57,9 @@ lmerBF<-function(formula, priors1, priors2) {
   
 }
 
-
 bayesGlmer<-function(formula, priors) {
   set.seed(12345)
+  diagnostic<-deparse(substitute(priors))
   fittedGlmer<- stan_glmer(formula,
                            data=factorial,
                            family = binomial(link = "logit"),
@@ -67,7 +67,21 @@ bayesGlmer<-function(formula, priors) {
                            prior_intercept = normal(0, 2.5),
                            chains = 3, iter = nIter,
                            diagnostic_file = 
-                             paste(deparse(substitute(h1.1.1)),".csv", sep=""))
+                             paste(diagnostic,".csv", sep=""))
+  return(fittedGlmer)
+}
+
+bayeslmer<-function(formula, priors) {
+  set.seed(12345)
+  diagnostic<-deparse(substitute(priors))
+  fittedGlmer <- stan_glmer(formula,
+                            data=factorial,
+                            family = gaussian(link = "identity"),
+                            prior = priors,
+                            prior_intercept = normal(0, 2.5),
+                            chains = 3, iter = nIter,
+                            diagnostic_file = 
+                              paste(diagnostic,".csv", sep=""))
   return(fittedGlmer)
 }
 

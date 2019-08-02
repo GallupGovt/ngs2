@@ -40,12 +40,6 @@ lapply(scriptNames, dlScripts)
 ```{r run_scripts, include=F}
 # run scripts in order
 source("analytics.R")
-load (file ="bayesGlmer.1.0")
-load (file ="bayesGlmer.1.1")
-load (file ="bridge_1.0")
-load (file ="bridge_1.1")
-testnull<-bf(bridge_1.1, bridge_1.0)
-
 ```
 
 # Introduction
@@ -111,6 +105,7 @@ We present next the posterior distribution of the coefficients for the full-fact
 
 ```{r glmmoverall}
 bayesGlmer.1.1
+testnull<-bf(bridge_1.1, bridge_1.0)
 #posteriorAreas
 ```
 
@@ -122,16 +117,17 @@ Posterior predictive distributions and posterior parameter distributions are sam
 
 We then estimate the likelihood that the observed data were produced by the hypothesized generating model (1.1. motivation to innovate increases with competition), and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of prediction 1.1. to the null with the following priors:  
 
-```{r h1priors, include=T}
-# Null priors
++ H1.Null priors
+```{r h1.0.priors, include=T}
 prior_summary(bayesGlmer.1.0)
+```
 
-# H1.1. priors
++ H1.1. priors
+```{r h1.1.priors, include=T}
 prior_summary(bayesGlmer.1.1)
 ```
 
 The resulting Bayes Factor (BF = `r testnull[1]`) indicates the support for h1.1 over the null (BF = 1 indicates no preference, BF>10 indicates strong preference for h1.1, BF<0.1 indicates strong preference for h1.2). 
-
 
 # Machine Learning
 
@@ -175,7 +171,7 @@ predictions <- predict(object=rf.tuned, validation, type='prob')
 
 # Predictions from Bayesian GLMER model
 
-predsBayesian<-colMeans(posterior_linpred(bayesGlmer.1.1, transform=TRUE, newdata=validation))
+
 ```
 
 The areas under the two correlated ROC curves are shown below. According to the Delong test (1988), as implemented by the roc.test procedure of the pROC package (Robin et al., 2011), the ML approach  outperforms the GLMM approach. 
@@ -198,6 +194,7 @@ legend("bottomright",
        lwd=2, cex = 0.9)
 text(50, 40, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
 ```
+
 End Time: `r format(Sys.time(), '%d %B, %Y')`
 
 <br />

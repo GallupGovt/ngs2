@@ -10,7 +10,7 @@
 
 output = matrix(data=NA, nrow=700, ncol=2)
 row<-1
-for(j in seq(8:8)){
+for(j in seq(2:8)){
   nBatches<-j
   for(i in 1:100){
     source("dataprep.R")
@@ -23,4 +23,3 @@ for(j in seq(8:8)){
 }
 
 write.csv(output, "power_h12.csv")
-

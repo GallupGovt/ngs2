@@ -2,14 +2,11 @@
 
 **Most up-to-date:**
 
-As of August 01, 2019 - https://github.gallup.com/Pablo-Diego-Rosell/ngs2docker
+As of August 02, 2019 - https://github.com/GallupGovt/ngs2/edit/master/cycle3/Boomtown/Preregistration
 
 [Pablo Diego-Rosell](https://github.gallup.com/Pablo-Diego-Rosell "Gallup GitHub")
-
 [Nasser Qadri](https://github.gallup.com/nasser-qadri "Gallup GitHub")
-
 [Taylor Bolt](https://github.gallup.com/taylor-bolt "Gallup GitHub")
-
 [Mitchell Bregman](https://github.gallup.com/mitchell-bregman "Gallup GitHub")
 
 ## To connect to AWS instance in terminal use: 
@@ -18,8 +15,7 @@ As of August 01, 2019 - https://github.gallup.com/Pablo-Diego-Rosell/ngs2docker
 ## (Optional) To setup `git` remote:
 Instructions included below.
 
-As of June 20, 2019 - set remote for [this repo](https://github.gallup.com/mitchell-bregman/ngs2docker/) as `upstream`. This
-is required.
+As of August 2, 2019 - set remote for [this repo](https://github.com/GallupGovt/ngs2/edit/master/cycle3/Boomtown/Preregistration) as `upstream`. This is required.
 
 *To be moved to Predictive Analytics GitHub in future.*
 

@@ -75,14 +75,14 @@ Variables where existing predictions could not fully account for observed effect
 + Containerization of the analytical environment via Docker to guarantee forward compatibility and one-click reproducibility.
 + Parallelized computing via AWS to reduce processing time from days to hours.
 
-# Data used for the prediction
+# Data used for the predictions
 
 * Valid experimental instances included games with at least seven players and one tool choice. 
 * Each round of data collection will include:
-    + 96 experimental conditions in the full factorial space.
-    + 672 players (7 players per instance)
-    + 1,248 group choices (13 rounds per instance)
-    + 8,736 individual choices (7 players * 13 rounds per instance) 
+    + 192 experimental conditions in the full factorial space.
+    + 1,344 players (7 players per instance)
+    + 2,496 group choices (13 rounds per instance)
+    + 17,472 individual choices (7 players * 13 rounds per instance) 
     
 Variables used and a random sample of rows from the final analytical dataset are summarized below. 
 
@@ -95,7 +95,7 @@ datatable(sample_n(factorial, 5),
               scrollCollapse = TRUE))
 ```
 
-# General effects
+# Estimating general effects
 
 All hypothesis tests and effect size estimations are conducted within a Bayesian framework, using Bayesian Generalized Linear Mixed Models (GLMMs). Because repeated measures from the same game are not independent, all estimations will include a group random effect for group-level outcomes, an individual random effect for individual-level outcomes, and fixed effects for the corresponding independent variables. 
 

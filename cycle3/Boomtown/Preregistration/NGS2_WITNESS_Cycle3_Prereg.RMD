@@ -172,7 +172,7 @@ rf.tuned<-train(inmot1.1.RF~
 predictions <- predict(object=rf.tuned, validation, type='prob')
 
 # Predictions from Bayesian GLMER model
-predsBayesian<-colMeans(posterior_linpred(glmmoverall, transform=TRUE, newdata=validation))
+predsBayesian<-colMeans(posterior_linpred(bayesGlmer.1.1, transform=TRUE, newdata=validation))
 ```
 
 The areas under the two correlated ROC curves are shown below. According to the Delong test (1988), as implemented by the roc.test procedure of the pROC package (Robin et al., 2011), the ML approach  outperforms the GLMM approach. 

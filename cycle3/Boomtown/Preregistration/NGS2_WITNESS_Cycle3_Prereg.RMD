@@ -1,7 +1,7 @@
 ---
 title: "Group Innovation under Competition and Uncertanity - Cycle 3 Pre-registration"
 author: "Pablo Diego-Rosell, PhD  - Gallup"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "`r format(Sys.time(), '%d %B, %Y. %H:%M CET')`"
 output:
   html_document:
     number_sections: yes
@@ -195,9 +195,7 @@ legend("bottomright",
        lwd=2, cex = 0.9)
 text(50, 40, labels=paste("p-value =", format.pval(testobj$p.value, digits =3, eps= 0.001)), adj=c(0, .5))
 ```
-
-End Time: `r format(Sys.time(), '%d %B, %Y')`
-
+End Time: `r format(Sys.time(), '%d %B, %Y. %H:%M CET')`
 <br />
 <br />
 <br />

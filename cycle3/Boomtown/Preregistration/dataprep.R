@@ -39,6 +39,8 @@ factorial <- expand.grid(competition=c(0, 1, 2, 3),
                          centralization=c(0,1,2), 
 
                          leaderWeight=seq(0:1), 
+                         
+                         timeUncertainty=seq(0:1), 
 
                          round=seq(1:13), 
 
@@ -52,7 +54,7 @@ factorial <- expand.grid(competition=c(0, 1, 2, 3),
 
 factorial$group<- (factorial$competition)+(factorial$tolerance*10)+(factorial$support*100) +
 
-  (factorial$centralization*1000) + (factorial$leaderWeight*10000)
+  (factorial$centralization*1000) + (factorial$leaderWeight*10000) + (factorial$timeUncertainty*100000)
 
 #length(unique(factorial$group))
 

@@ -2,18 +2,6 @@
 
 # For questions, please email pablo_diego-rosell@gallup.co.uk
 
-
-
-## Game parameters
-
-
-
-nPlayers<-7 # Typically 7 or 10
-
-nBatches<-1 # Number of batches of data collection (96 games per batch, 672 players per game. Viable range = 1 to 8 batches)
-
-
-
 # We add random group and individual coefficients following a normal distribution with a mean of 0 and a SD of 0.1
 
 # DEFT=1.2 calculated from Cycle 2 data. 

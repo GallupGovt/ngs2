@@ -1,5 +1,13 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in July 2019
 
+## Game parameters
+
+
+nPlayers<-7 # Typically 7 or 10
+
+nBatches<-1 # Number of batches of data collection (192 games per batch, 1,344 players per game. Viable range = 1 to 4 batches)
+
+
 ## Stan parameters
 
 weak_prior <- normal(0, 2.5)

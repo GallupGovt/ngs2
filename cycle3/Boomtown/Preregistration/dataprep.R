@@ -264,7 +264,7 @@ distLoComp<-c()
 
 for (i in (1:(nPlayers+1))){
 
-  distLoComp[i] <-((nPlayers+1)/i)
+  distLoComp[i] <-((nPlayers+1)/i+5)
 
 }
 

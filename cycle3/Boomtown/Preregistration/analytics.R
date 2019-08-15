@@ -14,7 +14,11 @@ weak_prior <- normal(0, 2.5)
 
 nIter<-10000 # Iterations for MCMC sampler (Per standard recommendations. Numbers under 1,000 create some errors in simulations)
 
+#Effect of Competition on Group Conformity (Using Cohen's (1988) effect size conventions: https://en.wikiversity.org/wiki/Eta-squared)
 
+ConfEffect<-10 #1= Large effect  (Eta squared ~ 0.13)
+              #3= Medium effect (Eta squared ~ 0.07)
+              #10= Small effect  (Eta squared ~ 0.01)
 
 ## Source modelling and plotting functions
 

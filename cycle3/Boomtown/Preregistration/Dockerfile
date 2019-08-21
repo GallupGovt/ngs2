@@ -8,6 +8,7 @@ FROM jrnold/rstan
 #COPY NGS2_WITNESS_Cycle2_Notebook.Rmd /home/rstudio/
 WORKDIR /report
 
+LABEL maintainer="Pablo Diego-Rosell c_Pablo_Diego-Rosell@gallup.co.uk"
 
 RUN R -e "options(repos = \
   list(CRAN = 'http://mran.revolutionanalytics.com/snapshot/2019-02-06/')); \

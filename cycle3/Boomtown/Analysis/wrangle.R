@@ -1,272 +1,200 @@
 ## Experiment processing file, re-factored to batch process multiple games.
-## Created by Pablo Diego Rosell, PhD, for Gallup inc. in October 2018
-## For any questions, contact pablo_diego-rosell@gallup.co.uk
+## Created by Ying Han, PhD, Gallup Inc, in August 2019
+## For any questions, contact ying_han@gallup.com
 
-# clear workspace
-URL <- 'https://volunteerscience.com/gallup/boomtown_metadata'
+# clear workplace
+library(dplyr)
 
 # define constants
-gamedata_names <- c("matchid", "round", "h1.1", "h1.3", "h2.1", "h2.2", "h2.3",
-                    "h2.4", "h2.5", "h2.6", "h3.2", "h3.3", "h3.4", "h3.5",
-                    "tools", "innovation", "CSE", "leaderChoice", "nConnected")
-str1.1 <- c("None", "Weak", "Normal", "Strong")
-str2.1 <- c("False", "True")
-str3.2 <- c("LowTolerance", "HighTolerance")
-str3.3 <- c("highStatus_highLegitimacy", "highStatus_lowLegitimacy",
-            "lowStatus_highLegitimacy", "lowStatus_lowLegitimacy")
-str3.4 <- c("LowTransformational", "HighTransformational")
+dd_logs <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/Sample_Logs"
+dd_meta <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3"
+dd_output <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3"
 
-tool_dict <- list(
-    'TNTbarrel,SatchelCharge' = 1,
-    'BlackPowder,Dynamite' = 2,
-    'BlackPowder,RDX' = 3,
-    'RDX,Dynamite' = 4,
-    'Mine1,Mine2' = 5,
-    'Mine4,Mine3' = 6,
-    'Mine1,BlackPowder' = 7,
-    'Mine2,BlackPowder' = 7,
-    'Mine3,BlackPowder' = 8,
-    'Mine4,BlackPowder' = 8,
-    'TNTbarrel,Dynamite' = 9,
-    'BlackPowder,SatchelCharge' = 10,
-    'SatchelCharge,RDX' = 11,
-    'Dynamite,SatchelCharge' = 12
+events <- c("SetupMatch", "PlayerConnection", "StartMatch", "StartVotation", "PlayerFinalVotation", 
+            "FinalItemSelected", "GameSuspended", "EndMatch", "PlayerDisconnection")
+
+field_start <- "01-01-2019"
+  
+# define functons
+gamelog_process <- function(data){
+  
+  # subset logs related to events of interest
+  data <- data[grep(paste(events, collapse ="|"), data)]
+  
+  # matchid, matchDate
+  match_info <- unlist(strsplit(data[grep("StartMatch", data)], ","))
+  matchid <- as.numeric(match_info[3])
+  matchDate <- as.Date(match_info[2], format = "%m/%d/%Y %H:%M:%S %p")
+  
+  # competition, timeUncertainty, support
+  match_setting <- unlist(strsplit(data[grep("SetupMatch",data)], split=","))
+  
+  timeUncertaintyLabel <- match_setting[4] 
+  competitionLabel <- match_setting[6]
+  supportLabel <- match_setting[7]
+  
+  timeUncertainty <- case_when(timeUncertaintyLabel == "False" ~ 0, 
+                               timeUncertaintyLabel == "True" ~ 1,
+                               TRUE ~ NA_real_)
+  competition <- case_when(competitionLabel == "None" ~ 0,
+                           competitionLabel == "Weak" ~ 1,
+                           competitionLabel == "Normal" ~ 2,
+                           competitionLabel == "Strong" ~ 3,
+                           TRUE ~ NA_real_)
+  support <- case_when(supportLabel == "HighStatus_HighLegitimacy" ~ 0, 
+                       supportLabel == "LowStatus_HighLegitimacy" ~ 1)
+  
+  # nConnected, playerid
+  players_info <- strsplit(data[grep("PlayerConnection", data)], split=",")
+  playerid <- unique(unlist(lapply(players_info, function(x){x[3]})))
+  nConnected <- length(playerid)
+  
+  # nRound
+  nRound <- length(grep("StartVotation", data))
+  
+  # set up initial data frame
+  df <- data.frame(
+    matchid = rep(matchid, nRound * nConnected),
+    matchDate = rep(matchDate, nRound * nConnected),
+    competitionLabel = rep(competitionLabel, nRound * nConnected),
+    competition = rep(competition, nRound * nConnected),
+    timeUncertaintyLabel = rep(timeUncertaintyLabel, nRound * nConnected),
+    timeUncertainty = rep(timeUncertainty, nRound * nConnected),
+    supportLabel = rep(supportLabel, nRound * nConnected),
+    support = rep(support, nRound * nConnected),
+    nRound = rep(nRound, nRound * nConnected),
+    roundid_short = unlist(lapply(1:nRound, rep, nConnected)),
+    roundid = unlist(lapply(matchid*100 + 1:nRound, rep, nConnected)),
+    nConnected = rep(nConnected, nRound * nConnected),
+    playerid = rep(playerid, nRound)
+  )
+  
+  # toolsLabel, PlayerVote1, PlayerVote2, FinalItemSelected
+  roundid <- matchid * 100
+  round_info <- strsplit(data[grep("StartVotation|PlayerFinalVotation|FinalItemSelected", data)], split=",")
+  
+  for (log in round_info){
+    if (log[1] == "StartVotation"){
+      roundid <- roundid + 1
+      players_voted <- NULL
+      df[which(df$roundid==roundid),"toolsLabel"] <- paste(log[3:4], collapse = ",")
+    }
+    
+    if (log[1] == "PlayerFinalVotation"){
+      playerid <- log[3]
+      player_vote <- log[4]
+      if(!playerid %in% players_voted){
+        df[which(df$roundid == roundid & df$playerid == playerid), "PlayerVote1"] = log[4]
+        players_voted <- c(players_voted, playerid)
+      }
+      else {
+        df[which(df$roundid == roundid & df$playerid == playerid), "PlayerVote2"] = log[4]}
+    }
+    
+    if (log[1] == "FinalItemSelected"){
+      df[which(df$roundid==roundid),"FinalItemSelected"] <- log[3]
+    }
+  }
+  
+  # tools
+  df$tools <- case_when(
+    df$toolsLabel == "TNTbarrel,SatchelCharge" ~ 1, 
+    df$toolsLabel == "BlackPowder,Dynamite" ~ 2, 
+    df$toolsLabel == "BlackPowder,RDX" ~ 3, 
+    df$toolsLabel == "RDX,Dynamite" ~ 4, 
+    df$toolsLabel == "Mine1,Mine2" ~ 5, 
+    df$toolsLabel == "Mine4,Mine3" ~ 6, 
+    df$toolsLabel == "Mine1,BlackPowder" ~ 7,
+    df$toolsLabel == "Mine2,BlackPowder" ~ 7, 
+    df$toolsLabel == "Mine3,BlackPowder" ~ 8, 
+    df$toolsLabel == "Mine4,BlackPowder" ~ 8, 
+    df$toolsLabel == "TNTbarrel,Dynamite" ~ 9, 
+    df$toolsLabel == "BlackPowder,SatchelCharge" ~ 10, 
+    df$toolsLabel == "SatchelCharge,RDX" ~ 11, 
+    df$toolsLabel == "Dynamite,SatchelCharge" ~ 12, 
+    TRUE ~ NA_real_
+  )
+  
+  # innovation
+  df$innovation <- case_when(
+    (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$FinalItemSelected == "SatchelCharge") | 
+      (df$toolsLabel == "BlackPowder,Dynamite" & df$FinalItemSelected == "Dynamite") |
+      (df$toolsLabel == "BlackPowder,RDX" & df$FinalItemSelected == "RDX") |
+      (df$toolsLabel == "RDX,Dynamite" & df$FinalItemSelected == "RDX") |
+      (df$toolsLabel == "Mine1,Mine2" & df$FinalItemSelected == "Mine2") |
+      (df$toolsLabel == "Mine4,Mine3" & df$FinalItemSelected == "Mine4") |
+      (df$toolsLabel == "Mine1,BlackPowder" & df$FinalItemSelected == "Mine1") |
+      (df$toolsLabel == "Mine2,BlackPowder" & df$FinalItemSelected == "Mine2") |
+      (df$toolsLabel == "Mine3,BlackPowder" & df$FinalItemSelected == "Mine3") |
+      (df$toolsLabel == "Mine4,BlackPowder" & df$FinalItemSelected == "Mine4") ~ 1,
+    df$toolsLabel == "TNTbarrel,Dynamite" |
+      df$toolsLabel == "BlackPowder,SatchelCharge" |
+      df$toolsLabel == "SatchelCharge,RDX" |
+      df$toolsLabel == "Dynamite,SatchelCharge"  ~ NA_real_,
+    TRUE ~ 0
+  )
+  
+  # eligible
+  suspend <- ifelse(length(grep("GameSuspended", data))==0,length(data), min(grep("GameSuspended", data)))
+  vote_1st <- min(grep("StartVotation", data))
+  df$eligible <- suspend > vote_1st
+  
+  return(df)
+}
+
+# read in full game logs and apply the gamelog_process function
+files <- list.files(dd_logs, "*.txt")
+datalist <- lapply(files, function(file) {readLines(paste(dd_logs, file, sep="/"))})
+game_list <- bind_rows(lapply(datalist, gamelog_process))
+
+# read in the metadata
+metadata <- read.csv(paste(dd_meta, "boomtown_metadata.csv", sep="/"), 
+                     header = T, stringsAsFactors = FALSE)
+
+metadata$toleranceLabel <- metadata$group
+metadata$tolerance <- ifelse(metadata$group == 'Ambiguity Low', 0, 1)
+
+# merge processed game logs with meta data
+game_data <- merge(game_list, metadata[,c("matchID","toleranceLabel", "tolerance","date.time","replay","consumableKey","settingsNum")], 
+                   by.x="matchid", by.y="matchID", all.x = TRUE)
+
+# framing - Double Check with Pablo
+# 1. when settingsNum is even: framing is 0 for rounds 1, 4, 7; 1 for rounds 2, 6, 8, 10, 12, 13; 2 for rounds 3, 5, 9, 11.
+# 2. when settingsNum is odd : framing is 0 for rounds 1, 4, 7; 1 for rounds 3, 5, 6, 9, 10, 13; 2 for rounds 2, 6, 8, 11, 12.
+game_data$framing <- case_when(
+  game_data$settingsNum %% 2 == 0 & game_data$roundid_short %in% c(1, 4, 7) ~ 0,
+  game_data$settingsNum %% 2 == 0 & game_data$roundid_short %in% c(2, 6, 8, 10, 12, 13) ~ 1,
+  game_data$settingsNum %% 2 == 0 & game_data$roundid_short %in% c(3, 5, 9, 11) ~ 2,
+  game_data$settingsNum %% 2 == 1 & game_data$roundid_short %in% c(1, 4, 7) ~ 0,
+  game_data$settingsNum %% 2 == 1 & game_data$roundid_short %in% c(3, 5, 9, 10, 13) ~ 1,
+  game_data$settingsNum %% 2 == 1 & game_data$roundid_short %in% c(2, 6, 8, 11, 12) ~ 2,
+  TRUE ~ NA_real_
 )
 
-# define functions
-# helper function for grepping in h_values_complex
-get_search_value <- function(tools, value) {
-    return(paste(names(which(tools == value)), collapse = '|'))
-}
-
-# gets various h values, given input parameters for parsing
-h_values <- function(data, h, rds) {
-    tmp <- lapply(data, function(x) c(0:(length(h)-1))[sapply(h, grepl, x)])
-    return(mapply(function(x, n) {
-        rep(x, n)
-    }, tmp, rds, SIMPLIFY = FALSE))
-}
-
-# gets other h values that are complex, based on multiple conditions
-h_values_complex <- function(rounds, tool_choices, tool_set, v1, v2) {
-    return(mapply(function(rds, tools) {
-        tmp <- rep(NA, rds)
-        tmp[grep(get_search_value(tool_set, v1), tools)] <- 0
-        tmp[grep(get_search_value(tool_set, v2), tools)] <- 1
-        return(tmp)
-    }, rounds, tool_choices, SIMPLIFY = FALSE))
-}
-
-# Read in logs
-files <- list.files(dd, pattern = "*.txt")
-datalist <- lapply(files[!(files %in% 'cookies.txt')], function(x) {
-    readLines(paste(dd, x, sep = '/'))
-})
-                  
-# LeaderSelection events before game suspended
-leaderSelectionAll <- lapply(datalist, function(x) x[grep("LeaderSelection|GameSuspended", x)])
-leaderSelection <- lapply(leaderSelectionAll, 
-                          function(x) if ('TRUE' %in% grepl("GameSuspended", x)) {
-                            x[0:(grep("GameSuspended", x)-1)]
-                          } else {
-                            x
-                          })
-leaderSelectionYes <- lapply(leaderSelection, function(x) length(as.character(x))>0 & length(as.character(x))<14)
-
-# Identify games played during fielding period (StartMatch date >= 10/25/2018)
-StartMatch <- lapply(datalist, function(x) gsub(" .*$", "", x[grep("StartMatch", x)]))
-dates <- lapply(StartMatch, function(x) as.Date((gsub("StartMatch,", "", x)), "%m/%d/%Y"))
-datesFIELD <- lapply(dates, function(x) x >= as.Date('2018-10-25'))
+# group vote
+group_vote <- aggregate(x = game_data[, c("PlayerVote1","PlayerVote2")], 
+                        by = list(roundid = game_data$roundid), 
+                        FUN = function(x){
+                          tb = table(x)
+                          if(length(tb)>0){
+                            tb = formatC(prop.table(table(x)) * 100, format="d")
+                            result = paste(paste0(names(tb)," ", tb, "%"), collapse = ", ")
+                          } else {result = NA}
+                          return(result)
+                        })
+names(group_vote) <- c("roundid", "GroupVote1", "GroupVote2")
+game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
 # Subset datalist according to the two conditions above:
 # 1. Played during fielding period (StartMatch date >= 10/25/2018)
 # 2. Had at least one "LeaderSelection") event before the game was suspended
-datalist<-datalist[datesFIELD==TRUE & leaderSelectionYes==TRUE]
+game_data <- game_data[game_data$matchDate >= as.Date(field_start, format="%m-%d-%Y") & game_data$eligible == TRUE,]
 
-# Count number of games
-nElements <- length(datalist)
-
-# Count number of rounds (leaderSelection events)
-leaderVotes <- lapply(datalist, function(x) x[grep("LeaderSelection", x)])
-nRounds <- lapply(leaderVotes, function(x) length(x))                     
-                     
-# Extract choices in the shop
-toolChoicesAll <- lapply(datalist, function(x) x[grep("StartVotation", x)])
-toolChoices <- mapply(function(x,y) {return(x[1:y])}, x=toolChoicesAll, y=nRounds)
-
-# Extract match id to create group variable
-matchid <- lapply(datalist, function(x) x[grep("StartMatch", x)])
-matchid <- lapply(matchid, function(x) as.numeric(strsplit(x,',',fixed=TRUE)[[1]][3]))
-matchid <- mapply(function(x, n) {
-    rep(x, n)
-}, matchid, nRounds, SIMPLIFY = FALSE)
-
-# Count number of connected players
-PlayerConnection <- lapply(datalist, function(x) length(x[grep("PlayerConnection", x)]))
-PlayerConnections <- mapply(function(nConnected, n) {
-  return(rep(nConnected, n))
-}, PlayerConnection, nRounds, SIMPLIFY = FALSE)              
-                  
-# Extract values for block-randomized hypotheses
-gameSettings <- lapply(datalist, function(x) x[grep("SetupMatch", x)])
-
-# get h values
-h1.1 <- h_values(gameSettings, str1.1, nRounds)
-h2.1 <- h_values(gameSettings, str2.1, nRounds)
-h3.2 <- h_values(gameSettings, str3.2, nRounds)
-h3.3 <- h_values(gameSettings, str3.3, nRounds)
-h3.4 <- h_values(gameSettings, str3.4, nRounds)
-
-# Assign values of h1.3 (Fixed at Rounds 4 & 9 = 1, Rounds = 5 & 7 = 2, else = 0)
-h1.3Fixed <-rep(list(c(0, 0, 0, 1, 2, 0, 2, 0, 1, 0, 0, 0, 0)), nElements)
-h1.3 <- mapply(function(x,y) {return(x[1:y])}, x=h1.3Fixed, y=nRounds)
+# output dataset
+write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
 
 
-# Assign values of h3.5 (Fixed at Round 1 = 0, Rounds 6, 8 = 2, else = 1)
-h3.5Fixed <- rep(list(c(0, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1)), nElements)
-h3.5 <- mapply(function(x,y) {return(x[1:y])}, x=h3.5Fixed, y=nRounds)
 
-# Extract value of tool choice for each round
-tools <- lapply(toolChoices, function(x) {
-    tmp <- lapply(x, function(y) {
-        do.call(c,
-            tool_dict[do.call(c,
-                lapply(names(tool_dict), function(z) {
-                    grepl(z, y)
-                })
-            )]
-        )
-    })
-    return(do.call(c, lapply(tmp, function(y) {
-        ifelse(!is.null(y), y, NA)
-    })))
-})
 
-# Assign hypothesis and hypothesis level by round, based on tool choices
-h2.2 <- h_values_complex(nRounds, toolChoices, tool_dict, 1, 2)
-h2.3 <- h_values_complex(nRounds, toolChoices, tool_dict, 1, 3)
-h2.4 <- h_values_complex(nRounds, toolChoices, tool_dict, 4, 1)
-h2.5 <- h_values_complex(nRounds, toolChoices, tool_dict, 5, 6)
-h2.6 <- h_values_complex(nRounds, toolChoices, tool_dict, 7, 8)
-control1 <- h_values_complex(nRounds, toolChoices, tool_dict, 9, 10)
-control2 <- h_values_complex(nRounds, toolChoices, tool_dict, 11, 12)
 
-# Extract innovation outcome, based on tool choice.
-leaderChoice <- lapply(leaderVotes, function(x) strsplit(x, ',', fixed = TRUE))
-leaderChoice <- lapply(leaderChoice, function(x) sapply(x, "[[", 3))
 
-innovation <- mapply(function(leader, tool) {
-    tmp <- ifelse(
-        (grepl(names(tool_dict[1]), tool) == TRUE & grepl('SatchelCharge', leader) == TRUE) |
-        (grepl(names(tool_dict[2]), tool) == TRUE & grepl('Dynamite', leader) == TRUE) |
-        (grepl(names(tool_dict[3]), tool) == TRUE & grepl('RDX', leader) == TRUE) |
-        (grepl(names(tool_dict[4]), tool) == TRUE & grepl('RDX', leader) == TRUE) |
-        (grepl(names(tool_dict[5]), tool) == TRUE & grepl('Mine2', leader) == TRUE) |
-        (grepl(names(tool_dict[6]), tool) == TRUE & grepl('Mine4', leader) == TRUE) |
-        (grepl(names(tool_dict[7]), tool) == TRUE & grepl('Mine1', leader) == TRUE) |
-        (grepl(names(tool_dict[9]), tool) == TRUE & grepl('Mine3', leader) == TRUE) |
-        (grepl(names(tool_dict[8]), tool) == TRUE & grepl('Mine2', leader) == TRUE) |
-        (grepl(names(tool_dict[10]), tool) == TRUE & grepl('Mine4', leader) == TRUE), 1,
-        ifelse(
-            grepl(names(tool_dict[11]), tool) == TRUE |
-            grepl(names(tool_dict[12]), tool) == TRUE |
-            grepl(names(tool_dict[13]), tool) == TRUE |
-            grepl(names(tool_dict[14]), tool) == TRUE, NA, 0
-        )
-    )
-    return(tmp)
-}, leaderVotes, toolChoices, SIMPLIFY = FALSE)
-
-# Post-game survey
-survey <- lapply(datalist, function(x) x[grep("SurveyResponse", x)])
-survey <- lapply(survey, function(x) strsplit(x,',',fixed=TRUE))
-playerID <- lapply(survey, function(x) sapply(x, "[[", 3))
-surveyQuestions<-lapply(survey, function(x) sapply(x, "[[", 4))
-surveyResponses<-lapply(survey, function(x) sapply(x, "[[", 5))
-
-CSE <- lapply(surveyResponses, function(x) mean(as.numeric(as.character(x))))
-CSE <- mapply(function(cse, n) {
-    return(rep(cse, n))
-}, CSE, nRounds, SIMPLIFY = FALSE)
-
-# Merge all variables into a single frame
-gamesList <- list(
-    matchid,
-    lapply(nRounds, function(x) {return(1:x)}),
-    h1.1,
-    h1.3,
-    h2.1,
-    h2.2,
-    h2.3,
-    h2.4,
-    h2.5,
-    h2.6,
-    h3.2,
-    h3.3,
-    h3.4,
-    h3.5,
-    tools,
-    innovation,
-    CSE,
-    leaderChoice, 
-    PlayerConnections
-)
-
-# run a check on gamesList to ensure the flattening to a matrix/data frame
-# works out okay
-gamesList <- lapply(gamesList, function(x) {
-    tmp <- mapply(function(y, z) {
-        if(length(y) == 0) {
-            return(rep(NA, z))
-        } else {
-            return(y)
-        }
-    }, x, nRounds, SIMPLIFY = FALSE)
-    return(tmp)
-})
-
-gamesData <- as.data.frame(matrix(unlist(gamesList), nrow = sum(unlist(nRounds))))
-colnames(gamesData) <- gamedata_names
-              
-# Recode h3.3 to 9 if h1.1 = 0. 
-
-gamesData$h3.3<-as.numeric(gamesData$h3.3)
-gamesData$h3.3[gamesData$h1.1==0] <- 9
-gamesData$h3.3<-as.factor(gamesData$h3.3)
-
-# Load metadata
-# Downloads automatically when visting this URL https://volunteerscience.com/gallup/boomtown_metadata/
-# Tried to automatize download process using "download.file" command, but not working properly.
-# Copy and paste "boomtown_metadata.csv" from "downloads" folder to working directory, then execute below.
-if('cookies.txt' %in% list.files(paste(dd, sep = '/'))) {
-    tmp <- tempfile()
-    cookies <- readLines(paste(dd, 'cookies.txt', sep = '/'))
-    cookies <- cookies[grep('volunteerscience', cookies)]
-    cookies <- as.data.frame(do.call(rbind, strsplit(cookies, '\t')[2:length(cookies)]),
-                             stringsAsFactors = FALSE)
-    sessid <- cookies$V7[which(cookies$V6 == 'sessionid')]
-
-    GET(URL, set_cookies(.cookies = c('sessionid' = sessid)), write_disk(tmp))
-    metadata <- readLines(tmp)
-
-    metadata_names <- strsplit(metadata[1], ',')[[1]]
-    metadata <-  as.data.frame(do.call(rbind, strsplit(metadata, ',')[2:length(metadata)]),
-                               stringsAsFactors = FALSE)
-    names(metadata) <- metadata_names
-
-    metadata$h3.1 <- ifelse(metadata$group == 'Ambiguity Low', 0, 1)
-    gamesData  <-  merge(gamesData, metadata[, c('matchID', 
-                                               'h3.1', 
-                                               'date/time', 
-                                               'replay', 
-                                               'consumableKey', 
-                                               'settingsNum')],
-                         by.x = "matchid", by.y = "matchID", all.x = TRUE)
-    gamesData <- subset(gamesData, consumableKey != "boomtown_demo")
-    write.csv(gamesData, file = paste(od, 'gamesData.csv', sep = '/'),
-              row.names = FALSE)
-} else {
-    print('WARNING -- Missing cookies file, so only writing partial dataset.')
-    write.csv(gamesData, file = paste(od, 'gamesData_partial.csv', sep = '/'),
-              row.names = FALSE)
-}

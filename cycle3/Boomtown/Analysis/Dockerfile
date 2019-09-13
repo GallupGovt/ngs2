@@ -25,4 +25,4 @@ RUN R -e "options(repos = \
 ENTRYPOINT ["/usr/local/bin/Rscript", "--vanilla"]
 
 # Set the `example_report.R data.csv` as the default script to run with ENTRYPOINT's Rscript
-CMD ["ngs2_maker.R"]
+CMD ["ngs2.R"]

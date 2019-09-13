@@ -181,7 +181,7 @@ The post-game survey included a perceived uncertainty item about perceptions reg
 
 Tool choices for each of the three experimental conditions dealing with availability were compared for consistency of voting with the availability heuristic.
 
-```{r exuncert}
+```{r avail}
 #avail
 ```
 
@@ -286,7 +286,7 @@ summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competi
 - Prediction 3: Cellular structure increases group motivation to innovate
 - Prediction 4: Network structure increases group motivation to innovate
 
-```{r START2output}
+```{r START2BFs}
 BFs27 <-read.csv(paste(od, "BFs27.csv", sep = '/'))                      
 BFs27
 ```
@@ -296,7 +296,7 @@ BFs27
 
 - Null: Intergroup competition has no effect on individual motivation to innovate (T1)
 
-```{r START1null}
+```{r h1null}
 load (file ="bayesGlmer.1.0")
 summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
 ```
@@ -305,7 +305,7 @@ summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competi
 - Prediction 2: Individual motivation to innovate (T1) is u-shaped on intergroup competition
 - Prediction 3: Low intergroup competition decreases individual motivation to innovate (T1)
 
-```{r h1output}
+```{r h1BFs}
 BFs1 <-read.csv(paste(od, "BFs1.csv", sep = '/'))                      
 BFs1
 ```

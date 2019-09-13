@@ -1,0 +1,329 @@
+---
+title: "Group Innovation under Competition and Uncertanity - Cycle 3 Results"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+options(mc.cores = parallel::detectCores()) # Use multiple cores for Stan (speeds up performance )
+nIter <- 10000 # MCMC sampling iterations, drives processing time.
+# load libraries
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, library, formatR, foreach, doParallel)
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+  }
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Preregistration"
+setup <- c("dataprep.R", "functions.R", "analytics.R")
+hypotheses <- c("h1.R", "h2.R", "h3.R", "h4.R", "h5.R", "h6.R", "h7.R",
+"h8.R", "h9.R", "h10.R", "h11.R", "h12.R", "h13.R", "h14.R", "h15.R", "h16.R", "h17.R", "h18.R", "h19.R",
+"h20.R", "h21.R", "h22.R", "h25.R", "h26.R", "h27.R")
+lapply(c(setup, hypotheses), dlScripts)
+```
+
+```{r run_scripts, include=F}
+# run scripts in order
+source("functions.R")
+source("dataprep.R")
+source("analytics.R")
+registerDoParallel(cores=25)
+getDoParWorkers()
+hypothesis_files = hypotheses
+foreach(n = 1:length(hypothesis_files)) %dopar% {
+  source(hypothesis_files[n])
+}
+```
+
+# Introduction
+
+This document presents the results of team NGS2 WITNESS's cycle 3 experiments on the Boomtown platform. The project's overall background, motivation, goals and theoretical rationale remains the same as in Cycle 2, with a continued focus on the effect of intergroup competition and uncertainty on group motivation to innovate. Pre-registration form is available at: https://osf.io/c57b8/
+
+The main changes for Cycle 3 can be summarized into the following categories:
+
+* Abduction from Cycle 2: Observations from Cycle 2 data and are incorporated into Cycle 3 by either eliminating null variables from the design or formulating new hypotheses where existing predictions could not readily account for observed effects. Variables that had a null effect on group motivation to innovate were removed from the design, including:
+
++ Leader Tolerance of Ambiguity
++ Group Status and Legitimacy
++ Collective Self-efficacy
+
+Variables where existing predictions could not fully account for observed effects included:
+
++ Perceived intergroup competition
++ Innovation uncertainty (risk) and expected value
++ Heuristic reasoning
+
+* Expanded theoretical framework: The suite of independent variables is expanded, focusing on group-level dynamics and factors known to be central to group processes. The process included a traditional literature review formalized into causal graphs, followed by an expert crowd-sourcing exercise via DESIM (see description below) to validate the graphs and quantify expected effects. The following variables were added to the design:
+
++ Hierarchical role differentiation (boss, leads, miners)
++ Communication structures with varying levels of density and centralization
++ Varying voting weights
++ Voting rounds before and after group discussion
++ Social norms
++ Time Pressure
+
+* Enhanced Analytics: The analytical pipeline is boosted by enhancing the computing infrastructure and its reproducibility.
+
++ Containerization of the analytical environment via Docker to guarantee forward compatibility and one-click reproducibility.
++ Parallelized computing via AWS to reduce processing time from days to hours.
+
+# Data used for the prediction
+
+* Valid experimental instances included games with at least seven players and one tool choice. 
+* Each round of data collection included:
+    + 96 experimental conditions in the full factorial space.
+    + 672 players (7 players per instance)
+    + 1,248 group choices (13 rounds per instance)
+    + 8,736 individual choices (7 players * 13 rounds per instance)
+* Since Cycle 3 experiments were launched, Gallup has: 
+    + Ran a total of `r nGames` valid instances.
+    + Obtained usable data from a total of `r nPlayers` players.
+    + Completed data collection for XXX of the 96 experimental conditions in the fullfactorial space.
+
+`r barplot(table(dates$date.time))`
+
+Variables used and a random sample of rows from the final analytical dataset are summarized below. 
+
+```{r data header}
+names(factorial)
+datatable(sample_n(factorial, 5), 
+          caption = "Randomly selected rows of processed data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```
+
+
+# Descriptives
+```{r descriptives}
+# Number of rounds
+nByround=factorial%>%
+  group_by(round)%>%
+  summarise(counts  = n())
+nChoices<-sum(nByround$counts)
+nMax<- max(nByround$counts)
+ggplot(data=nByround, aes(x=round, y=counts)) +
+  geom_bar(stat="identity") +
+  ggtitle("Number of Choices") + 
+  xlab("Round") +
+  ylab("Total Choices by Round")+
+  annotate("text", x=7, y=nMax*1.15, label = paste("Total to date =", nChoices, "valid decisions in 13 rounds")) +
+  scale_y_continuous(limits = c(0, nMax*1.25))
+# By tool choice
+factorial.tools<-subset(factorial, tools!="9" & tools!="11" & tools!="12")
+factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)-1
+tool_rate1<-factorial.tools%>%
+  group_by(tools)%>%
+  summarise(rate_inn=mean(innovation2, na.rm=TRUE))
+ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
+  geom_bar(stat="identity") +
+  ggtitle("Innovative Choices by Tool Choice") + 
+  xlab("Tool Choice") +
+  ylab("Innovative Choice Rate")
+```
+
+# Manipulation Checks
+```{r manchecks}
+#source("manipulation_checks.R")
+```
+
+## Perceived Intergroup Competition
+
+The post-game survey included two questions about perceived inter-group competition. Results are summarized below for each of the four experimental conditions.   
+
++The opposing teams were stronger than my team. 
++The relationship between my team and the other teams was competitive.. 
+  
+```{r competitionPlots}
+#competitionPlots
+```
+
+## Uncertainty/Risk
+
++ Check test items propose obvious choices to test whether participants are paying attention.   
++ Check test items show that tool choices were adequately understood by participants. 
+
+```{r toolControls}
+#toolControls
+```
+
++ Only `r length(allWrong$matchid)` games failed all three check test items. 
+
+```{r allwrong}
+#allWrong
+```
+
+## Exogenous Uncertainty
+
+The post-game survey included a perceived uncertainty item about perceptions regarding the number of rounds they had to play. Results are summarized below for each of the two experimental conditions.   
+
+```{r exuncert}
+#exUncert
+```
+
+## 	Heuristic Reasoning: 
+
+Tool choices for each of the three experimental conditions dealing with availability were compared for consistency of voting with the availability heuristic.
+
+```{r exuncert}
+#avail
+```
+
+## Group Tolerance of Ambiguity
+
+We check that group randomization was effective in creating groups with the required experimental charachteristics. Our post-hoc analysis of group composition shows that average group Tolerance of Ambiguity (TA) was higher in the "high group TA" condition.
+
+```{r groupTAPlots}
+#groupTAplot
+```
+
+## 	Group Support for Innovation: 
+
+The post-game survey included the "Values" scale from the Innovation Quotient survey.
+
+```{r groupSIPlots}
+#groupSIplot
+```
+
+## 	Time Pressure: 
+
+The post-game survey included four items where individuals were asked to reflect on the experience in fast and slow voting rounds, and rate each using two items adapted from Edland (1994). 
+
+```{r timePressure}
+#TPplot
+```
+
+## 	Tool Complexity: 
+
+The post-game survey included two items where individuals were asked to reflect on their experience assessing simple tools (explosives) and complex tools (mines) using perceived information overload items.
+
+```{r toolComplexity}
+#TCplot
+```
+
+## 	Network density: 
+
+The correspondence of organizational density structures and actual communication flows will be measured via a communications density score, measuring active communication channels (at least one message shared over chat) over total communication channels (graph edges). 
+
+```{r networkDensity}
+#NDplot
+```
+
+## 	Network centralization: 
+
+The correspondence of different centralization levels and actual communication flows will be measured with a communications centralization score, defined as the ratio between the numbers of active communication channels for each node (at least one message shared over chat) divided by the maximum possible sum of differences.
+
+```{r networkCentral}
+#NCplot
+```
+
+## 	Leader vote weight: 
+
+Final voting outcomes will be checked to ensure they correspond with the corresponding weighted sum of actual votes. 
+
+```{r voteWeight}
+#LVWplot
+```
+# Hypothesis Testing
+
+All hypothesis tests and effect size estimations are conducted within a Bayesian framework, using Bayesian Generalized Linear Mixed Models (GLMMs). Because repeated measures from the same game are not independent, all estimations will include a group random effect for group-level outcomes, an individual random effect for individual-level outcomes, and fixed effects for the corresponding independent variables. 
+
+$ln(p/(1-p))_{ij} = \beta_{0} + \beta_{1}X_{j} + \beta_{2}Y_{ij} + \beta_{3} (X_{j}*Y_{ij}) +u_{j} + \epsilon_{ij}$
+
+Where the log odds of the probability of innovation for each decision $i$ in each game $j$ are a function of a constant term $\beta_0$ (intercept); an experimentally manipulated independent 2-level factor $X$ that varies for each game $j$, with unknown coefficients $\beta_1$; an experimentally manipulated independent variable $Y$, that varies for each game $j$ and each measure $i$, with unknown coefficients $\beta_2$; a two-way interaction $(X_j*Y_ij)$ between both experimental variables, with unknown coefficients $\beta_3$; a group random effect $u_j$, and a residual error term $\epsilon_{ij}$. 
+
+We estimate causal effects for all the predictions under each hypothesis using Bayesian applied regression modelling. We quantify the change from prior to posterior model odds based on observed data to compare competing predictions in terms of Bayes factors (see Alston et al., 2005, for a general discussion). 
+
+Posterior predictive distributions and posterior parameter distributions are sampled using Hamiltonian MCMC (e.g. Hoffman & Gelman, 2014), with 3 Markov chains and 10,000 iterations. The posterior probability distributions for each prediction are summarized using the mean and the central 95% interval. Since we are primarily concerned with effect size estimation and model optimization within a Bayesian framework, correction for multiple comparisons do not apply (Gelman, Hill, & Yajima, 2012). 
+
+We then estimate the likelihood that the observed data were produced by the hypothesized generating model, and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of a prediction to the null.  
+
+## Start Hypotheses
+### Hypothesis 1. Intergroup Competition and group motivation to innovate
+
+- Null: Competition has no effect on Group Motivation to Innovate
+
+```{r START1null}
+load (file ="bayesGlmer.26.0")
+summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
+```
+- Prediction 1: Intergroup competition increases group motivation to innovate
+- Prediction 2: Group motivation to innovate is u-shaped on intergroup competition
+- Prediction 3: Intergroup competition decreases group motivation to innovate
+- Prediction 4: Low intergroup competition decreases group motivation to innovate
+
+```{r START1BFs}
+BFs26 <-read.csv(paste(od, "BFs26.csv", sep = '/'))                      
+BFs26
+```
+### Hypothesis 2. Organizational Structure and Group Motivation to Innovate
+
+- Null: Organizational Structure has no effect on Group Motivation to Innovate
+
+```{r START1null}
+load (file ="bayesGlmer.27.0")
+summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
+```
+
+- Prediction 1: Network structure reduces group motivation to innovate
+- Prediction 2: Hierarchical structure increases group motivation to innovate
+- Prediction 3: Cellular structure increases group motivation to innovate
+- Prediction 4: Network structure increases group motivation to innovate
+
+```{r START2output}
+BFs27 <-read.csv(paste(od, "BFs27.csv", sep = '/'))                      
+BFs27
+```
+
+## Causal Graph Testing
+### Hypothesis 1. Intergroup Competition and individual motivation to innovate
+
+- Null: Intergroup competition has no effect on individual motivation to innovate (T1)
+
+```{r START1null}
+load (file ="bayesGlmer.1.0")
+summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
+```
+
+- Prediction 1: Intergroup competition increases individual motivation to innovate (T1)
+- Prediction 2: Individual motivation to innovate (T1) is u-shaped on intergroup competition
+- Prediction 3: Low intergroup competition decreases individual motivation to innovate (T1)
+
+```{r h1output}
+BFs1 <-read.csv(paste(od, "BFs1.csv", sep = '/'))                      
+BFs1
+```
+
+# Machine Learning
+
+Since the aim of the NGS2 program is being able to quickly and reliably single models that can predict and explain group innovation, we conduct a model robustness check by comparing the model-based predictions of a full Bayesian GLMM with the data-driven predictions of a machine learning (ML) approach. ML algorithms can efficiently discover complex dependencies in the data, including non-linear relationships and multiple-order interactions between predictors, which will lead to biased estimates of predictor coefficients and lower overall model fit if left ignored. 
+
+We train a Random Forests model using the caret package in R (R Core Team, 2018), using a random subset of the experimental data including 80% of the cases (stratified by game) to train the model with 5-fold cross-validation, with the remaining 20% of cases put aside in a testing dataset. Out of sample performance of both the ML and Bayesian models will be assessed through a comparison of Receiver Operating Characteristic (ROC) curves, as estimated from the testing dataset. 
+
+# Conclusions
+## Confirmed Predictions
+## Meaningful effects
+## Near-zero effects
+## Inconclusive effects
+
+End Time: `r format(Sys.time(), '%d %B, %Y')`
+
+<br />
+<br />
+<br />

@@ -276,7 +276,7 @@ BFs26
 
 - Null: Organizational Structure has no effect on Group Motivation to Innovate
 
-```{r START1null}
+```{r START2null}
 load (file ="bayesGlmer.27.0")
 summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
 ```

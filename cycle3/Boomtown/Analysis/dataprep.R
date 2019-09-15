@@ -209,6 +209,14 @@ factorial <- subset (factorial, select = -c(odds, ind_random_effect, group_rando
 
 # Recode tools into the predicted choice according to different theories in:
 # "NGS2 WITNESS Cycle 3 FINAL.xlsx", "Tools" tab
+# CPT predictions
+
+factorial$toolsCPT <- 1
+factorial$toolsCPT[factorial$tools==1] <- 0
+factorial$toolsCPT[factorial$tools==2] <- 0
+factorial$toolsCPT[factorial$tools==8] <- 0
+factorial$toolsCPT<-factor(factorial$toolsCPT)
+
 # EUT predictions
 
 factorial$toolsEUT <- 0

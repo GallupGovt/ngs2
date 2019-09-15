@@ -1,46 +1,5 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
-# Generate conformity measure
-
-factorial$groupRound <- as.numeric(factorial$group)*100+as.numeric(factorial$round)
-
-factorialNum <- factorial
-factorialNum[] <- lapply(factorial, as.numeric)
-factorialNum$group <- factorial$group
-factorialNum$inmot1 <- factorialNum$inmot1-1
-factorialNum$inmot2 <- factorialNum$inmot2-1
-factorialNum$grmot1 <- ave(factorialNum$inmot1, factorial$groupRound)
-factorialNum$grmot2 <- ave(factorialNum$inmot2, factorial$groupRound)
-factorialNum$conformity<-ifelse(
-  factorialNum$grmot1>0.5 & factorialNum$inmot1==0 & factorialNum$inmot2==1,1,
-  ifelse(
-  factorialNum$grmot1<0.5 & factorialNum$inmot1==1 & factorialNum$inmot2==0, 1, 0))
-
-# Generate aggregate dataset
-
-factorialGroup <-aggregate(factorialNum, 
-                           by=list(factorialNum$groupRound), 
-                           FUN=mean, 
-                           na.rm=TRUE)
-
-factorialGroup$nPlayers <- aggregate(player ~ groupRound, data = factorialNum, FUN = length)$player
-factorialGroup$unanimity <- (factorialGroup$nPlayers-1)/factorialGroup$nPlayers
-factorialGroup$unanimous <-ifelse(factorialGroup$grmot1 == factorialGroup$unanimity,1,0)
-
-factorialGroup2 <- factorialGroup
-factorialGroup2[] <- lapply(factorialGroup, factor)
-factorialGroup <- factorialGroup2
-factorialGroup$conformity <- as.numeric(factorialGroup$conformity)
-factorialGroup$grmot1 <- as.numeric(factorialGroup$grmot1)
-factorialGroup$grmot2 <- as.numeric(factorialGroup$grmot2)
-factorialGroup$risk <- as.numeric(factorialGroup$risk)
-
-# Merge conformity and group motivation vars back with individual level data
-
-factorial <- merge(factorial, 
-                   factorialGroup[c("grmot1", "grmot2", "conformity", "groupRound")], 
-                   by="groupRound")
-
 # Formula
 formula.h12.1<-as.formula("conformity~grmot1+framing+complexity+timeUncertainty+pressure+tolerance+competition+support+centralization+leaderWeight+density+(1|group)")
 formula.h12.2<-as.formula("conformity~unanimous+framing+complexity+timeUncertainty+pressure+tolerance+competition+support+centralization+leaderWeight+density+(1|group)")

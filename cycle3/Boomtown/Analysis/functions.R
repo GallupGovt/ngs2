@@ -14,6 +14,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
                            prior_intercept = normal(0, 2.5),
                            chains = 3, iter = nIter,
                            diagnostic_file = diagnostic)
+  fittedGlmer$call$diagnostic_file <- diagnostic
   save (fittedGlmer, file = paste("bayesGlmer.",label, sep=""))
   bridge_priors <- bridge_sampler(fittedGlmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
@@ -33,6 +34,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
                            prior_intercept = normal(0, 2.5),
                            chains = 3, iter = nIter,
                            diagnostic_file = diagnostic)
+  fittedGlmer$call$diagnostic_file <- diagnostic
   save (fittedLmer, file = paste("bayesLmer.",label, sep=""))
   bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))

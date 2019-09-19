@@ -11,10 +11,10 @@ ndim<-length(fittedGlmer$covmat[1,])-3
 # Declare priors
 # Baseline priors based on DESIM (split effect of 0.70 into two levels)
 priorSD <- 0.2
-# h20.0 priors (null): Network Density will not increase Individual motivation to innovate (T2)
+# h20.0 priors (null): Network Centralization will not decrease Individual motivation to innovate (T2)
 h20.0 <- normal(location = c(0.0, 0.00, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
-# h20.1 priors: Network Density will increase Individual motivation to innovate (T2)
-h20.1 <- normal(location = c(0.35, 0.70, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
+# h20.1 priors: Network Centralization will decrease Individual motivation to innovate (T2)
+h20.1 <- normal(location = c(-0.35, -0.70, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
 
 # Run models 
 

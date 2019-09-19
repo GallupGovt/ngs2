@@ -1,35 +1,55 @@
+#####################################################################################
 ## Experiment processing file, re-factored to batch process multiple games.
-## Created by Ying Han, PhD, Gallup Inc, in August 2019
-## For any questions, contact ying_han@gallup.com
+## Created by Pablo Diego Rosell and Ying Han, Gallup.Inc, in September 2019
+## For any questions, contact pablo_diego-rosell@gallup.co.uk or ying_han@gallup.com
+#####################################################################################
 
-# clear workplace
+# Set up enviroment ----
+rm(list = ls())
 library(dplyr)
 
-# define constants
-dd_logs <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/Sample_Logs"
-dd_meta <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3"
-dd_output <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3"
+# Define constants -----
+# directory to input (storing game logs, metadata, and survey results) and output folder
+dd_input  <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
+dd_output <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
 
-events <- c("SetupMatch", "PlayerConnection", "StartMatch", "StartVotation", "PlayerFinalVotation", 
-            "FinalItemSelected", "GameSuspended", "EndMatch", "PlayerDisconnection")
-
+# fieldwork start date
 field_start <- "01-01-2019"
-  
-# define functons
+
+# game events of interest
+events <- c("SetupMatch", 
+            "PlayerConnection", 
+            "StartMatch", 
+            "StartVotation", 
+            "PlayerFinalVotation", 
+            "FinalItemSelected", 
+            "GameSuspended", 
+            "EndMatch", 
+            "PlayerDisconnection")
+
+# variable excluded in part 6
+vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "PlayerVote1",
+          "PlayerVote2", "tools", "innovation", "eligible", "framing", "GroupVote1", "GroupVote2", 
+          "matchid", "playerid")
+
+# Define functions ----
+# function to extract information from one game log file
 gamelog_process <- function(data){
-  
+
   # subset logs related to events of interest
   data <- data[grep(paste(events, collapse ="|"), data)]
   
   # matchid, matchDate
   match_info <- unlist(strsplit(data[grep("StartMatch", data)], ","))
   matchid <- as.numeric(match_info[3])
-  matchDate <- as.Date(match_info[2], format = "%m/%d/%Y %H:%M:%S %p")
+  matchDate <- as.Date(match_info[2], format = "%m/%d/%Y %I:%M:%S %p")
   
   # competition, timeUncertainty, support
   match_setting <- unlist(strsplit(data[grep("SetupMatch",data)], split=","))
   
+  matchSetting1Label <- match_setting[3] 
   timeUncertaintyLabel <- match_setting[4] 
+  matchSetting3Label <- match_setting[5]
   competitionLabel <- match_setting[6]
   supportLabel <- match_setting[7]
   
@@ -56,6 +76,8 @@ gamelog_process <- function(data){
   df <- data.frame(
     matchid = rep(matchid, nRound * nConnected),
     matchDate = rep(matchDate, nRound * nConnected),
+    matchSetting1Label = rep(matchSetting1Label, nRound * nConnected),
+    matchSetting3Label = rep(matchSetting3Label, nRound * nConnected),
     competitionLabel = rep(competitionLabel, nRound * nConnected),
     competition = rep(competition, nRound * nConnected),
     timeUncertaintyLabel = rep(timeUncertaintyLabel, nRound * nConnected),
@@ -134,7 +156,7 @@ gamelog_process <- function(data){
     TRUE ~ 0
   )
   
-  # eligible
+  # eligible: at least one round before agem suspend
   suspend <- ifelse(length(grep("GameSuspended", data))==0,length(data), min(grep("GameSuspended", data)))
   vote_1st <- min(grep("StartVotation", data))
   df$eligible <- suspend > vote_1st
@@ -142,32 +164,43 @@ gamelog_process <- function(data){
   return(df)
 }
 
-# read in full game logs and apply the gamelog_process function
-files <- list.files(dd_logs, "*.txt")
-datalist <- lapply(files, function(file) {readLines(paste(dd_logs, file, sep="/"))})
-game_list <- bind_rows(lapply(datalist, gamelog_process))
+# Part 1: Read data into R ----
+gamelogs_files <- list.files(dd_input, "*.txt")
+metadata_file  <- list.files(dd_input, "*metadata.csv")
+survey_files   <- list.files(dd_input, "^survey")
 
-# read in the metadata
-metadata <- read.csv(paste(dd_meta, "boomtown_metadata.csv", sep="/"), 
-                     header = T, stringsAsFactors = FALSE)
+# Part 2: game logs cleaning ----
+gamelogs<- lapply(gamelogs_files, function(file) {readLines(paste(dd_input, file, sep="/"))})
+game_data <- bind_rows(lapply(gamelogs, gamelog_process))
 
-metadata$toleranceLabel <- metadata$group
-metadata$tolerance <- ifelse(metadata$group == 'Ambiguity Low', 0, 1)
+# Subset datalist according to the two conditions above:
+# 1. Played during fielding period 
+# 2. Had at least one "LeaderSelection") event before the game was suspended
+game_data <- game_data[game_data$matchDate >= as.Date(field_start, format="%m-%d-%Y") 
+                       & game_data$eligible == TRUE,]
 
-# merge processed game logs with meta data
-game_data <- merge(game_list, metadata[,c("matchID","toleranceLabel", "tolerance","date.time","replay","consumableKey","settingsNum")], 
+# Part 3: metadata cleaning ----
+metadata <- read.csv(paste(dd_input, metadata_file, sep="/"), header = T, stringsAsFactors = FALSE)
+
+# tolerance
+metadata[,"toleranceLabel"] <- metadata[,"group"]
+metadata[,"tolerance"] <- ifelse(metadata[,"toleranceLabel"] == 'Ambiguity Low', 0, 1)
+
+# Part 4: Merging game data and metadata ----
+game_data <- merge(game_data, 
+                   metadata[,!grepl("group", names(metadata))], 
                    by.x="matchid", by.y="matchID", all.x = TRUE)
 
-# framing - Double Check with Pablo
+# framing
 # 1. when settingsNum is even: framing is 0 for rounds 1, 4, 7; 1 for rounds 2, 6, 8, 10, 12, 13; 2 for rounds 3, 5, 9, 11.
 # 2. when settingsNum is odd : framing is 0 for rounds 1, 4, 7; 1 for rounds 3, 5, 6, 9, 10, 13; 2 for rounds 2, 6, 8, 11, 12.
-game_data$framing <- case_when(
-  game_data$settingsNum %% 2 == 0 & game_data$roundid_short %in% c(1, 4, 7) ~ 0,
-  game_data$settingsNum %% 2 == 0 & game_data$roundid_short %in% c(2, 6, 8, 10, 12, 13) ~ 1,
-  game_data$settingsNum %% 2 == 0 & game_data$roundid_short %in% c(3, 5, 9, 11) ~ 2,
-  game_data$settingsNum %% 2 == 1 & game_data$roundid_short %in% c(1, 4, 7) ~ 0,
-  game_data$settingsNum %% 2 == 1 & game_data$roundid_short %in% c(3, 5, 9, 10, 13) ~ 1,
-  game_data$settingsNum %% 2 == 1 & game_data$roundid_short %in% c(2, 6, 8, 11, 12) ~ 2,
+game_data[,"framing"] <- case_when(
+  game_data[,"settingsNum"] %% 2 == 0 & game_data[,"roundid_short"] %in% c(1, 4, 7) ~ 0,
+  game_data[,"settingsNum"]  %% 2 == 0 & game_data[,"roundid_short"] %in% c(2, 6, 8, 10, 12, 13) ~ 1,
+  game_data[,"settingsNum"]  %% 2 == 0 & game_data[,"roundid_short"] %in% c(3, 5, 9, 11) ~ 2,
+  game_data[,"settingsNum"]  %% 2 == 1 & game_data[,"roundid_short"] %in% c(1, 4, 7) ~ 0,
+  game_data[,"settingsNum"]  %% 2 == 1 & game_data[,"roundid_short"] %in% c(3, 5, 9, 10, 13) ~ 1,
+  game_data[,"settingsNum"]  %% 2 == 1 & game_data[,"roundid_short"] %in% c(2, 6, 8, 11, 12) ~ 2,
   TRUE ~ NA_real_
 )
 
@@ -185,13 +218,49 @@ group_vote <- aggregate(x = game_data[, c("PlayerVote1","PlayerVote2")],
 names(group_vote) <- c("roundid", "GroupVote1", "GroupVote2")
 game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
-# Subset datalist according to the two conditions above:
-# 1. Played during fielding period (StartMatch date >= 10/25/2018)
-# 2. Had at least one "LeaderSelection") event before the game was suspended
-game_data <- game_data[game_data$matchDate >= as.Date(field_start, format="%m-%d-%Y") & game_data$eligible == TRUE,]
-
-# output dataset
+# output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
+
+# Part 5: survey data cleaning ----
+survey_data <- lapply(survey_files, function(file){read.csv(paste(dd_input, file, sep="/"), skip = 1, header = 1, stringsAsFactors = F)})
+names(survey_data) <- gsub(".csv", "", survey_files)
+
+# recode PlayerId values in each survey response files
+survey_data <- lapply(survey_data, function(x){
+  x[,"PlayerId"] <- gsub("boomtown-", "", x[,"PlayerId"])
+  return(x)
+})
+
+# remove columns with no values
+survey_data <- lapply(survey_data, function(x){ x[,-c(which(colSums(!is.na(x)) == 0))]})
+
+# remove the column "Raw Data"
+survey_data <- lapply(survey_data, function(x){ x[,!grepl("Raw.Data", names(x))]})
+
+# rename question variables
+survey_data <- lapply(1:2, function(i){
+  data <- survey_data[[i]]
+  start <- min(grep(".", names(data), fixed=T))
+  end <- length(names(data))
+  names(data)[start:end] <- paste0("Q", 1:length(start:end), "_", i)
+  return(data)
+})
+
+# merge survey_results_1 and survey_results_2
+survey_data <- merge(survey_data[[grep("_1", survey_files)]], 
+                     survey_data[[grep("_2", survey_files)]], 
+                     by="PlayerId", all.x = T, suffixes = c("_1", "_2"))
+
+# Part 6: merge game data with survey data at the match level ----
+game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names(game_data))],
+                            by = list(matchid = game_data[,"matchid"], playerid = game_data[,"playerid"]),
+                            FUN = unique)
+
+game_survey_data <- merge(game_data_aggr, survey_data, by.x = "playerid", by.y = "PlayerId", all.x = T)
+
+# output data
+write.csv(game_survey_data, paste(dd_output, 'game_survey_data.csv', sep = '/'), row.names = FALSE)
+
 
 
 

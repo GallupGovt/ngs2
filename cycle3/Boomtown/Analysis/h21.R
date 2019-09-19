@@ -1,7 +1,4 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
-
-factorialGroup$innovation <- as.numeric(factorialGroup$innovation)-1
-
 # Formula
 
 formula.h21<-as.formula("innovation~leaderWeight+grmot2+centralization+density+conformity+grmot1+support+framing+complexity+timeUncertainty+pressure+tolerance+competition+(1|group)")

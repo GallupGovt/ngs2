@@ -18,7 +18,7 @@ h26.1 <- normal(location = c(-0.50, 0.00, 0.50, rep(0, 18)), scale = c(rep(prior
 # h26.2 priors: Group motivation to innovate is u-shaped on intergroup competition
 h26.2 <- normal(location = c(-0.50, 0.00, -0.50, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
 # h26.3 priors: Intergroup competition decreases group motivation to innovate
-h26.2 <- normal(location = c(0.50, 0.00, -0.50, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
+h26.3 <- normal(location = c(0.50, 0.00, -0.50, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
 # h26.4 priors: Low intergroup competition decreases group motivation to innovate
 h26.4 <- normal(location = c(-0.50, 0.00, 0.00, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
 

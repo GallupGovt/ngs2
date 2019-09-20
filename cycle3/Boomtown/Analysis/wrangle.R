@@ -10,8 +10,8 @@ library(dplyr)
 
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
-dd_input  <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
-dd_output <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
+dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
+dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
 
 # fieldwork start date
 field_start <- "01-01-2019"
@@ -130,7 +130,7 @@ gamelog_process <- function(data){
     df$toolsLabel == "Mine2,BlackPowder" ~ 7, 
     df$toolsLabel == "Mine3,BlackPowder" ~ 8, 
     df$toolsLabel == "Mine4,BlackPowder" ~ 8, 
-    df$toolsLabel == "TNTbarrel,Dynamite" ~ 9, 
+    df$toolsLabel == "Dynamite,TNTbarrel" ~ 9, 
     df$toolsLabel == "BlackPowder,SatchelCharge" ~ 10, 
     df$toolsLabel == "SatchelCharge,RDX" ~ 11, 
     df$toolsLabel == "Dynamite,SatchelCharge" ~ 12, 
@@ -149,7 +149,7 @@ gamelog_process <- function(data){
       (df$toolsLabel == "Mine2,BlackPowder" & df$FinalItemSelected == "Mine2") |
       (df$toolsLabel == "Mine3,BlackPowder" & df$FinalItemSelected == "Mine3") |
       (df$toolsLabel == "Mine4,BlackPowder" & df$FinalItemSelected == "Mine4") ~ 1,
-    df$toolsLabel == "TNTbarrel,Dynamite" |
+    df$toolsLabel == "Dynamite,TNTbarrel" |
       df$toolsLabel == "BlackPowder,SatchelCharge" |
       df$toolsLabel == "SatchelCharge,RDX" |
       df$toolsLabel == "Dynamite,SatchelCharge"  ~ NA_real_,

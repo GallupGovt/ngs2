@@ -53,8 +53,8 @@ gamelog_process <- function(data){
   competitionLabel <- match_setting[6]
   supportLabel <- match_setting[7]
   
-  timeUncertainty <- case_when(timeUncertaintyLabel == "False" ~ 0, 
-                               timeUncertaintyLabel == "True" ~ 1,
+  timeUncertainty <- case_when(timeUncertaintyLabel == "False" ~ 1, 
+                               timeUncertaintyLabel == "True" ~ 0,
                                TRUE ~ NA_real_)
   competition <- case_when(competitionLabel == "None" ~ 0,
                            competitionLabel == "Weak" ~ 1,

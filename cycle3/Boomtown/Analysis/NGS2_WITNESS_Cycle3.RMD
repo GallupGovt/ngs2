@@ -123,7 +123,7 @@ nByround=factorial%>%
   summarise(counts  = n())
 nChoices<-sum(nByround$counts)
 nMax<- max(nByround$counts)
-ggplot(data=nByround, aes(x=round, y=counts)) +
+ggplot(data=nByround, aes(x=roundid_short, y=counts)) +
   geom_bar(stat="identity") +
   ggtitle("Number of Choices") + 
   xlab("Round") +
@@ -131,7 +131,7 @@ ggplot(data=nByround, aes(x=round, y=counts)) +
   annotate("text", x=7, y=nMax*1.15, label = paste("Total to date =", nChoices, "valid decisions in 13 rounds")) +
   scale_y_continuous(limits = c(0, nMax*1.25))
 # By tool choice
-factorial.tools<-subset(factorial, tools!="9" & tools!="11" & tools!="12")
+factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
 tool_rate1<-factorial.tools%>%
   group_by(tools)%>%

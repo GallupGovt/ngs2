@@ -259,7 +259,7 @@ game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names
 game_survey_data <- merge(game_data_aggr, survey_data, by.x = "playerid", by.y = "PlayerId", all.x = T)
 
 # output data
-write.csv(game_survey_data, paste(dd_output, 'game_survey_data.csv', sep = '/'), row.names = FALSE)
+write.csv(game_survey_data, paste(dd_output, 'survey_data.csv', sep = '/'), row.names = FALSE)
 
 
 

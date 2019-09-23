@@ -3,6 +3,7 @@
 
 # Number of valid games
 
+factorial$matchid <- factorial$group
 nGames<-length(unique(factorial$group))
 
 # Number of players connected

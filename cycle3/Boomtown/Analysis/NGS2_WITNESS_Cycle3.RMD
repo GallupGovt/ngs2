@@ -119,7 +119,7 @@ datatable(sample_n(factorial, 5),
 ```{r descriptives}
 # Number of rounds
 nByround=factorial%>%
-  group_by(round)%>%
+  group_by(roundid_short)%>%
   summarise(counts  = n())
 nChoices<-sum(nByround$counts)
 nMax<- max(nByround$counts)

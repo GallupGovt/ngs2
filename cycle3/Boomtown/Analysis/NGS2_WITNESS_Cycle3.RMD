@@ -132,7 +132,7 @@ ggplot(data=nByround, aes(x=round, y=counts)) +
   scale_y_continuous(limits = c(0, nMax*1.25))
 # By tool choice
 factorial.tools<-subset(factorial, tools!="9" & tools!="11" & tools!="12")
-factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)-1
+factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
 tool_rate1<-factorial.tools%>%
   group_by(tools)%>%
   summarise(rate_inn=mean(innovation2, na.rm=TRUE))

@@ -2,16 +2,16 @@
 ## Bayesian hypothesis testing (Individual-level outcomes)
 
 # Number of valid games
-
 factorial$group <- factorial$matchid
 nGames<-length(unique(factorial$group))
 
 # Number of players connected
-
 nPlayers<-length(unique(factorial$player))
 
 # Number of unique experimental conditions played
-
 factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$settingsNum]
 nConditions<-length(unique(factorial$settingsNum))
 
+# Game dates
+factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]
+dates<-aggregate(date.time ~ matchid, data=factorial, mean)

@@ -62,7 +62,8 @@ bayesPlotter <- function (plotdf, plotBF) {
   postPlot<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
     geom_density(alpha=0.4) + 
     scale_x_continuous(limits = c(-1.5, 1.5)) + 
-    scale_y_continuous(limits = c(0, 5))
+    scale_y_continuous(limits = c(0, 5)) +
+    geom_vline(xintercept = 0, linetype="dashed")
   bfPlot<-ggplot(plotdf, aes(value, fill=Level, linetype=Distribution)) + 
     geom_density(alpha=0.4) + 
     scale_x_continuous(limits = c(-1.5, 1.5)) + 

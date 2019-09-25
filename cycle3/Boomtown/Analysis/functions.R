@@ -5,7 +5,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
   set.seed(12345)
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
-  label<-paste("bridge_",formulatext, "_", priorstext, sep="")
+  label<-paste(formulatext, "_", priorstext, sep="")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlmer<- stan_glmer(formula,
                            data=dataset,
@@ -25,7 +25,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   set.seed(12345)
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
-  label<-paste("bridge_",formulatext, "_", priorstext, sep="")
+  label<-paste(formulatext, "_", priorstext, sep="")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedLmer<- stan_glmer(formula,
                            data=dataset,

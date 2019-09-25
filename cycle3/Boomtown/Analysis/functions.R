@@ -80,8 +80,8 @@ bayesPlotter1 <- function (model, priorList, priors1, priorScale, coef1, plotBF)
   a <- rnorm(plotIters, mean=priorList[[priors1]], sd=priorScale)
   d <- draws[[coef1]]
   plotdf <- data.frame(value=c(a, d), 
-                       Distribution=c(rep("Prior", plotIters*3),
-                                      rep("Posterior", plotIters*3)), 
+                       Distribution=c(rep("Prior", plotIters),
+                                      rep("Posterior", plotIters)), 
                        Level=c(rep(priors1, plotIters),
                                rep(priors1, plotIters)))
   plots<-bayesPlotter(plotdf, plotBF)

@@ -9,9 +9,9 @@ nGames<-length(unique(factorial$group))
 nPlayers<-length(unique(factorial$player))
 
 # Number of unique experimental conditions played
-factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$settingsNum]
-nConditions<-length(unique(factorial$settingsNum))
+#factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$settingsNum]
+#nConditions<-length(unique(factorial$settingsNum))
 
 # Game dates
-factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]
-dates<-aggregate(date.time ~ matchid, data=factorial, mean)
+#factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]
+#dates<-aggregate(date.time ~ matchid, data=factorial, mean)

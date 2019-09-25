@@ -266,15 +266,49 @@ We then estimate the likelihood that the observed data were produced by the hypo
 
 ```{r START1null}
 load (file ="bayesGlmer.26.0")
+BFs26 <-read.csv(paste(od, "BFs26.csv", sep = '/'))
 summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
+priorSD.26<-0.2
 ```
 - Prediction 1: Intergroup competition increases group motivation to innovate
+
+```{r START1_plot1}
+priors.h26.1 <- list(low_competition = -0.5, 
+                   mid_competition = 0, 
+                   hi_competition = 0.5)
+plotsh26.1<-bayesPlotter3 (fittedGlmer, priors.h26.1, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.1.vs..Null)
+plotsh26.1[[3]]
+```
 - Prediction 2: Group motivation to innovate is u-shaped on intergroup competition
+
+```{r START1_plot2}
+priors.h26.2 <- list(low_competition = -0.5, 
+                   mid_competition = 0, 
+                   hi_competition = -0.5)
+plotsh26.2<-bayesPlotter3 (fittedGlmer, priors.h26.2, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.2.vs..Null)
+plotsh26.2[[3]]
+```
 - Prediction 3: Intergroup competition decreases group motivation to innovate
+
+```{r START1_plot3}
+priors.h26.3 <- list(low_competition = 0.5, 
+                   mid_competition = 0, 
+                   hi_competition = -0.5)
+plotsh26.3<-bayesPlotter3 (fittedGlmer, priors.h26.3, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.3.vs..Null)
+plotsh26.3[[3]]
+```
 - Prediction 4: Low intergroup competition decreases group motivation to innovate
 
-```{r START1BFs}
-BFs26 <-read.csv(paste(od, "BFs26.csv", sep = '/'))                      
+```{r START1_plot4}
+priors.h26.4 <- list(low_competition = 0.5, 
+                   mid_competition = 0, 
+                   hi_competition = -0.5)
+plotsh26.4<-bayesPlotter3 (fittedGlmer, priors.h26.4, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.4.vs..Null)
+plotsh26.4[[3]]
+```
+Bayes factors for all hypothesis tests are shown below, including comparisons among all predictions and vs null: 
+
+```{r START1BFs}               
 BFs26
 ```
 ### Hypothesis 2. Organizational Structure and Group Motivation to Innovate

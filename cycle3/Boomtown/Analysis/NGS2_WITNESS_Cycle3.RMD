@@ -370,15 +370,14 @@ BFs27
 ```
 
 ## Causal Graph Testing
-### Hypothesis 1. Intergroup Competition and individual motivation to innovate
+### Hypothesis 1. Intergroup Competition and Individual Motivation to Innovate (T1)
 
 - Null: Intergroup competition has no effect on individual motivation to innovate (T1)
 
 ```{r h1null}
-load (file ="bayesGlmer.1.0")
-summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competition4"))
+load (file ="bayesGlmer_h1.1_h1.0")
+summary(fittedGlmer, digits = 2))
 ```
-
 - Prediction 1: Intergroup competition increases individual motivation to innovate (T1)
 - Prediction 2: Individual motivation to innovate (T1) is u-shaped on intergroup competition
 - Prediction 3: Low intergroup competition decreases individual motivation to innovate (T1)
@@ -386,6 +385,325 @@ summary(fittedGlmer, digits = 2, pars=c("competition2", "competition3", "competi
 ```{r h1BFs}
 BFs1 <-read.csv(paste(od, "BFs1.csv", sep = '/'))                      
 BFs1
+```
+
+### Hypothesis 2. Innovative Prospect Value and Individual Motivation to Innovate (T1) 
+
+- Null: Prospect value will have no effect on Individual Motivation to Innovate (T1)
+
+```{r h2null}
+load (file ="bayesGlmer_h2.1_h2.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Prospect value, calculated according to Cumulative Prospect Theory, will determine Individual Motivation to Innovate (T1) 
+- Prediction 2: Prospect value, calculated according to Expected Utility Theory, will determine Individual Motivation to Innovate (T1) 
+- Prediction 3: Prospect value, calculated according to Probability Theory, will determine Individual Motivation to Innovate (T1) 
+- Prediction 4: Prospect value, calculated according to a combination of CPT + Summative Expectancy Theory, will determine Individual Motivation to Innovate (T1) 
+
+```{r h2BFs}
+BFs2 <-read.csv(paste(od, "BFs2.csv", sep = '/'))                      
+BFs2
+```
+
+### Hypothesis 3. Innovation Uncertainty, Innovative Prospect Value and Individual Motivation to Innovate (T1) 
+
+- Null: Controlling for expected gains, individuals will not be more likely to select a certain tool over an uncertain tool.
+
+```{r h3null}
+load (file ="bayesGlmer_h3.1_h3.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h3BFs}
+BFs3 <-read.csv(paste(od, "BFs3.csv", sep = '/'))                      
+BFs3
+```
+
+### Hypothesis 4. Tolerance of Ambiguity and Innovation Uncertainty
+
+- Null: TA will not moderate the effect of Innovation Uncertainty on Innovative Prospect Value. Individuals high in TA will show the same certainty effect than individuals low in TA. 
+
+```{r h4null}
+load (file ="bayesGlmer_h4.1_h4.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: TA will moderate the effect of Innovation Uncertainty on Innovative Prospect Value. Individuals high in TA will show a lower certainty effect than individuals low in TA.
+
+```{r h4BFs}
+BFs4 <-read.csv(paste(od, "BFs4.csv", sep = '/'))                      
+BFs4
+```
+### Hypothesis 5.  Availability Heuristic and Individual Motivation (T1)
+
+- Null: 
+
+```{r h5null}
+load (file ="bayesGlmer_h5.1_h5.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h5BFs}
+BFs5 <-read.csv(paste(od, "BFs5.csv", sep = '/'))                      
+BFs5
+```
+### Hypothesis 6. Exogenous Uncertainty and Individual Motivation (T1)
+
+- Null: 
+
+```{r h6null}
+load (file ="bayesGlmer_h6.1_h6.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h6BFs}
+BFs6 <-read.csv(paste(od, "BFs6.csv", sep = '/'))                      
+BFs6
+```
+### Hypothesis 7. Perceived Intergroup Competition and Heuristic Reasoning
+
+- Null: 
+
+```{r h7null}
+load (file ="bayesGlmer_h7.1_h7.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h7BFs}
+BFs7 <-read.csv(paste(od, "BFs7.csv", sep = '/'))                      
+BFs7
+```
+### Hypothesis 8. Tolerance of Ambiguity and Heuristic Reasoning
+
+- Null: 
+
+```{r h8null}
+load (file ="bayesGlmer_h8.1_h8.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h8BFs}
+BFs8 <-read.csv(paste(od, "BFs8.csv", sep = '/'))                      
+BFs8
+```
+### Hypothesis 9. Time Pressure and Heuristic Reasoning
+
+- Null: 
+
+```{r h9null}
+load (file ="bayesGlmer_h9.1_h9.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h9BFs}
+BFs9 <-read.csv(paste(od, "BFs9.csv", sep = '/'))                      
+BFs9
+```
+### Hypothesis 10. Innovation Uncertainty and Heuristic Reasoning
+
+- Null: 
+
+```{r h10null}
+load (file ="bayesGlmer_h10.1_h10.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h10BFs}
+BFs10 <-read.csv(paste(od, "BFs10.csv", sep = '/'))                      
+BFs10
+```
+### Hypothesis 11. Complexity of Innovation and Heuristic Reasoning
+
+- Null: 
+
+```{r h11null}
+load (file ="bayesGlmer_h11.1_h11.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h11BFs}
+BFs11 <-read.csv(paste(od, "BFs11.csv", sep = '/'))                      
+BFs11
+```
+### Hypothesis 12. Group Aggregate Motivation to Innovate (T1) and Conformity
+
+- Null: 
+
+```{r h12null}
+load (file ="bayesGlmer_h12.1_h12.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h12BFs}
+BFs12 <-read.csv(paste(od, "BFs12.csv", sep = '/'))                      
+BFs12
+```
+### Hypothesis 13. Time Pressure and Conformity
+
+- Null: 
+
+```{r h13null}
+load (file ="bayesGlmer_h13.1_h13.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h13BFs}
+BFs13 <-read.csv(paste(od, "BFs13.csv", sep = '/'))                      
+BFs13
+```
+### Hypothesis 14. Intergroup Competition and Conformity
+
+- Null: 
+
+```{r h14null}
+load (file ="bayesGlmer_h14.1_h14.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h14BFs}
+BFs14 <-read.csv(paste(od, "BFs14.csv", sep = '/'))                      
+BFs14
+```
+### Hypothesis 15. Tolerance of Ambiguity and Conformity
+
+- Null: 
+
+```{r h15null}
+load (file ="bayesGlmer_h15.1_h15.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h15BFs}
+BFs15 <-read.csv(paste(od, "BFs15.csv", sep = '/'))                      
+BFs15
+```
+### Hypothesis 16. Innovation Complexity and Conformity
+
+- Null: 
+
+```{r h16null}
+load (file ="bayesGlmer_h16.1_h16.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h16BFs}
+BFs16 <-read.csv(paste(od, "BFs16.csv", sep = '/'))                      
+BFs16
+```
+### Hypothesis 17. Group Support for Innovation and Individual Motivation to Innovate (T2)
+
+- Null: 
+
+```{r h17null}
+load (file ="bayesGlmer_h17.1_h17.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h17BFs}
+BFs17 <-read.csv(paste(od, "BFs17.csv", sep = '/'))                      
+BFs17
+```
+### Hypothesis 18. Conformity and Individual Motivation to Innovate (T2)
+
+- Null: 
+
+```{r h18null}
+load (file ="bayesGlmer_h18.1_h18.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h18BFs}
+BFs18 <-read.csv(paste(od, "BFs18.csv", sep = '/'))                      
+BFs18
+```
+### Hypothesis 19. Network Density and Individual Motivation to Innovate (T2)
+
+- Null: 
+
+```{r h19null}
+load (file ="bayesGlmer_h19.1_h19.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h19BFs}
+BFs19 <-read.csv(paste(od, "BFs19.csv", sep = '/'))                      
+BFs19
+```
+### Hypothesis 20. Network Centralization and Individual Motivation to Innovate (T2)
+
+- Null: 
+
+```{r h20null}
+load (file ="bayesGlmer_h20.1_h20.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h20BFs}
+BFs20 <-read.csv(paste(od, "BFs20.csv", sep = '/'))                      
+BFs20
+```
+### Hypothesis 21. Leader Vote Weight and Group Motivation to Innovate
+
+- Null: 
+
+```{r h21null}
+load (file ="bayesGlmer_h21.1_h21.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h21BFs}
+BFs21 <-read.csv(paste(od, "BFs21.csv", sep = '/'))                      
+BFs21
+```
+### Hypothesis 22. Individual Motivation (T1 & T2)
+
+- Null: 
+
+```{r h22null}
+load (file ="bayesGlmer_h22.1_h22.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h22BFs}
+BFs22 <-read.csv(paste(od, "BFs22.csv", sep = '/'))                      
+BFs22
+```
+### Hypothesis 23. Individual Motivation (T1) and Group Aggregate (T1)
+ (Ommitted in final pre-registration)
+### Hypothesis 24. Individual Motivation (T2) and Group Aggregate (T2) 
+ (Ommitted in final pre-registration)
+
+### Hypothesis 25. Group Aggregate (T2) and Group Motivation to Innovate
+
+- Null: 
+
+```{r h25null}
+load (file ="bayesGlmer_h25.1_h25.0")
+summary(fittedGlmer, digits = 2))
+```
+- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+
+```{r h25BFs}
+BFs25 <-read.csv(paste(od, "BFs25.csv", sep = '/'))                      
+BFs25
 ```
 
 # Machine Learning

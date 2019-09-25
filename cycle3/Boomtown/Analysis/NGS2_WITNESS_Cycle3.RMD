@@ -44,9 +44,9 @@ lapply(c(setup, hypotheses, data), dlScripts)
 ```{r run_scripts, include=F}
 # run scripts in order
 source("functions.R")
-factorial <- read.csv(file="game_data.csv")
+#factorial <- read.csv(file="game_data.csv")
 survey <- read.csv(file="survey_data.csv")
-#source("dataprep.R")
+source("dataprep.R")
 source("analytics.R")
 registerDoParallel(cores=25)
 getDoParWorkers()

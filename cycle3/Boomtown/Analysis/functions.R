@@ -15,7 +15,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
                            chains = 3, iter = nIter,
                            diagnostic_file = diagnostic)
   fittedGlmer$call$diagnostic_file <- diagnostic
-  save (fittedGlmer, file = paste("bayesGlmer.",label, sep=""))
+  save (fittedGlmer, file = paste("bayesGlmer_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedGlmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
   return(bridge_priors)
@@ -35,7 +35,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
                            chains = 3, iter = nIter,
                            diagnostic_file = diagnostic)
   fittedLmer$call$diagnostic_file <- diagnostic
-  save (fittedLmer, file = paste("bayesLmer.",label, sep=""))
+  save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
   return(bridge_priors)
@@ -70,6 +70,22 @@ bayesPlotter <- function (plotdf, plotBF) {
     annotate("text", x=1.2, y=2, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
     geom_vline(xintercept = 0, linetype="dashed")
   return(list(priorPlot, postPlot, bfPlot))
+}
+
+# Bayesian plotting - frame processing function (Predictions with one coefficient)
+
+bayesPlotter1 <- function (model, priorList, priors1, priorScale, coef1, plotBF) {
+  plotIters<-nIter*1.5  
+  draws <- as.data.frame(model)
+  a <- rnorm(plotIters, mean=priorList[[priors1]], sd=priorScale)
+  d <- draws[[coef1]]
+  plotdf <- data.frame(value=c(a, d), 
+                       Distribution=c(rep("Prior", plotIters*3),
+                                      rep("Posterior", plotIters*3)), 
+                       Level=c(rep(priors1, plotIters),
+                               rep(priors1, plotIters)))
+  plots<-bayesPlotter(plotdf, plotBF)
+  return(plots)
 }
 
 # Bayesian plotting - frame processing function (Predictions with three coefficients)

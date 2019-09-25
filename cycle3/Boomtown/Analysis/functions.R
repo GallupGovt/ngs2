@@ -57,7 +57,6 @@ bayesPlotter <- function (plotdf, plotBF) {
     geom_density(alpha=0.4) + 
     scale_x_continuous(limits = c(-1.5, 1.5)) + 
     scale_y_continuous(limits = c(0, 5)) +
-    annotate("text", x=2, y=1.7, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
     geom_vline(xintercept = 0, linetype="dashed")
   frame.posterior<-subset(plotdf, Distribution=="Posterior")
   postPlot<-ggplot(frame.posterior, aes(value, fill=Level, linetype=Distribution)) + 
@@ -68,7 +67,7 @@ bayesPlotter <- function (plotdf, plotBF) {
     geom_density(alpha=0.4) + 
     scale_x_continuous(limits = c(-1.5, 1.5)) + 
     scale_y_continuous(limits = c(0, 5)) +
-    annotate("text", x=2, y=1.7, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
+    annotate("text", x=1.2, y=2, label = paste(deparse(substitute(plotBF)), " = ", sprintf("%0.2f", plotBF))) +
     geom_vline(xintercept = 0, linetype="dashed")
   return(list(priorPlot, postPlot, bfPlot))
 }

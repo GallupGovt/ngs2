@@ -260,7 +260,7 @@ Posterior predictive distributions and posterior parameter distributions are sam
 We then estimate the likelihood that the observed data were produced by the hypothesized generating model, and compare that to the likelihood that the observed data were produced by a null model. The Bayes factor is the ratio of the marginal likelihoods of two models, where the marginal likelihood of a model is the probability of the data given a model and quantifies how well the model has predicted the observed data. We calculate the Bayes Factor from the ratio of the likelihood of a prediction to the null.  
 
 ## Start Hypotheses
-### Hypothesis 1. Intergroup Competition and group motivation to innovate
+### Hypothesis 1. Intergroup Competition and Group Motivation to Innovate
 
 - Null: Competition has no effect on Group Motivation to Innovate
 
@@ -318,7 +318,7 @@ BFs26
 ```
 ### Hypothesis 2. Organizational Structure and Group Motivation to Innovate
 
-- Null: Organizational Structure has no effect on Group Motivation to Innovate
+- Null: Organizational Structure has no effect on Group Motivation to Innovate.
 
 ```{r START2null}
 BFs27 <-read.csv(paste(od, "BFs27.csv", sep = '/'))
@@ -330,7 +330,7 @@ summary(fittedGlmer, digits = 2, pars="structureHie")
 load (file ="bayesGlmer_h27.3_h27.0")
 summary(fittedGlmer, digits = 2, pars="structureCel")
 ```
-- Prediction 1: Network structure reduces group motivation to innovate
+- Prediction 1: Network structure reduces Group Motivation to Innovate.
 
 ```{r START2plot1}
 load (file ="bayesGlmer_h27.1_h27.1")
@@ -338,7 +338,7 @@ priors.h27.1 <- list(Network_Structure = -0.5)
 plotsh27.1<-bayesPlotter1 (fittedGlmer, priors.h27.1, "Network_Structure", priorSD.27, "structureNet", BFs27$Prediction.1.vs..Null)
 plotsh26.1[[3]]
 ```
-- Prediction 2: Hierarchical structure increases group motivation to innovate
+- Prediction 2: Hierarchical structure increases Group Motivation to Innovate.
 
 ```{r START2plot2}
 load (file ="bayesGlmer_h27.2_h27.2")
@@ -346,7 +346,7 @@ priors.h27.2<- list(Hierarchical_Structure = 0.5)
 plotsh27.2<-bayesPlotter1 (fittedGlmer, priors.h27.2, "Hierarchical_Structure", priorSD.27, "structureHie", BFs27$Prediction.2.vs..Null)
 plotsh27.2[[3]]
 ```
-- Prediction 3: Cellular structure increases group motivation to innovate
+- Prediction 3: Cellular structure increases Group Motivation to Innovate.
 
 ```{r START2plot3}
 load (file ="bayesGlmer_h27.3_h27.3")
@@ -354,7 +354,7 @@ priors.h27.3<- list(Cellular_Structure = 0.5)
 plotsh27.3<-bayesPlotter1 (fittedGlmer, priors.h27.3, "Cellular_Structure", priorSD.27, "structureCel", BFs27$Prediction.3.vs..Null)
 plotsh27.3[[3]]
 ```
-- Prediction 4: Network structure increases group motivation to innovate
+- Prediction 4: Network structure increases Group Motivation to Innovate.
 
 ```{r START2plot4}
 load (file ="bayesGlmer_h27.4_h27.4")
@@ -372,15 +372,15 @@ BFs27
 ## Causal Graph Testing
 ### Hypothesis 1. Intergroup Competition and Individual Motivation to Innovate (T1)
 
-- Null: Intergroup competition has no effect on individual motivation to innovate (T1)
+- Null: Intergroup competition has no effect on individual motivation to innovate (T1).
 
 ```{r h1null}
 load (file ="bayesGlmer_h1.1_h1.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Intergroup competition increases individual motivation to innovate (T1)
-- Prediction 2: Individual motivation to innovate (T1) is u-shaped on intergroup competition
-- Prediction 3: Low intergroup competition decreases individual motivation to innovate (T1)
+- Prediction 1: Intergroup competition increases Individual Motivation to Innovate (T1).
+- Prediction 2: Individual Motivation to Innovate (T1) is u-shaped on intergroup competition.
+- Prediction 3: Low intergroup competition decreases Individual Motivation to Innovate (T1).
 
 ```{r h1BFs}
 BFs1 <-read.csv(paste(od, "BFs1.csv", sep = '/'))                      
@@ -389,16 +389,16 @@ BFs1
 
 ### Hypothesis 2. Innovative Prospect Value and Individual Motivation to Innovate (T1) 
 
-- Null: Prospect value will have no effect on Individual Motivation to Innovate (T1)
+- Null: Prospect value will have no effect on Individual Motivation to Innovate (T1).
 
 ```{r h2null}
 load (file ="bayesGlmer_h2.1_h2.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Prospect value, calculated according to Cumulative Prospect Theory, will determine Individual Motivation to Innovate (T1) 
-- Prediction 2: Prospect value, calculated according to Expected Utility Theory, will determine Individual Motivation to Innovate (T1) 
-- Prediction 3: Prospect value, calculated according to Probability Theory, will determine Individual Motivation to Innovate (T1) 
-- Prediction 4: Prospect value, calculated according to a combination of CPT + Summative Expectancy Theory, will determine Individual Motivation to Innovate (T1) 
+- Prediction 1: Prospect value, per Cumulative Prospect Theory, will determine Individual Motivation to Innovate (T1).
+- Prediction 2: Prospect value, per Expected Utility Theory, will determine Individual Motivation to Innovate (T1).
+- Prediction 3: Prospect value, per Probability Theory, will determine Individual Motivation to Innovate (T1).
+- Prediction 4: Prospect value, per a combination of CPT + Summative Expectancy Theory, will determine Individual Motivation to Innovate (T1).
 
 ```{r h2BFs}
 BFs2 <-read.csv(paste(od, "BFs2.csv", sep = '/'))                      
@@ -436,13 +436,14 @@ BFs4
 ```
 ### Hypothesis 5.  Availability Heuristic and Individual Motivation (T1)
 
-- Null: 
+- Null: Availability of positive or negative examples will not affect individual motivation to innovate (T1).
 
 ```{r h5null}
 load (file ="bayesGlmer_h5.1_h5.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Availability of a positive example will increase individual motivation to innovate (T1), while availability of a negative example will decrease individual motivation to innovate (T1).
+- Prediction 2: Availability of a negative example will decrease individual motivation to innovate (T1).
 
 ```{r h5BFs}
 BFs5 <-read.csv(paste(od, "BFs5.csv", sep = '/'))                      
@@ -450,13 +451,14 @@ BFs5
 ```
 ### Hypothesis 6. Exogenous Uncertainty and Individual Motivation (T1)
 
-- Null: 
+- Null: Increased exogenous uncertainty (ignorance) will not affect individual motivation to innovate (T1)
 
 ```{r h6null}
 load (file ="bayesGlmer_h6.1_h6.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Increased exogenous uncertainty (ignorance) will increase individual motivation to innovate (T1).
+- Prediction 2: Exogenous uncertainty (ignorance) will decrease individual motivation to innovate (T1) in the early stages of the game.
 
 ```{r h6BFs}
 BFs6 <-read.csv(paste(od, "BFs6.csv", sep = '/'))                      
@@ -464,13 +466,14 @@ BFs6
 ```
 ### Hypothesis 7. Perceived Intergroup Competition and Heuristic Reasoning
 
-- Null: 
+- Null: Perceived intergroup competition does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals facing strong competition as those facing balanced or weak competition.
 
 ```{r h7null}
 load (file ="bayesGlmer_h7.1_h7.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals facing strong competition than those facing balanced or weak competition. 
+- Prediction 2: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals facing strong competition than those facing balanced or weak competition.
 
 ```{r h7BFs}
 BFs7 <-read.csv(paste(od, "BFs7.csv", sep = '/'))                      
@@ -478,13 +481,14 @@ BFs7
 ```
 ### Hypothesis 8. Tolerance of Ambiguity and Heuristic Reasoning
 
-- Null: 
+- Null: TA does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals with high TA than those with low TA. 
 
 ```{r h8null}
 load (file ="bayesGlmer_h8.1_h8.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
+- Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
 
 ```{r h8BFs}
 BFs8 <-read.csv(paste(od, "BFs8.csv", sep = '/'))                      
@@ -492,13 +496,14 @@ BFs8
 ```
 ### Hypothesis 9. Time Pressure and Heuristic Reasoning
 
-- Null: 
+- Null: TA does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals with high TA than those with low TA. 
 
 ```{r h9null}
 load (file ="bayesGlmer_h9.1_h9.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
+- Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
 
 ```{r h9BFs}
 BFs9 <-read.csv(paste(od, "BFs9.csv", sep = '/'))                      
@@ -506,13 +511,14 @@ BFs9
 ```
 ### Hypothesis 10. Innovation Uncertainty and Heuristic Reasoning
 
-- Null: 
+- Null: Uncertainty does not moderate  the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals for high uncertainty prospects than low uncertainty prospects.
 
 ```{r h10null}
 load (file ="bayesGlmer_h10.1_h10.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Uncertainty moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals for high uncertainty prospects than low uncertainty prospects. 
+- Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
 
 ```{r h10BFs}
 BFs10 <-read.csv(paste(od, "BFs10.csv", sep = '/'))                      
@@ -520,13 +526,13 @@ BFs10
 ```
 ### Hypothesis 11. Complexity of Innovation and Heuristic Reasoning
 
-- Null: 
+- Null: Innovation complexity does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will not have a greater effect on individual motivation to innovate under high complexity than under low complexity.
 
 ```{r h11null}
 load (file ="bayesGlmer_h11.1_h11.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Innovation complexity moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individual motivation to innovate under high complexity than under low complexity.
 
 ```{r h11BFs}
 BFs11 <-read.csv(paste(od, "BFs11.csv", sep = '/'))                      
@@ -534,13 +540,14 @@ BFs11
 ```
 ### Hypothesis 12. Group Aggregate Motivation to Innovate (T1) and Conformity
 
-- Null: 
+- Null: Group Aggregate Motivation to Innovate (T1) will not increase Conformity.
 
 ```{r h12null}
 load (file ="bayesGlmer_h12.1_h12.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Group Aggregate Motivation to Innovate (T1) will increase Conformity.
+- Prediction 2: Group Aggregate Motivation to Innovate (T1) will increase Conformity when the group is unanimous. 
 
 ```{r h12BFs}
 BFs12 <-read.csv(paste(od, "BFs12.csv", sep = '/'))                      
@@ -548,13 +555,13 @@ BFs12
 ```
 ### Hypothesis 13. Time Pressure and Conformity
 
-- Null: 
+- Null: Time Pressure does not increase Conformity.
 
 ```{r h13null}
 load (file ="bayesGlmer_h13.1_h13.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Time Pressure increases Conformity.
 
 ```{r h13BFs}
 BFs13 <-read.csv(paste(od, "BFs13.csv", sep = '/'))                      
@@ -562,13 +569,13 @@ BFs13
 ```
 ### Hypothesis 14. Intergroup Competition and Conformity
 
-- Null: 
+- Null: Intergroup Competition does not increase Conformity.
 
 ```{r h14null}
 load (file ="bayesGlmer_h14.1_h14.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Intergroup Competition increases Conformity.
 
 ```{r h14BFs}
 BFs14 <-read.csv(paste(od, "BFs14.csv", sep = '/'))                      
@@ -576,13 +583,13 @@ BFs14
 ```
 ### Hypothesis 15. Tolerance of Ambiguity and Conformity
 
-- Null: 
+- Null: Tolerance of Ambiguity does not decrease Conformity. 
 
 ```{r h15null}
 load (file ="bayesGlmer_h15.1_h15.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Tolerance of Ambiguity decreases Conformity.
 
 ```{r h15BFs}
 BFs15 <-read.csv(paste(od, "BFs15.csv", sep = '/'))                      
@@ -590,13 +597,13 @@ BFs15
 ```
 ### Hypothesis 16. Innovation Complexity and Conformity
 
-- Null: 
+- Null: Innovation Complexity does not decrease Conformity. 
 
 ```{r h16null}
 load (file ="bayesGlmer_h16.1_h16.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Innovation Complexity increases Conformity.
 
 ```{r h16BFs}
 BFs16 <-read.csv(paste(od, "BFs16.csv", sep = '/'))                      
@@ -604,13 +611,13 @@ BFs16
 ```
 ### Hypothesis 17. Group Support for Innovation and Individual Motivation to Innovate (T2)
 
-- Null: 
+- Null: Group Support for Innovation will not increase Individual Motivation to Innovate (T2).
 
 ```{r h17null}
 load (file ="bayesGlmer_h17.1_h17.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Group Support for Innovation will increase Individual Motivation to Innovate (T2).
 
 ```{r h17BFs}
 BFs17 <-read.csv(paste(od, "BFs17.csv", sep = '/'))                      
@@ -618,13 +625,13 @@ BFs17
 ```
 ### Hypothesis 18. Conformity and Individual Motivation to Innovate (T2)
 
-- Null: 
+- Null: Group Conformity will not moderate Individual Motivation to Innovate (T2).
 
 ```{r h18null}
 load (file ="bayesGlmer_h18.1_h18.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Group Conformity will moderate Individual Motivation to Innovate (T2). When group motivation to innovate is positive, conformity increases Individual Motivation to Innovate (T2). When group motivation to innovate is negative, conformity decreases Individual Motivation to Innovate (T2).
 
 ```{r h18BFs}
 BFs18 <-read.csv(paste(od, "BFs18.csv", sep = '/'))                      
@@ -632,13 +639,13 @@ BFs18
 ```
 ### Hypothesis 19. Network Density and Individual Motivation to Innovate (T2)
 
-- Null: 
+- Null: Network Density will not increase Individual motivation to innovate (T2).
 
 ```{r h19null}
 load (file ="bayesGlmer_h19.1_h19.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Network Density will increase Individual motivation to innovate (T2).
 
 ```{r h19BFs}
 BFs19 <-read.csv(paste(od, "BFs19.csv", sep = '/'))                      
@@ -646,13 +653,13 @@ BFs19
 ```
 ### Hypothesis 20. Network Centralization and Individual Motivation to Innovate (T2)
 
-- Null: 
+- Null: Network Centralization will not decrease Individual motivation to innovate (T2).
 
 ```{r h20null}
 load (file ="bayesGlmer_h20.1_h20.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Network Centralization will decrease Individual motivation to innovate (T2)
 
 ```{r h20BFs}
 BFs20 <-read.csv(paste(od, "BFs20.csv", sep = '/'))                      
@@ -660,13 +667,13 @@ BFs20
 ```
 ### Hypothesis 21. Leader Vote Weight and Group Motivation to Innovate
 
-- Null: 
+- Null: Leader vote weight will not increase Group Motivation to Innovate (T2). 
 
 ```{r h21null}
 load (file ="bayesGlmer_h21.1_h21.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Leader vote weight will increase Group Motivation to Innovate (T2).
 
 ```{r h21BFs}
 BFs21 <-read.csv(paste(od, "BFs21.csv", sep = '/'))                      
@@ -674,13 +681,13 @@ BFs21
 ```
 ### Hypothesis 22. Individual Motivation (T1 & T2)
 
-- Null: 
+- Null: Individual motivation to innovate (T1) will not increase Individual motivation to innovate (T2).
 
 ```{r h22null}
 load (file ="bayesGlmer_h22.1_h22.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Individual motivation to innovate (T1) will increase Individual motivation to innovate (T2).
 
 ```{r h22BFs}
 BFs22 <-read.csv(paste(od, "BFs22.csv", sep = '/'))                      
@@ -693,13 +700,13 @@ BFs22
 
 ### Hypothesis 25. Group Aggregate (T2) and Group Motivation to Innovate
 
-- Null: 
+- Null: Group Aggregate motivation to innovate (T2) will not increase Group Motivation to Innovate.
 
 ```{r h25null}
 load (file ="bayesGlmer_h25.1_h25.0")
 summary(fittedGlmer, digits = 2))
 ```
-- Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
+- Prediction 1: Group Aggregate motivation to innovate (T2) will increase Group Motivation to Innovate.
 
 ```{r h25BFs}
 BFs25 <-read.csv(paste(od, "BFs25.csv", sep = '/'))                      
@@ -713,10 +720,15 @@ Since the aim of the NGS2 program is being able to quickly and reliably single m
 We train a Random Forests model using the caret package in R (R Core Team, 2018), using a random subset of the experimental data including 80% of the cases (stratified by game) to train the model with 5-fold cross-validation, with the remaining 20% of cases put aside in a testing dataset. Out of sample performance of both the ML and Bayesian models will be assessed through a comparison of Receiver Operating Characteristic (ROC) curves, as estimated from the testing dataset. 
 
 # Conclusions
+TBD
 ## Confirmed Predictions
+TBD
 ## Meaningful effects
+TBD
 ## Near-zero effects
+TBD
 ## Inconclusive effects
+TBD
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`
 

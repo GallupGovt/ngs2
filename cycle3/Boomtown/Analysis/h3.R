@@ -11,9 +11,9 @@ ndim<-length(fittedGlmer$covmat[1,])-2
 # Declare priors
 # Baseline priors based on Cycle 2 data: log-odds = -1.7, SD = 0.25
 priorSD <- 0.25
-# h3.0 priors (null): Innovation uncertainty will not affect individual motivation to innovate
+# h3.0 priors (null): Controlling for expected gains, individuals will not be more likely to select a certain tool over an uncertain tool.
 h3.0 <- normal(location = c(0.00, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
-# h3.1 priors: Prospect value, calculated according to Cumulative Prospect Theory, will determine an individual's motivation to innovate. 
+# h3.1 priors: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
 h3.1 <- normal(location = c(-1.7, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
 
 # Run models 

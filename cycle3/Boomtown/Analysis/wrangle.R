@@ -229,6 +229,21 @@ game_data$inmot1 <- motivationCoder (game_data, "PlayerVote1")
 game_data$inmot2 <- motivationCoder (game_data, "PlayerVote2")
 game_data$innovation <- motivationCoder (game_data, "FinalItemSelected")
 
+# Organizational structure variables (hard-coded per factorial matrix, pending metadata update from Jeff)
+
+for (i in seq(1, 96, by=3)){ 
+  game_data$structure[game_data$settingsNum==i]<- "Hierarchical"
+  game_data$centralization[game_data$settingsNum==i]<- "Medium"
+  game_data$leaderWeight[game_data$settingsNum==i]<- "High"
+  
+  game_data$structure[game_data$settingsNum==i+1]<- "Cellular"
+  game_data$centralization[game_data$settingsNum==i+1]<- "High"
+  game_data$leaderWeight[game_data$settingsNum==i+1]<- "Low"
+  
+  game_data$structure[game_data$settingsNum==i+2]<- "Network"
+  game_data$centralization[game_data$settingsNum==i+2]<- "Low"
+}
+
 # format date/time fields
 game_data$date.time<-as.POSIXct(game_data$date.time)
 

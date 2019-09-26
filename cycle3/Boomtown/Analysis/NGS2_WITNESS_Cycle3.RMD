@@ -101,7 +101,8 @@ Variables where existing predictions could not fully account for observed effect
     + Obtained usable data from a total of `r nPlayers` players.
     + Completed data collection for `r nConditions` of the 96 experimental conditions in the full factorial space.
 
-`r barplot(table(dates$date.time))`
+`r barplot(table(dates$matchDate))`
+`r barplot(table(times$date.time))`
 
 Variables used and a random sample of rows from the final analytical dataset are summarized below. 
 

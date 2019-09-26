@@ -13,5 +13,5 @@ factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$setti
 nConditions<-length(unique(factorial$settingsNum))
 
 # Game dates
-factorial$date.time<-as.Date(levels(factorial$date.time))[factorial$date.time]
-dates<-aggregate(date.time ~ matchid, data=factorial, mean)
+factorial$matchDate<-as.Date(levels(factorial$matchDate))[factorial$matchDate]
+dates<-aggregate(matchDate ~ matchid, data=factorial, mean)

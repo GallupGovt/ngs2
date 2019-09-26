@@ -219,7 +219,7 @@ names(group_vote) <- c("roundid", "GroupVote1", "GroupVote2")
 game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
 # format date/time fields
-factorial$date.time<-as.POSIXct(factorial$date.time)
+game_data$date.time<-as.POSIXct(game_data$date.time)
 
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)

@@ -137,7 +137,47 @@ gamelog_process <- function(data){
     TRUE ~ NA_real_
   )
   
-  # innovation
+# Individual Motivation (T1)
+  df$inmot1 <- case_when(
+    (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$PlayerVote1 == "SatchelCharge") | 
+      (df$toolsLabel == "BlackPowder,Dynamite" & df$PlayerVote1 == "Dynamite") |
+      (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote1 == "RDX") |
+      (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote1 == "RDX") |
+      (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote1 == "Mine2") |
+      (df$toolsLabel == "Mine4,Mine3" & df$PlayerVote1 == "Mine4") |
+      (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote1 == "Mine1") |
+      (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote1 == "Mine2") |
+      (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote1 == "Mine3") |
+      (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote1 == "Mine4") ~ 1,
+    df$toolsLabel == "Dynamite,TNTbarrel" |
+      df$toolsLabel == "BlackPowder,SatchelCharge" |
+      df$toolsLabel == "SatchelCharge,RDX" |
+      df$toolsLabel == "Dynamite,SatchelCharge"  ~ NA_real_,
+    TRUE ~ 0
+  )
+
+# Individual Motivation (T2)
+            
+  df$inmot2 <- case_when(
+    (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$PlayerVote2 == "SatchelCharge") | 
+      (df$toolsLabel == "BlackPowder,Dynamite" & df$PlayerVote2 == "Dynamite") |
+      (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote2 == "RDX") |
+      (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote2 == "RDX") |
+      (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote2 == "Mine2") |
+      (df$toolsLabel == "Mine4,Mine3" & df$PlayerVote2 == "Mine4") |
+      (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote2 == "Mine1") |
+      (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote2 == "Mine2") |
+      (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote2 == "Mine3") |
+      (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote2 == "Mine4") ~ 1,
+    df$toolsLabel == "Dynamite,TNTbarrel" |
+      df$toolsLabel == "BlackPowder,SatchelCharge" |
+      df$toolsLabel == "SatchelCharge,RDX" |
+      df$toolsLabel == "Dynamite,SatchelCharge"  ~ NA_real_,
+    TRUE ~ 0
+  )
+
+            
+  # Group innovation
   df$innovation <- case_when(
     (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$FinalItemSelected == "SatchelCharge") | 
       (df$toolsLabel == "BlackPowder,Dynamite" & df$FinalItemSelected == "Dynamite") |
@@ -155,7 +195,7 @@ gamelog_process <- function(data){
       df$toolsLabel == "Dynamite,SatchelCharge"  ~ NA_real_,
     TRUE ~ 0
   )
-  
+                         
   # eligible: at least one round before agem suspend
   suspend <- ifelse(length(grep("GameSuspended", data))==0,length(data), min(grep("GameSuspended", data)))
   vote_1st <- min(grep("StartVotation", data))

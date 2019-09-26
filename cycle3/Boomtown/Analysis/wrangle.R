@@ -220,7 +220,7 @@ game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
-
+factorial <- game_data #Assign to object named as used in analytics
 # Part 5: survey data cleaning ----
 survey_data <- lapply(survey_files, function(file){read.csv(paste(dd_input, file, sep="/"), skip = 1, header = 1, stringsAsFactors = F)})
 names(survey_data) <- gsub(".csv", "", survey_files)

@@ -202,6 +202,24 @@ group_vote <- aggregate(x = game_data[, c("PlayerVote1","PlayerVote2")],
 names(group_vote) <- c("roundid", "GroupVote1", "GroupVote2")
 game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
+# Back-code 'FinalItemSelected' for first choice between two mines (rounds 10 & 12)
+
+game_data_mines <- game_data[game_data$roundid_short == 11 | game_data$roundid_short == 13,
+                             c("roundid", "toolsLabel")]
+game_data_mines$FinalItemSelected_2 <- case_when(
+  (game_data_mines$toolsLabel == "Mine1,BlackPowder") ~ "Mine1",
+  (game_data_mines$toolsLabel == "Mine2,BlackPowder") ~ "Mine2",
+  (game_data_mines$toolsLabel == "Mine3,BlackPowder") ~ "Mine3",
+  (game_data_mines$toolsLabel == "Mine4,BlackPowder") ~ "Mine4")
+game_data_mines$roundid <- game_data_mines$roundid-1
+game_data_mines <- game_data_mines[, c("roundid", "FinalItemSelected_2")]
+game_data <- merge(game_data,game_data_mines,by="roundid", all = TRUE)
+
+game_data$FinalItemSelected <- ifelse(is.na(game_data$FinalItemSelected), 
+                                      game_data$FinalItemSelected_2, 
+                                      game_data$FinalItemSelected)
+game_data <- subset(game_data, select=-FinalItemSelected_2)
+
 # Motivation to Innovate Outcomes            
 
 motivationCoder <- function (gameData, voteVar) {
@@ -243,6 +261,29 @@ for (i in seq(1, 96, by=3)){
   game_data$structure[game_data$settingsNum==i+2]<- "Network"
   game_data$centralization[game_data$settingsNum==i+2]<- "Low"
 }
+
+# Network density variable (hard-coded per json *see "tweaker.R")
+
+roleSampler<- function() {
+  nRoles  <- c(0, 1, 2, 3, 4, 5, 6, 7)
+  roles  <- c("Engineer", "LeadShotfirer", "LeadHewer", "LeadScout", "Shotfirer", "Hewer", "Scout")
+  sampledRoles<-paste (sample (roles, sample(nRoles, 1)), collapse=',')
+  sampledRoles<-gsub("(\\w+)", '"\\1"', sampledRoles)
+  return(sampledRoles)
+}
+
+roleMuted <- data.frame (matrix(ncol = 7, nrow = 96))
+roleMuted[,1]<-as.numeric(roleMuted[,1])
+for (i in 1:96){
+  roleMuted[i,1] <- i
+  for (j in 2:7){  
+    set.seed((i*10)+j)
+    roleMuted[i,j]  <- roleSampler()
+  }  
+}
+
+colnames(roleMuted) <- c("settingsNum", "Muted1", "Muted2", "Muted3", "Muted4", "Muted5", "Muted6")
+game_data <- merge(game_data,roleMuted,by= "settingsNum", all = TRUE)
 
 # format date/time fields
 game_data$date.time<-as.POSIXct(game_data$date.time)

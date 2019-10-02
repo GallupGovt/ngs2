@@ -6,7 +6,9 @@
 
 # Set up enviroment ----
 rm(list = ls())
-library(dplyr)
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(statnet, dplyr)
 
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
@@ -202,24 +204,6 @@ group_vote <- aggregate(x = game_data[, c("PlayerVote1","PlayerVote2")],
 names(group_vote) <- c("roundid", "GroupVote1", "GroupVote2")
 game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
-# Back-code 'FinalItemSelected' for first choice between two mines (rounds 10 & 12)
-
-game_data_mines <- game_data[game_data$roundid_short == 11 | game_data$roundid_short == 13,
-                             c("roundid", "toolsLabel")]
-game_data_mines$FinalItemSelected_2 <- case_when(
-  (game_data_mines$toolsLabel == "Mine1,BlackPowder") ~ "Mine1",
-  (game_data_mines$toolsLabel == "Mine2,BlackPowder") ~ "Mine2",
-  (game_data_mines$toolsLabel == "Mine3,BlackPowder") ~ "Mine3",
-  (game_data_mines$toolsLabel == "Mine4,BlackPowder") ~ "Mine4")
-game_data_mines$roundid <- game_data_mines$roundid-1
-game_data_mines <- game_data_mines[, c("roundid", "FinalItemSelected_2")]
-game_data <- merge(game_data,game_data_mines,by="roundid", all = TRUE)
-
-game_data$FinalItemSelected <- ifelse(is.na(game_data$FinalItemSelected), 
-                                      game_data$FinalItemSelected_2, 
-                                      game_data$FinalItemSelected)
-game_data <- subset(game_data, select=-FinalItemSelected_2)
-
 # Motivation to Innovate Outcomes            
 
 motivationCoder <- function (gameData, voteVar) {
@@ -247,43 +231,149 @@ game_data$inmot1 <- motivationCoder (game_data, "PlayerVote1")
 game_data$inmot2 <- motivationCoder (game_data, "PlayerVote2")
 game_data$innovation <- motivationCoder (game_data, "FinalItemSelected")
 
+# Back-code 'FinalItemSelected' for first choice between two mines (rounds 10 & 12)
+
+game_data_mines <- game_data[game_data$roundid_short == 11 | game_data$roundid_short == 13,
+                             c("roundid", "toolsLabel")]
+game_data_mines$FinalItemSelected_2 <- case_when(
+  (game_data_mines$toolsLabel == "Mine1,BlackPowder") ~ "Mine1",
+  (game_data_mines$toolsLabel == "Mine2,BlackPowder") ~ "Mine2",
+  (game_data_mines$toolsLabel == "Mine3,BlackPowder") ~ "Mine3",
+  (game_data_mines$toolsLabel == "Mine4,BlackPowder") ~ "Mine4")
+game_data_mines$roundid <- game_data_mines$roundid-1
+game_data_mines <- game_data_mines[, c("roundid", "FinalItemSelected_2")]
+game_data <- merge(game_data,game_data_mines,by="roundid", all = TRUE)
+
+game_data$FinalItemSelected <- ifelse(is.na(game_data$FinalItemSelected), 
+                                      game_data$FinalItemSelected_2, 
+                                      game_data$FinalItemSelected)
+game_data <- subset(game_data, select=-FinalItemSelected_2)
+
 # Organizational structure variables (hard-coded per factorial matrix, pending metadata update from Jeff)
 
 for (i in seq(1, 96, by=3)){ 
-  game_data$structure[game_data$settingsNum==i]<- "Hierarchical"
   game_data$centralization[game_data$settingsNum==i]<- "Medium"
   game_data$leaderWeight[game_data$settingsNum==i]<- "High"
   
-  game_data$structure[game_data$settingsNum==i+1]<- "Cellular"
   game_data$centralization[game_data$settingsNum==i+1]<- "High"
   game_data$leaderWeight[game_data$settingsNum==i+1]<- "Low"
   
-  game_data$structure[game_data$settingsNum==i+2]<- "Network"
   game_data$centralization[game_data$settingsNum==i+2]<- "Low"
 }
 
-# Network density variable (hard-coded per json *see "tweaker.R")
+## Calculate density variable (hard-coded per json *see "tweaker.R")
+# Create role sampler funciton
+
+roleNames <- c("Engineer", "LeadShotfirer", "LeadHewer", "LeadScout", "Shotfirer", "Hewer", "Scout")
 
 roleSampler<- function() {
-  nRoles  <- c(0, 1, 2, 3, 4, 5, 6, 7)
-  roles  <- c("Engineer", "LeadShotfirer", "LeadHewer", "LeadScout", "Shotfirer", "Hewer", "Scout")
-  sampledRoles<-paste (sample (roles, sample(nRoles, 1)), collapse=',')
-  sampledRoles<-gsub("(\\w+)", '"\\1"', sampledRoles)
+  nRoles  <- c(0,0,0,1,1,1,1,1,1,1,2,2,3,3,4)
+  sampledRoles <- sample (roleNames, sample(nRoles, 1))
   return(sampledRoles)
 }
 
-roleMuted <- data.frame (matrix(ncol = 7, nrow = 96))
-roleMuted[,1]<-as.numeric(roleMuted[,1])
-for (i in 1:96){
-  roleMuted[i,1] <- i
-  for (j in 2:7){  
-    set.seed((i*10)+j)
-    roleMuted[i,j]  <- roleSampler()
-  }  
+## Setup three different network types
+# Hierarchical network
+
+Hierarchical <- cbind(c(0,1,1,1,0,0,0),
+                      c(1,0,1,1,1,0,0),
+                      c(1,1,0,1,0,1,0),
+                      c(1,0,1,1,0,0,1),
+                      c(0,1,0,0,0,1,1),
+                      c(0,0,1,0,1,0,1),
+                      c(0,0,0,1,1,1,0))
+
+hieNet <- as.network(x = Hierarchical, directed = FALSE, loops = FALSE, matrix.type = "adjacency")
+network.vertex.names(hieNet) <- roleNames
+
+# Cellular network
+
+Cellular <- cbind(c(0,1,1,1,0,0,0),
+                  c(1,0,0,0,1,0,0),
+                  c(1,0,0,0,0,1,0),
+                  c(1,0,0,0,0,0,1),
+                  c(0,1,0,0,0,0,0),
+                  c(0,0,1,0,0,0,0),
+                  c(0,0,0,1,0,0,0))
+
+celNet <- as.network(x = Cellular, directed = FALSE, loops = FALSE, matrix.type = "adjacency")
+network.vertex.names(celNet) <- roleNames
+
+# Network-network
+
+Network <- matrix(1, nrow = 6, ncol = 6)
+netNet <- as.network(x = Network, directed = FALSE, loops = FALSE, matrix.type = "adjacency")
+network.vertex.names(netNet) <- roleNames[!roleNames %in% "Engineer"] # No engineer
+
+# Function to calculate network density after disconnections
+
+densityCalc <- function (orgMatrix, rolesMuted) {
+  orgMatrixMuted <- eval(parse(text=orgMatrix))
+  if (orgMatrix == "Network") {
+    roleNames.df <- data.frame(roleNames[2:7], 1:6)
+  } else {
+    roleNames.df <- data.frame(roleNames, 1:7)
+  }
+  colnames(roleNames.df) <- "roleNames"
+  rolesMuted.df <- data.frame(roleNames = rolesMuted)
+  rolesMutednum <- merge(roleNames.df , rolesMuted.df, by = "roleNames")[,2]
+  for (i in unique (rolesMutednum)) {
+    orgMatrixMuted[,i]<- 0
+    orgMatrixMuted[i,]<- 0  
+  }
+  mutedNet <- as.network(x = orgMatrixMuted, directed = FALSE, loops = FALSE, matrix.type = "adjacency")
+  return(gden(mutedNet))
 }
 
-colnames(roleMuted) <- c("settingsNum", "Muted1", "Muted2", "Muted3", "Muted4", "Muted5", "Muted6")
-game_data <- merge(game_data,roleMuted,by= "settingsNum", all = TRUE)
+# Create data frame per the configuration used for jsons 
+
+roleMuted <- data.frame (matrix(ncol = 14, nrow = 96))
+roleMuted[,1]<-as.numeric(roleMuted[,1])
+colnames(roleMuted)<- c("settingsNum",
+                        "structure",
+                        "muted.1",
+                        "muted.2",
+                        "muted.3",
+                        "muted.4",
+                        "muted.5",
+                        "muted.6",
+                        "density.1",
+                        "density.2",
+                        "density.3",
+                        "density.4",
+                        "density.5",
+                        "density.6")
+
+for (i in seq(1, 96, by=3)){ 
+  roleMuted[i+0,2] <- "Hierarchical"
+  roleMuted[i+1,2] <- "Cellular"
+  roleMuted[i+2,2] <- "Network"
+}
+
+for (i in 1:96){
+  roleMuted[i,1] <- i
+  for (j in 3:8){  
+    set.seed((i*10)+j)
+    sampleMuted <- roleSampler()
+    roleMuted[i,j]  <- paste (sampleMuted, collapse=',')
+    roleMuted[i,j+6] <- densityCalc(roleMuted[i,2], sampleMuted)
+  }
+}
+
+roleMuted <- reshape(roleMuted, direction='long', varying=3:14, idvar="settingsNum")
+
+# Merge datasets
+
+roleMuted$ID <- roleMuted$settingsNum*100 + roleMuted$time
+
+game_data$time[game_data$roundid_short==1|game_data$roundid_short==2|game_data$roundid_short==3] <- 1
+game_data$time[game_data$roundid_short==4|game_data$roundid_short==5|game_data$roundid_short==6] <- 2
+game_data$time[game_data$roundid_short==7|game_data$roundid_short==8|game_data$roundid_short==9] <- 3
+game_data$time[game_data$roundid_short==10|game_data$roundid_short==11] <- 4
+game_data$time[game_data$roundid_short==12|game_data$roundid_short==13] <- 5
+game_data$ID <- game_data$settingsNum*100 + game_data$time
+
+game_data <- merge(game_data, roleMuted, by = "ID", all = T)
 
 # format date/time fields
 game_data$date.time<-as.POSIXct(game_data$date.time)

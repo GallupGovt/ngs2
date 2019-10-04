@@ -378,9 +378,12 @@ game_data <- merge(game_data, roleMuted, by = "ID", all = T)
 # format date/time fields
 game_data$date.time<-as.POSIXct(game_data$date.time)
 
+# format player from string to numeric to reduce file size
+game_data$player <- as.numeric(as.factor((game_data$playerid))
+
 # drop scrap variables
 game_data <-subset(game_data, select=-c(matchSetting1Label, matchSetting1Label, ID, competitive.level, 
-                                        consumableKey, time.x, time.y, settingsNum.y))
+                                        consumableKey, time.x, time.y, settingsNum.y, playerid))
 
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)

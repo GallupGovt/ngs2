@@ -12,7 +12,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
                            family = binomial(link = "logit"),
                            prior = priors,
                            prior_intercept = normal(0, 2.5),
-                           chains = 3, iter = nIter,
+                           chains = nChains, iter = nIter,
                            diagnostic_file = diagnostic)
   fittedGlmer$call$diagnostic_file <- diagnostic
   save (fittedGlmer, file = paste("bayesGlmer_",label, sep=""))
@@ -32,7 +32,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
                            family = gaussian(link = "identity"),
                            prior = priors,
                            prior_intercept = normal(0, 2.5),
-                           chains = 3, iter = nIter,
+                           chains = nChains, iter = nIter,
                            diagnostic_file = diagnostic)
   fittedLmer$call$diagnostic_file <- diagnostic
   save (fittedLmer, file = paste("bayesLmer_",label, sep=""))

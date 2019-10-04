@@ -32,7 +32,7 @@ events <- c("SetupMatch",
 # variable excluded in part 6
 vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "PlayerVote1",
           "PlayerVote2", "tools", "innovation", "inmot1", "inmot2", "eligible", "framing", "GroupVote1", "GroupVote2", 
-          "matchid", "playerid")
+          "matchid", "playerid", "ID", "time.x", "settingsNum.y", "time.y", "density", "muted")
 
 # Define functions ----
 

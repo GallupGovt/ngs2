@@ -1,7 +1,7 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
 # Formula
-formula.h1<-as.formula("inmot1~competition+tools+tolerance+support+centralization+leaderWeight+pressure+framing+density+timeUncertainty+(1|player)+(1|group)") #Formula h1.null
+formula.h1<-as.formula("inmot1~competition+tools+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)+(1|group)") #Formula h1.null
 
 # Extract number of prior parameters ('ndim') to be declared
 

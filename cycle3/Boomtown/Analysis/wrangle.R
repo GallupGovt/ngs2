@@ -32,7 +32,7 @@ events <- c("SetupMatch",
 # variable excluded in part 6
 vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "PlayerVote1",
           "PlayerVote2", "tools", "innovation", "inmot1", "inmot2", "eligible", "framing", "GroupVote1", "GroupVote2", 
-          "matchid", "playerid", "ID", "time.x", "settingsNum.y", "time.y", "density", "muted")
+          "matchid", "playerid", "density", "muted")
 
 # Define functions ----
 
@@ -377,6 +377,10 @@ game_data <- merge(game_data, roleMuted, by = "ID", all = T)
 
 # format date/time fields
 game_data$date.time<-as.POSIXct(game_data$date.time)
+
+# drop scrap variables
+game_data <-subset(game_data, select=-c(matchSetting1Label, matchSetting1Label, ID, competitive.level, 
+                                        consumableKey, time.x, time.y, settingsNum.y))
 
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)

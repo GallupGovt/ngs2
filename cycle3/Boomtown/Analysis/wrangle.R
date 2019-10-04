@@ -375,6 +375,10 @@ game_data$ID <- game_data$settingsNum*100 + game_data$time
 
 game_data <- merge(game_data, roleMuted, by = "ID", all = T)
 
+# Time pressure variable (hard-coded per factorial matrix and JSON)
+game_data$pressure[game_data$time.x==1 | game_data$time.x==3 | game_data$time.x==5]<- 0
+game_data$pressure[game_data$time.x==2 | game_data$time.x==4]<- 1
+
 # format date/time fields
 game_data$date.time<-as.POSIXct(game_data$date.time)
 

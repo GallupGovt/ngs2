@@ -1,10 +1,10 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
 # Formula
-formula.h2.1<-as.formula("inmot1~toolsCPT+competition+tolerance+support+centralization+leaderWeight+pressure+framing+density+timeUncertainty+(1|player)+(1|group)") #Formula h1.null
-formula.h2.2<-as.formula("inmot1~toolsEUT+competition+tolerance+support+centralization+leaderWeight+pressure+framing+density+timeUncertainty+(1|player)+(1|group)") #Formula h1.null
-formula.h2.3<-as.formula("inmot1~toolsPT+competition+tolerance+support+centralization+leaderWeight+pressure+framing+density+timeUncertainty+(1|player)+(1|group)") #Formula h1.null
-formula.h2.4<-as.formula("inmot1~toolsCPTEXP+competition+tolerance+support+centralization+leaderWeight+pressure+framing+density+timeUncertainty+(1|player)+(1|group)") #Formula h1.null
+formula.h2.1<-as.formula("inmot1~toolsCPT+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)+(1|group)")
+formula.h2.2<-as.formula("inmot1~toolsEUT+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)+(1|group)")
+formula.h2.3<-as.formula("inmot1~toolsPT+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)+(1|group)")
+formula.h2.4<-as.formula("inmot1~toolsCPTEXP+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)+(1|group)")
 
 # Extract number of prior parameters ('ndim') to be declared
 

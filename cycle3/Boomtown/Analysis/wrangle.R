@@ -389,6 +389,9 @@ game_data$player <- as.numeric(as.factor((game_data$playerid)))
 game_data <-subset(game_data, select=-c(matchSetting1Label, matchSetting1Label, ID, competitive.level, 
                                         consumableKey, time.x, time.y, settingsNum.y, playerid))
 
+# drop records with data missing on key outcomes
+game_data <- game_data[!with(game_data, is.na(inmot1) & is.na(innovation)),]
+
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
 factorial <- game_data #Assign to object named as used in analytics

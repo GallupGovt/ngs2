@@ -364,6 +364,9 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
 }
 
 ## recode variables (where analysis starts) ----
+
+game_survey_data$Q13_1 <- as.numeric(game_survey_data$Q13_1)
+
 gs <- game_survey_data %>%
   mutate(
     Age = Q13_1, 

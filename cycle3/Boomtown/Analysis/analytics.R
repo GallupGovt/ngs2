@@ -173,7 +173,7 @@ paired_samples_test <- function(data, vars, conditions, names, question,alternat
     paired = TRUE,
     var.equal = t.var.equal)
   
-  # wilcoxin test
+  # wilcoxon test
   wilcox_test <- wilcox.test(
     x = data$measurement[data$condition==levels(data$condition)[1]],
     y = data$measurement[data$condition==levels(data$condition)[2]],
@@ -296,11 +296,11 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
   anova <- aov(measurement ~ condition, data = data)
   
   # test of homogeneity of variance: residuals versus fits plot + Levene's test
-  plot(anova, 1)
+  
   homogeneity_check_test <- leveneTest(measurement ~ condition, data = data)
   
   # test of normality: QQ plot + Shapiro-Wilk test
-  plot(anova, 2)
+  
   normality_check_test <- shapiro.test(residuals(anova))
   
   # Non-parametric alternative to one-way ANOVA test: Kruskal-Wallis rank sum test
@@ -362,20 +362,6 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
               homogeneity_check_test = homogeneity_check_test,
               normality_check_test =  normality_check_test))
 }
-
-## simulate survey data ----
-n <- 1000
-
-col_names <- c(paste0("Q", 1:12, "_1"), paste0("Q", 1:10, "_2"))
-df1 <- matrix(sample(1:5, n*length(col_names), replace = T), ncol = length(col_names))
-colnames(df1) <- col_names
-
-unique_values <- list(Q13_1=18:100, Q14_1=1:4, Q15_1=1:6, Q16_1=1:2, Q17_1=1:2, 
-                      competitionLabel = comp_label, timeUncertaintyLabel = time_label, 
-                      toleranceLabel = tole_label, supportLabel = supp_label)
-df2 <- bind_cols(lapply(unique_values, sample, n, replace = T))
-
-game_survey_data <- cbind(df1, df2)
 
 ## recode variables (where analysis starts) ----
 gs <- game_survey_data %>%

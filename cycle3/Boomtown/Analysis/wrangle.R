@@ -4,10 +4,6 @@
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk or ying_han@gallup.com
 #####################################################################################
 
-# Set up enviroment ----
-rm(list = ls())
-library(dplyr)
-
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
 dd_input  <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
@@ -280,5 +276,3 @@ game_survey_data <- merge(game_data_aggr, survey_data, by.x = "playerid", by.y =
 
 # output data
 write.csv(game_survey_data, paste(dd_output, "game_survey_data.csv", sep="/"), row.names = F)
-
-

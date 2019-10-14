@@ -22,8 +22,8 @@ age_breaks <- c(18, 24, 34, 44, 54, 999)
 age_label  <- c("18-24","25-34","35-44", "45-54", "55+")
 gend_label <- c("Male", "Female", "Other", "RF")
 educ_label <- c("No education", "Elementrary School", "High School", "Some colleage", "Colleage Degree", "Post-Graducate")
-empl_label <- c("Yes", "No")
-onre_label <- c("Yes", "No")
+empl_label <- c("No", "Yes")
+onre_label <- c("No", "Yes")
 comp_label <- c("None", "Weak", "Normal", "Strong")
 time_label <- c("True", "False")
 tole_label <- c("Ambiguity Low", "Ambiguity High")
@@ -38,15 +38,18 @@ TA_calc <- function(x){
 
 chisq_test_plot <- function(data, key.var, group.var){
   
+  # remove cases with missing values
+  data <- data[,c(key.var, group.var)]
+  data <- data[rowSums(is.na(data))==0,]
   # Chi-sq test
   chisq_test <- chisq.test(table(data[,key.var], data[,group.var]))
   test_summary <- data.frame('key var' = gsub("_", " ", key.var),
-                           'group var' = gsub("_", " ", group.var),
-                           "test" = "Chi-square Test of Indepedence",
-                           'statistic' = round(chisq_test$statistic,3), 
-                           'df' = as.character(chisq_test$parameter),
-                           'p value' = round(chisq_test$p.value,3), 
-                           stringsAsFactors = F)
+                             'group var' = gsub("_", " ", group.var),
+                             "test" = "Chi-square Test of Indepedence",
+                             'statistic' = round(chisq_test$statistic,3), 
+                             'df' = as.character(chisq_test$parameter),
+                             'p value' = round(chisq_test$p.value,3), 
+                             stringsAsFactors = F)
   row.names(test_summary) <- NULL
   
   # barplot
@@ -67,10 +70,11 @@ chisq_test_plot <- function(data, key.var, group.var){
 }
 
 unpaired_samples_test <- function(data, key.var, key.var.label = gsub("_", " ", key.var), 
-  group.var, group.var.label = gsub("_", " ", group.var), question = "", 
-  alternative = c("two.sided", "less", "greater"), t.var.equal = FALSE){
+                                  group.var, group.var.label = gsub("_", " ", group.var), question = "", 
+                                  alternative = c("two.sided", "less", "greater"), t.var.equal = FALSE){
   
   data <- data[,c(group.var, key.var)]
+  data <- data[rowSums(is.na(data))==0,]
   colnames(data) <- c("condition", "measurement")
   
   # summary statistics
@@ -365,8 +369,6 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
 
 ## recode variables (where analysis starts) ----
 
-game_survey_data$Q13_1 <- as.numeric(game_survey_data$Q13_1)
-
 gs <- game_survey_data %>%
   mutate(
     Age = Q13_1, 
@@ -374,10 +376,32 @@ gs <- game_survey_data %>%
                     breaks = age_breaks,
                     labels = age_label,
                     include.lowest = T),
-    Gender = factor(gend_label[Q14_1], levels = gend_label),
-    Education_Group = factor(educ_label[Q15_1], levels = educ_label),
-    Employment_Status = factor(empl_label[Q16_1], levels = empl_label),
-    Online_Research_Experience = factor(onre_label[Q17_1], levels = onre_label),
+    Gender = case_when(
+      Q14_1 == 0 ~ gend_label[1], 
+      Q14_1 == 1 ~ gend_label[2], 
+      Q14_1 == 2 ~ gend_label[3], 
+      Q14_1 == 3 ~ gend_label[4], 
+      TRUE ~ NA_character_), 
+    Gender = factor(Gender, levels = gend_label), 
+    Education_Group = case_when(
+      Q15_1 == 0 ~ educ_label[1],
+      Q15_1 == 1 ~ educ_label[2],
+      Q15_1 == 2 ~ educ_label[3],
+      Q15_1 == 3 ~ educ_label[4],
+      Q15_1 == 4 ~ educ_label[5],
+      Q15_1 == 5 ~ educ_label[6],
+      TRUE ~ NA_character_), 
+    Education_Group = factor(Education_Group, levels = educ_label),
+    Employment_Status = case_when(
+      Q16_1 == 0 ~ empl_label[1],
+      Q16_1 == 1 ~ empl_label[2],
+      TRUE ~ NA_character_),
+    Employment_Status = factor(Employment_Status, levels = empl_label), 
+    Online_Research_Experience = case_when(
+      Q17_1 == 0 ~ onre_label[1],
+      Q17_1 == 1 ~ onre_label[2],
+      TRUE ~ NA_character_),
+    Online_Research_Experience = factor(Online_Research_Experience, levels = onre_label),
     competitionLabel = factor(competitionLabel, levels = comp_label),
     timeUncertaintyLabel = factor(timeUncertaintyLabel, levels = time_label),
     toleranceLabel = factor(toleranceLabel, levels = tole_label),

@@ -4,10 +4,16 @@
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk or ying_han@gallup.com
 #####################################################################################
 
+# Set up enviroment ----
+rm(list = ls())
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr)
+
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
-dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
-dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
+dd_input  <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
+dd_output <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
 
 # fieldwork start date
 field_start <- "01-01-2019"
@@ -93,7 +99,8 @@ gamelog_process <- function(data){
       PlayerVote1 = rep(NA, nRound * nConnected),
       PlayerVote2 = rep(NA, nRound * nConnected),
       FinalItemSelected = rep(NA, nRound * nConnected),
-      chat_per_round = rep(0, nRound * nConnected)
+      chat_per_round = rep(0, nRound * nConnected), 
+      stringsAsFactors = F
     )
     
     # toolsLabel, PlayerVote1, PlayerVote2, FinalItemSelected
@@ -179,6 +186,77 @@ gamelog_process <- function(data){
   }
 }
 
+check_range <- function(data){
+  vars1 <- c(paste0("Q", 1:12, "_1"), paste0("Q", 1:13, "_2"))
+  for (var in vars1){
+    if(any(!data[, var] %in% c(NA, 0, 1, 2, 3, 4), na.rm=T)){
+      stop(paste(var, "have values other than 0-4."))
+    }
+  }
+  
+  vars2 <- paste0("Q", 16:18, "_1")
+  for (var in vars2){
+    if(any(!data[, var] %in% c(NA,0,1), na.rm=T)){
+      stop(paste(var, "have values other than 0-1."))
+    }
+  }
+  
+  if(any(!data[, "Q14_1"] %in% c(NA,0,1,2,3), na.rm=T)){
+    stop(paste("Q14_1", "have values other than 0-3."))
+  }
+  
+  if(any(!data[, "Q15_1"] %in% c(NA,0,1,2,3,4,5), na.rm=T)){
+    stop(paste("Q14_1", "have values other than 0-5."))
+  }
+  
+  print("The values of survey items are in their correct range")
+}
+
+survey_clean <- function(filenames){
+  # read in data
+  data <- lapply(filenames, function(file){read.csv(paste(dd_input, file, sep="/"), skip = 1, header = 1, stringsAsFactors = F)})
+  
+  # remove columns with no values and the column "Raw Data"
+  data <- lapply(data, function(x){ x[,-c(which(colSums(!is.na(x)) == 0))]})
+  data <- lapply(data, function(x){ x[,!grepl("Raw.Data", names(x))]})
+  
+  # rename variable
+  data <- lapply(1:2, function(i){
+    tmp <- data[[i]]
+    start <- min(grep(".", names(tmp), fixed=T))
+    end <- length(names(tmp))
+    names(tmp)[start:end] <- paste0("Q", 1:length(start:end), "_", i)
+    return(tmp)
+  })
+  
+  # remove duplicates
+  data <- lapply(1:2, function(i){
+    
+    dup <- duplicated(data[[i]]["PlayerId"])
+    
+    if (any(dup)) {
+      warning(paste("There are duplicated values in the PlayerId colomn of", filenames[i], 
+                    ". Duplicates are removed."))
+      return(data[[i]][!dup,])
+    } else {
+      return(data[[i]])
+    }
+  })
+  
+  # merging
+  data <- merge(data[[1]], data[[2]], by = "PlayerId", all.x = T, suffixes = c("_1", "_2")) 
+  
+  # recode variables
+  data[, "PlayerId"] <- gsub("boomtown-", "", data[,"PlayerId"])
+  
+  vars_tmp <- c(paste0("Q", 1:18, "_1"), paste0("Q", 1:12, "_2"))
+  for (var in vars_tmp){
+    data[, var] <- as.numeric(data[,var])
+    data[grep("-1",data[,var]), var] <- NA
+  }
+  
+  return(data)
+}
 
 # Part 1: Read data into R ----
 gamelogs_files <- list.files(dd_input, "*.txt")
@@ -238,34 +316,7 @@ game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
 
 # Part 5: survey data cleaning ----
-survey_data <- lapply(survey_files, function(file){read.csv(paste(dd_input, file, sep="/"), skip = 1, header = 1, stringsAsFactors = F)})
-names(survey_data) <- gsub(".csv", "", survey_files)
-
-# recode PlayerId values in each survey response files
-survey_data <- lapply(survey_data, function(x){
-  x[,"PlayerId"] <- gsub("boomtown-", "", x[,"PlayerId"])
-  return(x)
-})
-
-# remove columns with no values
-survey_data <- lapply(survey_data, function(x){ x[,-c(which(colSums(!is.na(x)) == 0))]})
-
-# remove the column "Raw Data"
-survey_data <- lapply(survey_data, function(x){ x[,!grepl("Raw.Data", names(x))]})
-
-# rename question variables
-survey_data <- lapply(1:2, function(i){
-  data <- survey_data[[i]]
-  start <- min(grep(".", names(data), fixed=T))
-  end <- length(names(data))
-  names(data)[start:end] <- paste0("Q", 1:length(start:end), "_", i)
-  return(data)
-})
-
-# merge survey_results_1 and survey_results_2
-survey_data <- merge(survey_data[[grep("_1", survey_files)]], 
-                     survey_data[[grep("_2", survey_files)]], 
-                     by="PlayerId", all.x = T, suffixes = c("_1", "_2"))
+survey_data <- survey_clean(filenames = survey_files)
 
 # Part 6: merge game data with survey data at the match level ----
 game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names(game_data))],
@@ -274,5 +325,13 @@ game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names
 
 game_survey_data <- merge(game_data_aggr, survey_data, by.x = "playerid", by.y = "PlayerId", all.x = T)
 
+# check value ranges for each variable
+check_range(data = game_survey_data)
+
 # output data
 write.csv(game_survey_data, paste(dd_output, "game_survey_data.csv", sep="/"), row.names = F)
+
+
+
+
+

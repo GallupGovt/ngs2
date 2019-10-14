@@ -229,18 +229,15 @@ survey_clean <- function(filenames){
     return(tmp)
   })
   
-  # remove duplicates
-  data <- lapply(1:2, function(i){
+  # check whether there are duplicated playerids
+  check_duplicate <- lapply(1:2, function(i){
     
     dup <- duplicated(data[[i]]["PlayerId"])
     
     if (any(dup)) {
-      warning(paste("There are duplicated values in the PlayerId colomn of", filenames[i], 
+      stop(paste("There are duplicated playerids in", filenames[i], 
                     ". Duplicates are removed."))
-      return(data[[i]][!dup,])
-    } else {
-      return(data[[i]])
-    }
+      }
   })
   
   # merging
@@ -330,8 +327,3 @@ check_range(data = game_survey_data)
 
 # output data
 write.csv(game_survey_data, paste(dd_output, "game_survey_data.csv", sep="/"), row.names = F)
-
-
-
-
-

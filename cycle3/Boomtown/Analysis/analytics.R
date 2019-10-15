@@ -418,6 +418,10 @@ gs <- game_survey_data %>%
     Rounds_Certainty = Q10_2
   )
 
+gs = gs %>% mutate_if(is.factor,
+                      fct_explicit_na,
+                      na_level = "Missing")
+
 ## Chi-square Test of Indepedence ----
 # Age_Group by Competition, Time Urcertainty, Tolerance and Support Conditions
 age_comp_chisq <- chisq_test_plot(data = gs, key.var = "Age_Group", group.var = "Competition")

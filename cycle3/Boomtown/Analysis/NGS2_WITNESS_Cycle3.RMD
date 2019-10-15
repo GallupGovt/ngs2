@@ -25,7 +25,7 @@ nIter <- 10000 # MCMC sampling iterations, drives processing time.
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
 pacman::p_load(rstan, rstanarm, gplots, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, 
-RCurl, formatR, car, caret, pROC, formatR, foreach, doParallel, tidyr)
+RCurl, formatR, car, caret, pROC, formatR, foreach, doParallel, tidyr, forcats)
 
 # download scripts and data
 dlScripts <- function (scriptNames) {

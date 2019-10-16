@@ -177,7 +177,7 @@ gamelog_process <- function(data){
       TRUE ~ 0
     )
     
-    # eligible: at least one round before agem suspend
+    # eligible: at least one round before game suspend
     suspend <- ifelse(length(grep("GameSuspended", data))==0,length(data), min(grep("GameSuspended", data)))
     vote_1st <- min(grep("StartVotation", data))
     df$eligible <- suspend > vote_1st

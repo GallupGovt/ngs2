@@ -14,4 +14,5 @@ nConditions<-length(unique(factorial$settingsNum))
 
 # Game dates
 dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
+factorial$date.time <- as.POSIXct(factorial$date.time,format="%Y-%m-%d %H:%M:%S")
 times<-aggregate(date.time ~ matchid, data=factorial, mean)

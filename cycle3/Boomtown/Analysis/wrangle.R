@@ -237,8 +237,6 @@ survey_clean <- function(filenames){
     if (any(dup)) {
       stop(paste("There are duplicated playerids in", filenames[i], 
                     ". Remove duplicates before proceeding."))
-    } else {
-                paste("There are bi duplicated playerids in", filenames[i]".")
     })
   
   # merging

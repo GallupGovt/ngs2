@@ -1,0 +1,83 @@
+---
+title: "Group Innovation under Competition and Uncertanity - Cycle 3 Fieldwork Report"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: no
+    theme: united
+    toc: no
+  pdf_document:
+    toc: no
+  word_document:
+    toc: no
+---
+
+# Data Processing
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+# load libraries
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(ggplot2, httr, dplyr, knitr, RCurl, formatR, DT)
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("wrangle.R", "analytics.R")
+data <- c("game_data.csv", "survey_data.csv") # Run "wrangle.R" and upload resulting files to Github
+lapply(c(setup, data), dlScripts)
+source("wrangle.R")
+```
+
+- Boomtown data processed successfully!
+- There are no duplicate values of 'playerid'
+- The values of survey items are in their correct range
+- Remember to upload 'game_data.csv' and 'survey_data.csv' to Github: https://github.com/GallupGovt/ngs2/tree/master/cycle3/Boomtown/Analysis
+
+# Data Summary
+
+```{r analytics, include=FALSE}
+#Load data processed by "wrangle.r" and run analytics
+factorial <- read.csv(file="game_data.csv")
+survey <- read.csv(file="survey_data.csv")
+source("analytics.R")
+```
+
+* Valid experimental instances included games with at least seven players and one tool choice. 
+* Each round of data collection included:
+    + 96 experimental conditions in the full factorial space.
+    + 672 players (7 players per instance)
+    + 1,248 group choices (13 rounds per instance)
+    + 8,736 individual choices (7 players * 13 rounds per instance)
+* Since Cycle 3 experiments were launched, Gallup has: 
+    + Ran a total of `r nGames` valid instances.
+    + Obtained usable data from a total of `r nPlayers` players.
+    + Completed data collection for `r nConditions` of the 96 experimental conditions in the full factorial space.
+    
+# Games completed to date
+
+```{r samplePlots}
+barplot(table(dates$matchDate))
+print (hourly_plot)
+```
+
+# Data sample
+
+Variables used and a random sample of rows from the final analytical dataset are summarized below. 
+
+```{r data header}
+names(factorial)
+datatable(sample_n(factorial, 5), 
+          caption = "Randomly selected rows of processed data.",
+          options = list(
+              scrollX = TRUE,
+              scrollCollapse = TRUE))
+```

@@ -22,3 +22,7 @@ times<-aggregate(date.time ~ matchid, data=factorial, mean)
 times$hour <- strftime(times$date.time, format="%Y-%m-%d %H")
 times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
 times$day <- strftime(times$date.time, format="%Y-%m-%d")
+
+hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
+facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
+labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")

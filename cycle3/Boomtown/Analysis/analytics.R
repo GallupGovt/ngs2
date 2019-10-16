@@ -16,3 +16,9 @@ nConditions<-length(unique(factorial$settingsNum))
 dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
 factorial$date.time <- as.POSIXct(factorial$date.time,format="%Y-%m-%d %H:%M:%S")
 times<-aggregate(date.time ~ matchid, data=factorial, mean)
+
+# Games by hour
+
+times$hour <- strftime(times$date.time, format="%Y-%m-%d %H")
+times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
+times$day <- strftime(times$date.time, format="%Y-%m-%d")

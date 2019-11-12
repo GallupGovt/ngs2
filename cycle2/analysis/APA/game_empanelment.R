@@ -11,7 +11,7 @@ pacman::p_load(dplyr, hot.deck)
 
 # Define constants
 dd_emp <- "W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/empanelment"
-dd_log <- "W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/data"
+dd_log <- "W:/DARPA_NGS2/CONSULTING/Analytics/cycle2/data/game_logs"
 dd_game <- "W:/DARPA_NGS2/CONSULTING/Ying_Han/ASA_Poster_Cycle_2"
 # od <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Analytics/cycle2/output"
 
@@ -108,7 +108,7 @@ empanelment[,"Q26"] <- as.numeric(empanelment[,"Q26"])
 
 empanelment[,"nid"] <- 1:nrow(empanelment)
 hd_values <- hot.deck(empanelment[, grep(imputation_variables, names(empanelment))], method = 'best.cell',
-                      cutoff = 1, sdCutoff = 3)
+                      cutoff = 1, sdCutoff = 4)
 empanelment <- merge(empanelment, hd_values$data[[1]], by='nid')
 empanelment <- empanelment[, !grepl('.x', names(empanelment))]
 names(empanelment) <- gsub('.y', '', names(empanelment))

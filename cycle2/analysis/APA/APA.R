@@ -18,13 +18,6 @@ data <- read.csv("game_empanelment.csv")
 data <- data[!is.na(data$innovation),]
 ## Drop cases with NA values for 'Leader'
 data <- data[!is.na(data$Leader),]
-## Drop unusable variables (PII, variables with lots of "NA" values, no variation)
-data <- subset(data, 
-               select=-c(h2.2, h2.3, h2.4, h2.5, h2.6, leaderChoice, consumableKey, settingsNum, nid, 
-                         EndDate, IPAddress, LocationAccura, Q100, Q101_1, Q101_2, Q101_3, Q101_4, Q102, 
-                         Q102_TEXT, Q108, Q109_5_TEXT, Q109_6_TEXT, Q18_TEXT, Q30, Q31, Q43, Q45, Q54, 
-                         RecipientEmail, RecipientFirstName, RecipientLastName, ResponseSet,Status, 
-                         Q109_2_TEXT, Leader, match_round_id, matchid, Q1,Q10,Q2,Q3,Q40,Q44,Q46,Q5,Q99))
 
 #Define variables as numeric, integer or factor
 
@@ -47,14 +40,39 @@ data<-df
 rm(df)
 
 # Score remaining measures (DO THIS!!!)
-## Ten-Item Personality Inventory (TIPI)
-## Social Dominance Orientation (SDO)
-## Social Cognition
-## Leadership Style
+## Life Evaluations 
+data$life_today <- data$Q106_1
+data$life_5year <- data$Q106_2
+
+## Ten-Item Personality Inventory (TIPI): https://gosling.psy.utexas.edu/wp-content/uploads/2014/09/tipi.pdf
+data$tipi_extra <- data$Q6_1 + (abs(data$Q6_6 - 7)+1) # extraversion
+data$tipi_agree <- data$Q6_7 + (abs(data$Q6_2 - 7)+1) # agreeableness
+data$tipi_consc <- data$Q6_3 + (abs(data$Q6_8 - 7)+1) # conscientiousness
+data$tipi_emost <- data$Q6_9 + (abs(data$Q6_4 - 7)+1) # emotional stability
+data$tipi_opexp <- data$Q6_5 + (abs(data$Q6_10 - 7)+1) # openness to experience
+
+## Leadership Style (GTL)
+data$gtl <- data$Q107_1+data$Q107_2+data$Q107_3+data$Q107_4+data$Q107_5+data$Q107_6+data$Q107_8
+
 ## Overconfidence
+
+
+## Social Cognition
 ## Rational/Intuitive Decision Style
 
-# Do remaining data transformations
+# Do remaining data transformations and pre-processing (near-zero variance, standardization, splines, PCs)
+
+
+## Drop unused variables (PII, variables with lots of "NA" values, no variation, used in scales)
+data <- subset(data, 
+               select=-c(h2.2, h2.3, h2.4, h2.5, h2.6, leaderChoice, consumableKey, settingsNum, nid, 
+                         EndDate, IPAddress, LocationAccura, Q100, Q101_1, Q101_2, Q101_3, Q101_4, Q102, 
+                         Q102_TEXT, Q108, Q109_5_TEXT, Q109_6_TEXT, Q18_TEXT, Q30, Q31, Q43, Q45, Q54, 
+                         RecipientEmail, RecipientFirstName, RecipientLastName, ResponseSet,Status, 
+                         Q109_2_TEXT, Leader, match_round_id, matchid, Q1,Q10,Q2,Q3,Q40,Q44,Q46,Q5,Q99, 
+                         Q106_1, Q106_2, Q6_1, Q6_2, Q6_3, Q6_4, Q6_5, Q6_6, Q6_7, Q6_8, Q6_9, Q6_10, 
+                         Q107_1, Q107_2, Q107_3, Q107_4, Q107_5, Q107_6, Q107_7, Q107_8))
+
 # Split data into training and validation sets (stratify by 'innovation' and experimental conditions)
 
 inBuild <- createDataPartition(y= c(data$innovation, 

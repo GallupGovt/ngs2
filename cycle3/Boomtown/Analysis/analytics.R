@@ -9,7 +9,6 @@ nGames<-length(unique(factorial$group))
 nPlayers<-length(unique(factorial$player))
 
 # Number of unique experimental conditions played
-factorial$settingsNum<-as.numeric(levels(factorial$settingsNum))[factorial$settingsNum]
 nConditions<-length(unique(factorial$settingsNum))
 
 # Game dates

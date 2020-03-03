@@ -61,11 +61,18 @@ source("analytics.R")
     + Ran a total of `r nGames` valid instances.
     + Obtained usable data from a total of `r nPlayers` players.
     + Completed data collection for `r nConditions` of the 96 experimental conditions in the full factorial space.
-    
+
+```{r settingCounts}
+print(setting_counts)
+```
+
 # Games completed to date
 
 ```{r samplePlots}
+dates$month <- format(dates$matchDate, "%m/%Y")
+dates %>% group_by(month) %>% summarise(games = n())
 barplot(table(dates$matchDate))
+table(dates$matchDate)
 print (hourly_plot)
 ```
 

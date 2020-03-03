@@ -10,6 +10,11 @@ nPlayers<-length(unique(factorial$player))
 
 # Number of unique experimental conditions played
 nConditions<-length(unique(factorial$settingsNum))
+agg <- aggregate(data=factorial, matchid ~ settingsNum, function(x) length(unique(x)))
+df<- data.frame(c(1:96))
+colnames(df)<- "settingsNum"
+setting_counts<- merge(df, agg, by="settingsNum", all=TRUE)
+setting_counts[is.na(setting_counts)] <- 0
 
 # Game dates
 factorial$matchDate <- as.POSIXct(factorial$matchDate,format="%Y-%m-%d")

@@ -13,6 +13,8 @@ pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr)
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
 dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
+# Save all game logs and metadata to the dd_input folder before running script. 
+# Link to metadata: https://volunteerscience.com/gallup/boomtown_metadata
 dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
 
 # fieldwork start date

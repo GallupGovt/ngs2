@@ -4,6 +4,13 @@
 ## For any questions, contact pablo_diego-rosell@gallup.co.uk or ying_han@gallup.com
 #####################################################################################
 
+# PRELIMINARY STEPS
+# Save all game logs and metadata to the dd_input folder before running script. 
+## Link to metadata: https://volunteerscience.com/gallup/boomtown_metadata
+# Run "Wrangle.R"
+# Copy "game_data.csv" and "survey_data.csv" from \\gallup\dod_clients\DARPA_NGS2\CONSULTING\Ying_Han\Data_Wrangling_Cycle_3
+# Upload both csv files above to github https://github.com/GallupGovt/ngs2/edit/master/cycle3/Boomtown/Analysis/
+
 # Set up enviroment ----
 rm(list = ls())
 if (!require("pacman")) install.packages("pacman")
@@ -13,8 +20,6 @@ pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr)
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
 dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
-# Save all game logs and metadata to the dd_input folder before running script. 
-# Link to metadata: https://volunteerscience.com/gallup/boomtown_metadata
 dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
 
 # fieldwork start date

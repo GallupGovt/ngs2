@@ -37,6 +37,46 @@ events <- c("SetupMatch",
             "PlayerDisconnection",
             "ChatMessage")
 
+# columns to keep in survey_results_1
+selected_columns_1 <- c(
+  PlayerId = "PlayerId", 
+  Q1_1 = "I.avoid.settings.where.people.don.t.share.my.values.",
+  Q2_1 = "I.can.enjoy.being.with.people.whose.values.are.very.different.from.mine.",                                                          
+  Q3_1 = "I.would.like.to.live.in.a.foreign.country.for.a.while.",                                                                           
+  Q4_1 = "I.like.to.surround.myself.with.things.that.are.familiar.to.me.",                                                                     
+  Q5_1 = "The.sooner.we.all.acquire.similar.values.and.ideals.the.better.",                                                                  
+  Q6_1 = "I.can.be.comfortable.with.nearly.all.kinds.of.people.",                                                                   
+  Q7_1 = "If.given.a.choice..I.will.usually.visit.a.foreign.country.rather.than.vacation.at.home.",                                            
+  Q8_1 = "A.good.teacher.is.one.who.makes.you.wonder.about.your.way.of.looking.at.things.",                                                    
+  Q9_1 = "A.good.job.is.one.where.what.is.to.be.done.and.how.it.is.to.be.done.are.always.clear." ,                                             
+  Q10_1 = "A.person.who.leads.an.even..regular.life.in.which.few.surprises.or.unexpected.happenings.arise.really.has.a.lot.to.be.grateful.for.",
+  Q11_1 = "What.we.are.used.to.is.always.preferable.to.what.is.unfamiliar.",                                                                    
+  Q12_1 = "I.like.parties.where.I.know.most.of.the.people.more.than.ones.where.all.or.most.of.the.people.are.complete.strangers.",            
+  Q13_1 = "Age",                                                                                                                               
+  Q14_1 = "Gender",                                                                                                                            
+  Q15_1 = "What.is.the.highest.level.of.education.you.completed.",                                                                             
+  Q16_1 = "Do.you.currently.have.a.job.",                                                                                                      
+  Q17_1 = "Have.you.ever.participated.in.an.on.line.research.experiment.before.",                                                              
+  Q18_1 = "Do.we.have.permission.to.occasionally.send.survey.invitations.and.reminders.to.your.mobile.phone.number.using.text.messages.",
+  ToA_Calculated = "ToA.Calculated"
+)
+
+# columns to keep in survey_results_2
+selected_columns_2 <- c(
+  PlayerId = "PlayerId", 
+  Q1_2 = "A.few.questions.before.you.go..Please.indicate.how.much.you.agree.or.disagree.with.the.following.statements.",                            
+  Q2_2 = "The.opposing.teams.were.stronger.than.my.team.",                                                                                         
+  Q3_2 = "The.relationship.between.my.team.and.the.other.teams.was.competitive.",                                                                   
+  Q4_2 = "During.quick.voting.rounds..I.felt.a.great.amount.of.time.pressure.when.voting.for.an.item.",                                             
+  Q5_2 = "During.quick.voting.rounds..I.had.to.make.my.decisions.very.fast.",                                                                   
+  Q6_2 = "During.slow.voting.rounds..I.felt.a.great.amount.of.time.pressure.when.voting.for.an.item.",                                            
+  Q7_2 = "During.slow.voting.rounds..I.had.to.make.my.decisions.very.fast.",                                                                       
+  Q8_2 = "When.I.had.to.choose.between.different.types.of.explosives..I.felt.like.I.had.to.process.too.much.information.",                          
+  Q9_2 = "When.I.had.to.choose.between.different.types.of.mines..I.felt.like.I.had.to.process.too.much.information.",                               
+  Q10_2 = "When.I.was.playing.the.game.I.was.certain.about.the.number.of.rounds.I.had.to.play.",  
+  MatchId = "MatchId" 
+)
+
 # variable excluded in part 6
 vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "PlayerVote1",
           "PlayerVote2", "tools", "innovation", "eligible", "framing", "GroupVote1", "GroupVote2", 
@@ -194,7 +234,7 @@ gamelog_process <- function(data){
 }
 
 check_range <- function(data){
-  vars1 <- c(paste0("Q", 1:12, "_1"), paste0("Q", 1:13, "_2"))
+  vars1 <- vars1 <- c(paste0("Q", 1:12, "_1"), paste0("Q", 1:10, "_2"))
   for (var in vars1){
     if(any(!data[, var] %in% c(NA, 0, 1, 2, 3, 4), na.rm=T)){
       stop(paste(var, "have values other than 0-4."))
@@ -219,55 +259,11 @@ check_range <- function(data){
   print("The values of survey items are in their correct range")
 }
 
-survey_clean <- function(filenames){
-  # read in data
-  data <- lapply(filenames, function(file){read.csv(paste(dd_input, file, sep="/"), skip = 1, header = 1, stringsAsFactors = F)})
-  
-  # remove columns with no values and the column "Raw Data"
-  data <- lapply(data, function(x){ x[,-c(which(colSums(!is.na(x)) == 0))]})
-  data <- lapply(data, function(x){ x[,!grepl("Raw.Data", names(x))]})
-  
-  # rename variable
-  data <- lapply(1:2, function(i){
-    tmp <- data[[i]]
-    start <- min(grep(".", names(tmp), fixed=T))
-    end <- length(names(tmp))
-    names(tmp)[start:end] <- paste0("Q", 1:length(start:end), "_", i)
-    return(tmp)
-  })
-  
-  # check whether there are duplicated playerids
-  check_duplicate <- lapply(1:2, function(i){
-    
-    dup <- duplicated(data[[i]]["PlayerId"])
-    
-    if (any(dup)) {
-      stop(paste("There are duplicated playerids in", filenames[i], 
-                    ". Remove duplicates before proceeding."))
-    }
-  })
-  
-  # merging
-  data <- merge(data[[1]], data[[2]], by = "PlayerId", all.x = T, suffixes = c("_1", "_2")) 
-  
-  # recode variables
-  data[, "PlayerId"] <- gsub("boomtown-", "", data[,"PlayerId"])
-  
-  vars_tmp <- c(paste0("Q", 1:18, "_1"), paste0("Q", 1:12, "_2"))
-  for (var in vars_tmp){
-    data[, var] <- as.numeric(data[,var])
-    data[grep("-1",data[,var]), var] <- NA
-  }
-  
-  return(data)
-}
-
-# Part 1: Read data into R ----
+## Part 1: Read data into R ----
 gamelogs_files <- list.files(dd_input, "*.txt")
 metadata_file  <- list.files(dd_input, "*metadata.csv")
-survey_files   <- list.files(dd_input, "^survey")
 
-# Part 2: game logs cleaning ----
+## Part 2: game logs cleaning ----
 gamelogs<- lapply(gamelogs_files, function(file) {readLines(paste(dd_input, file, sep="/"))})
 game_data <- bind_rows(lapply(gamelogs, gamelog_process))
 
@@ -277,14 +273,14 @@ game_data <- bind_rows(lapply(gamelogs, gamelog_process))
 game_data <- game_data[game_data$matchDate >= as.Date(field_start, format="%m-%d-%Y") 
                        & game_data$eligible == TRUE,]
 
-# Part 3: metadata cleaning ----
+## Part 3: metadata cleaning ----
 metadata <- read.csv(paste(dd_input, metadata_file, sep="/"), header = T, stringsAsFactors = FALSE)
 
 # tolerance
 metadata[,"toleranceLabel"] <- metadata[,"group"]
 metadata[,"tolerance"] <- ifelse(metadata[,"toleranceLabel"] == 'Ambiguity Low', 0, 1)
 
-# Part 4: Merging game data and metadata ----
+## Part 4: Merging game data and metadata ----
 game_data <- merge(game_data, 
                    metadata[,!grepl("group", names(metadata))], 
                    by.x="matchid", by.y="matchID", all.x = TRUE)
@@ -319,15 +315,53 @@ game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
 
-# Part 5: survey data cleaning ----
-survey_data <- survey_clean(filenames = survey_files)
 
-# Part 6: merge game data with survey data at the match level ----
+## Part 5: survey data cleaning ----
+# read in data
+# Need to remove duplicated rows in "survey_results_2" to makes sure the match_player_id is unique.
+survey_1 = read.csv(paste(dd_input, "survey_results_1.csv", sep="/"), skip = 1, header = 1, stringsAsFactors = F)
+survey_2 = read.csv(paste(dd_input, "survey_results_2_cleaned.csv", sep="/"), header = 1, stringsAsFactors = F)
+
+# cleaning survey_results_1
+survey_1 <- survey_1 %>%
+  select(selected_columns_1) %>%
+  mutate(PlayerId = gsub("boomtown-", "", PlayerId))
+
+for (var in names(survey_1)[grepl("_1", names(survey_1))]){
+  survey_1[, var] <-  gsub("-1", "", survey_1[, var])
+  survey_1[, var] <- as.numeric(survey_1[,var])
+}
+
+if (any(duplicated(survey_1["PlayerId"]))) {
+  stop(paste("There are duplicated playerids in survey_results_1.csv. Remove duplicates before proceeding."))
+}
+
+# cleaning survey_results_2
+survey_2 <- survey_2 %>%
+  select(selected_columns_2) %>%
+  mutate(PlayerId = gsub("boomtown-", "", PlayerId), 
+         MatchId_PlayerId = paste(MatchId, PlayerId, sep = "-")) %>%
+  select(-c("MatchId", "PlayerId"))
+
+for (var in names(survey_2)[grepl("_2", names(survey_2))]){
+  survey_2[, var] <-  gsub("-1", "", survey_2[, var])
+  survey_2[, var] <- as.numeric(survey_2[,var])
+}
+
+if (any(duplicated(survey_2["MatchId_PlayerId"]))) {
+  stop(paste("There are duplicated match_player_ids in survey_results_2.csv. Remove duplicates before proceeding."))
+}
+
+
+## Part 6: merge game data with survey data at the match level ----
 game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names(game_data))],
                             by = list(matchid = game_data[,"matchid"], playerid = game_data[,"playerid"]),
                             FUN = unique)
+game_data_aggr <- game_data_aggr %>% mutate(matchid_playerid = paste(matchid, playerid, sep = "-"))
 
-game_survey_data <- merge(game_data_aggr, survey_data, by.x = "playerid", by.y = "PlayerId", all.x = T)
+# merge game_data_aggr with survey_1 using palyer id first, and then merge with survey_2 using matchid_playerid
+game_survey_data <- merge(game_data_aggr, survey_1, by.x = "playerid", by.y = "PlayerId", all.x = T)
+game_survey_data <- merge(game_survey_data, survey_2, by.x = "matchid_playerid", by.y = "MatchId_PlayerId", all.x = T)
 
 # check value ranges for each variable
 check_range(data = game_survey_data)

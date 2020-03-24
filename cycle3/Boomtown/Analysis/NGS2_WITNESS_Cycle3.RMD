@@ -31,7 +31,7 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-setup <- c("functions.R", "analytics.R", "survey_analytics.R")
+setup <- c("functions.R", "analytics.R", "survey_analytics.R", "survey_tests_cycle_3_code.R")
 hypotheses <- c("h1.R", "h2.R", "h3.R", "h4.R", "h5.R", "h6.R", "h7.R",
                 "h8.R", "h9.R", "h10.R", "h11.R", "h12.R", "h13.R", "h14.R", "h15.R", "h16.R", "h17.R", "h18.R", "h19.R",
                 "h20.R", "h21.R", "h22.R", "h25.R", "h26.R", "h27.R")
@@ -149,7 +149,7 @@ ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
 
 # Manipulation Checks
 ```{r manchecks}
-#source("manipulation_checks.R")
+source("survey_tests_cycle_3_code.R")
 ```
 
 ## Perceived Intergroup Competition
@@ -160,7 +160,8 @@ The post-game survey included two questions about perceived inter-group competit
 +The relationship between my team and the other teams was competitive.. 
   
 ```{r competitionPlots}
-#competitionPlots
+POS_comp_aov$boxplot
+PC_comp_aov$boxplot
 ```
 
 ## Uncertainty/Risk
@@ -183,7 +184,7 @@ The post-game survey included two questions about perceived inter-group competit
 The post-game survey included a perceived uncertainty item about perceptions regarding the number of rounds they had to play. Results are summarized below for each of the two experimental conditions.   
 
 ```{r exuncert}
-#exUncert
+RC_time_t$barplot
 ```
 
 ## 	Heuristic Reasoning: 
@@ -199,7 +200,7 @@ Tool choices for each of the three experimental conditions dealing with availabi
 We check that group randomization was effective in creating groups with the required experimental charachteristics. Our post-hoc analysis of group composition shows that average group Tolerance of Ambiguity (TA) was higher in the "high group TA" condition.
 
 ```{r groupTAPlots}
-#groupTAplot
+TA_tole_t$boxplot
 ```
 
 ## 	Group Support for Innovation: 
@@ -215,15 +216,16 @@ The post-game survey included the "Values" scale from the Innovation Quotient su
 The post-game survey included four items where individuals were asked to reflect on the experience in fast and slow voting rounds, and rate each using two items adapted from Edland (1994). 
 
 ```{r timePressure}
-#TPplot
+TP_round_pt$barplot
+FD_round_pt$barplot
 ```
 
 ## 	Tool Complexity: 
 
-The post-game survey included two items where individuals were asked to reflect on their experience assessing simple tools (explosives) and complex tools (mines) using perceived information overload items.
+The post-game survey included a question where individuals were asked to reflect on their experience assessing simple tools (explosives) and complex tools (mines) using perceived information overload items.
 
 ```{r toolComplexity}
-#TCplot
+IP_tool_pt$barplot
 ```
 
 ## 	Network density: 

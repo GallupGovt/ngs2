@@ -376,7 +376,7 @@ BFs27
 
 ```{r h1null}
 load (file ="bayesGlmer_h1.1_h1.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Intergroup competition increases Individual Motivation to Innovate (T1).
 - Prediction 2: Individual Motivation to Innovate (T1) is u-shaped on intergroup competition.
@@ -393,7 +393,7 @@ BFs1
 
 ```{r h2null}
 load (file ="bayesGlmer_h2.1_h2.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Prospect value, per Cumulative Prospect Theory, will determine Individual Motivation to Innovate (T1).
 - Prediction 2: Prospect value, per Expected Utility Theory, will determine Individual Motivation to Innovate (T1).
@@ -411,7 +411,7 @@ BFs2
 
 ```{r h3null}
 load (file ="bayesGlmer_h3.1_h3.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Controlling for expected gains, individuals will be more likely to select a certain tool over an uncertain tool.
 
@@ -426,7 +426,7 @@ BFs3
 
 ```{r h4null}
 load (file ="bayesGlmer_h4.1_h4.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: TA will moderate the effect of Innovation Uncertainty on Innovative Prospect Value. Individuals high in TA will show a lower certainty effect than individuals low in TA.
 
@@ -440,7 +440,7 @@ BFs4
 
 ```{r h5null}
 load (file ="bayesGlmer_h5.1_h5.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Availability of a positive example will increase individual motivation to innovate (T1), while availability of a negative example will decrease individual motivation to innovate (T1).
 - Prediction 2: Availability of a negative example will decrease individual motivation to innovate (T1).
@@ -455,7 +455,7 @@ BFs5
 
 ```{r h6null}
 load (file ="bayesGlmer_h6.1_h6.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Increased exogenous uncertainty (ignorance) will increase individual motivation to innovate (T1).
 - Prediction 2: Exogenous uncertainty (ignorance) will decrease individual motivation to innovate (T1) in the early stages of the game.
@@ -470,7 +470,7 @@ BFs6
 
 ```{r h7null}
 load (file ="bayesGlmer_h7.1_h7.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals facing strong competition than those facing balanced or weak competition. 
 - Prediction 2: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals facing strong competition than those facing balanced or weak competition.
@@ -485,7 +485,7 @@ BFs7
 
 ```{r h8null}
 load (file ="bayesGlmer_h8.1_h8.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
 - Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
@@ -500,7 +500,7 @@ BFs8
 
 ```{r h9null}
 load (file ="bayesGlmer_h9.1_h9.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
 - Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
@@ -515,7 +515,7 @@ BFs9
 
 ```{r h10null}
 load (file ="bayesGlmer_h10.1_h10.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Uncertainty moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals for high uncertainty prospects than low uncertainty prospects. 
 - Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
@@ -530,7 +530,7 @@ BFs10
 
 ```{r h11null}
 load (file ="bayesGlmer_h11.1_h11.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Innovation complexity moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individual motivation to innovate under high complexity than under low complexity.
 
@@ -544,7 +544,7 @@ BFs11
 
 ```{r h12null}
 load (file ="bayesGlmer_h12.1_h12.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Group Aggregate Motivation to Innovate (T1) will increase Conformity.
 - Prediction 2: Group Aggregate Motivation to Innovate (T1) will increase Conformity when the group is unanimous. 
@@ -559,7 +559,7 @@ BFs12
 
 ```{r h13null}
 load (file ="bayesGlmer_h13.1_h13.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Time Pressure increases Conformity.
 
@@ -573,7 +573,7 @@ BFs13
 
 ```{r h14null}
 load (file ="bayesGlmer_h14.1_h14.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Intergroup Competition increases Conformity.
 
@@ -587,7 +587,7 @@ BFs14
 
 ```{r h15null}
 load (file ="bayesGlmer_h15.1_h15.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Tolerance of Ambiguity decreases Conformity.
 
@@ -601,7 +601,7 @@ BFs15
 
 ```{r h16null}
 load (file ="bayesGlmer_h16.1_h16.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Innovation Complexity increases Conformity.
 
@@ -615,7 +615,7 @@ BFs16
 
 ```{r h17null}
 load (file ="bayesGlmer_h17.1_h17.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Group Support for Innovation will increase Individual Motivation to Innovate (T2).
 
@@ -629,7 +629,7 @@ BFs17
 
 ```{r h18null}
 load (file ="bayesGlmer_h18.1_h18.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Group Conformity will moderate Individual Motivation to Innovate (T2). When group motivation to innovate is positive, conformity increases Individual Motivation to Innovate (T2). When group motivation to innovate is negative, conformity decreases Individual Motivation to Innovate (T2).
 
@@ -643,7 +643,7 @@ BFs18
 
 ```{r h19null}
 load (file ="bayesGlmer_h19.1_h19.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Network Density will increase Individual motivation to innovate (T2).
 
@@ -657,7 +657,7 @@ BFs19
 
 ```{r h20null}
 load (file ="bayesGlmer_h20.1_h20.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Network Centralization will decrease Individual motivation to innovate (T2)
 
@@ -671,7 +671,7 @@ BFs20
 
 ```{r h21null}
 load (file ="bayesGlmer_h21.1_h21.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Leader vote weight will increase Group Motivation to Innovate (T2).
 
@@ -685,7 +685,7 @@ BFs21
 
 ```{r h22null}
 load (file ="bayesGlmer_h22.1_h22.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Individual motivation to innovate (T1) will increase Individual motivation to innovate (T2).
 
@@ -704,7 +704,7 @@ BFs22
 
 ```{r h25null}
 load (file ="bayesGlmer_h25.1_h25.0")
-summary(fittedGlmer, digits = 2))
+summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Group Aggregate motivation to innovate (T2) will increase Group Motivation to Innovate.
 

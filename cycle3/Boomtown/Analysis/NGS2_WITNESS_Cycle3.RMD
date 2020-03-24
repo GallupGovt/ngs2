@@ -148,10 +148,6 @@ ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
 ```
 
 # Manipulation Checks
-```{r manchecks}
-source("survey_tests_cycle_3_code.R")
-```
-
 ## Perceived Intergroup Competition
 
 The post-game survey included two questions about perceived inter-group competition. Results are summarized below for each of the four experimental conditions.   

@@ -22,7 +22,18 @@ if (!require("pacman")) install.packages("pacman")
 library ("pacman")
 pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr, knitr)
 
-source("W:/DARPA_NGS2/CONSULTING/Ying_Han/Survey_Test_Cycle_3/survey_tests_cycle_3_code_rev.R")
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+tests <- c("survey_tests_cycle_3_code.R")
+data <- c("game_data.csv", "survey_data.csv", "game_survey_data.csv")
+lapply(c(tests,data), dlScripts)
+source("survey_tests_cycle_3_code.R")
 ```
 
 # Hypothesis Test Results Summary

@@ -105,7 +105,6 @@ barplot(table(dates$matchDate))
 table(dates$matchDate)
 dates$month <- format(dates$matchDate, "%m/%Y")
 dates %>% group_by(month) %>% summarise(games = n())
-print (hourly_plot)
 ```
 Variables used and a random sample of rows from the final analytical dataset are summarized below. 
 
@@ -180,7 +179,7 @@ PC_comp_aov$boxplot
 The post-game survey included a perceived uncertainty item about perceptions regarding the number of rounds they had to play. Results are summarized below for each of the two experimental conditions.   
 
 ```{r exuncert}
-RC_time_t$barplot
+RC_time_t$boxplot
 ```
 
 ## 	Heuristic Reasoning: 
@@ -212,8 +211,8 @@ The post-game survey included the "Values" scale from the Innovation Quotient su
 The post-game survey included four items where individuals were asked to reflect on the experience in fast and slow voting rounds, and rate each using two items adapted from Edland (1994). 
 
 ```{r timePressure}
-TP_round_pt$barplot
-FD_round_pt$barplot
+TP_round_pt$boxplot
+FD_round_pt$boxplot
 ```
 
 ## 	Tool Complexity: 
@@ -221,7 +220,7 @@ FD_round_pt$barplot
 The post-game survey included a question where individuals were asked to reflect on their experience assessing simple tools (explosives) and complex tools (mines) using perceived information overload items.
 
 ```{r toolComplexity}
-IP_tool_pt$barplot
+IP_tool_pt$boxplot
 ```
 
 ## 	Network density: 

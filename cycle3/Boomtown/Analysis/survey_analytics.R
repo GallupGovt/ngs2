@@ -8,7 +8,7 @@ educ_label <- c("No education", "Elementrary School", "High School", "Some colle
 empl_label <- c("No", "Yes")
 onre_label <- c("No", "Yes")
 comp_label <- c("None", "Weak", "Normal", "Strong")
-time_label <- c("Certain Rounds", "Uncertain Rounds")
+time_label <- c("True", "False")
 tole_label <- c("Ambiguity Low", "Ambiguity High")
 supp_label <- c("HighStatus_HighLegitimacy", "LowStatus_HighLegitimacy")
 

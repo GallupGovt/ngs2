@@ -173,7 +173,7 @@ PC_comp_aov$boxplot
 #toolControls
 ```
 
-+ Only `r length(allWrong$matchid)` games failed all three check test items. 
++ Only `r #length(allWrong$matchid)` games failed all three check test items. 
 
 ```{r allwrong}
 #allWrong

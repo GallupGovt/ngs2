@@ -1,10 +1,3 @@
-## set up R enviroment ----
-rm(list = ls())
-
-if (!require("pacman")) install.packages("pacman")
-library ("pacman")
-pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr)
-
 ## define constants ----
 age_breaks <- c(18, 24, 34, 44, 54, 999)
 age_label  <- c("18-24","25-34","35-44", "45-54", "55+")

@@ -344,20 +344,6 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
               normality_check_test =  normality_check_test))
 }
 
-## simulate survey data ----
-n <- 1000
-
-col_names <- c(paste0("Q", 1:12, "_1"), paste0("Q", 1:10, "_2"))
-df1 <- matrix(sample(1:5, n*length(col_names), replace = T), ncol = length(col_names))
-colnames(df1) <- col_names
-
-unique_values <- list(Q13_1=18:100, Q14_1=1:4, Q15_1=1:6, Q16_1=1:2, Q17_1=1:2, 
-                      competitionLabel = comp_label, timeUncertaintyLabel = time_label, 
-                      toleranceLabel = tole_label, supportLabel = supp_label)
-df2 <- bind_cols(lapply(unique_values, sample, n, replace = T))
-
-game_survey_data <- cbind(df1, df2)
-
 ## recode variables (where analysis starts) ----
 gs <- game_survey_data %>%
   mutate(

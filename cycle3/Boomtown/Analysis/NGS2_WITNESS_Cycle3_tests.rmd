@@ -20,7 +20,7 @@ rm(list = ls())
 
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
-pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr, knitr)
+pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr, knitr, RCurl)
 
 # download scripts and data
 dlScripts <- function (scriptNames) {

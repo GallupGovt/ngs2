@@ -13,7 +13,7 @@ educ_label <- c("No education", "Elementrary School", "High School", "Some colle
 empl_label <- c("Yes", "No")
 onre_label <- c("Yes", "No")
 comp_label <- c("None", "Weak", "Normal", "Strong")
-time_label <- c("True", "False")
+time_label <- c("Certain Rounds", "Uncertain Rounds")
 tole_label <- c("Ambiguity Low", "Ambiguity High")
 supp_label <- c("HighStatus_HighLegitimacy", "LowStatus_HighLegitimacy")
 
@@ -43,7 +43,7 @@ chisq_test_plot <- function(data, key.var, group.var){
     geom_text(aes(label = scales::percent(..prop.., accuracy = 1), y = ..prop..), 
               stat = "count", size = 4, vjust = -0.5, position = position_dodge(0.9)) +
     labs(title = paste0("Comparison of ", gsub("_", " ", key.var), " by ", gsub("_", " ", group.var), " Condition"), 
-         subtitle = paste0("Chi-squre test: X²(", test_summary[1,5],") = ", test_summary[1,4], ", p value = ", test_summary[1,6], "."),
+         subtitle = paste0("Chi-squre test: XÂ²(", test_summary[1,5],") = ", test_summary[1,4], ", p value = ", test_summary[1,6], "."),
          x = gsub("_", " ", key.var), 
          y = "Perent (within each group)", 
          fill = paste(gsub("_", " ", group.var), "Condition")) +
@@ -315,7 +315,7 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
            "One-way ANOVA test: F(", summary(anova)[[1]][[1,"Df"]], ",", summary(anova)[[1]][[2,"Df"]], ") = ", 
            round(summary(anova)[[1]][[1,"F value"]],3),", ", 
            "p value = ", round(summary(anova)[[1]][[1,"Pr(>F)"]], 3), ". \n", 
-           "Kruskal-Wallis test: X²(", kruskal$parameter,") = ", round(kruskal$statistic, 3), ", ", 
+           "Kruskal-Wallis test: XÂ²(", kruskal$parameter,") = ", round(kruskal$statistic, 3), ", ", 
            "p value = ", round(kruskal$p.value, 3), "."),
          x = paste0(group.var.label, " Condition"),  
          y = paste0("Average ", key.var.label, collapse = ), 
@@ -334,7 +334,7 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
            "One-way ANOVA test: F(", summary(anova)[[1]][[1,"Df"]], ",", summary(anova)[[1]][[2,"Df"]], ") = ", 
            round(summary(anova)[[1]][[1,"F value"]],3),", ", 
            "p value = ", round(summary(anova)[[1]][[1,"Pr(>F)"]], 3), ". \n", 
-           "Kruskal-Wallis test: X²(", kruskal$parameter,") = ", round(kruskal$statistic, 3), ", ", 
+           "Kruskal-Wallis test: XÂ²(", kruskal$parameter,") = ", round(kruskal$statistic, 3), ", ", 
            "p value = ", round(kruskal$p.value, 3), "."),
          x = paste0(group.var.label, " Condition"), 
          y = key.var.label,

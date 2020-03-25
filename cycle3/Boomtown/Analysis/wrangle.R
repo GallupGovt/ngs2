@@ -78,9 +78,14 @@ selected_columns_2 <- c(
 )
 
 # variable excluded in part 6
+
 vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "PlayerVote1",
           "PlayerVote2", "tools", "innovation", "eligible", "framing", "GroupVote1", "GroupVote2", 
-          "matchid", "playerid", "chat_per_round")
+          "matchid", "playerid", "chat_per_round", "conformity", "grmot2", "grmot1", "playernum", 
+          "compStrong", "round", "group", "player", "structure", "pressure", "toolsCPT", "toolsEUT", 
+          "toolsSPT", "toolsCPTEXP", "risk", "prb", "structureHie","structureCel","structureNet",
+          "centralization", "leaderWeight", "compStrong", "playernum", "grmot1", "grmot2", "conformity", 
+          "inmot1", "inmot2")
 
 # Define functions ----
 # function to extract information from one game log file
@@ -224,6 +229,45 @@ gamelog_process <- function(data){
       TRUE ~ 0
     )
     
+    # Player Vote 1
+    df$inmot1 <- case_when(
+      (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$PlayerVote1 == "SatchelCharge") | 
+        (df$toolsLabel == "BlackPowder,Dynamite" & df$PlayerVote1 == "Dynamite") |
+        (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote1 == "RDX") |
+        (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote1 == "RDX") |
+        (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote1 == "Mine2") |
+        (df$toolsLabel == "Mine4,Mine3" & df$PlayerVote1 == "Mine4") |
+        (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote1 == "Mine1") |
+        (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote1 == "Mine2") |
+        (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote1 == "Mine3") |
+        (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote1 == "Mine4") ~ 1,
+      (df$toolsLabel == "TNTbarrel,Dynamite") |
+        (df$toolsLabel == "BlackPowder,SatchelCharge") |
+        (df$toolsLabel == "SatchelCharge,RDX") |
+        (df$toolsLabel == "Dynamite,SatchelCharge") ~ NA_real_,
+      TRUE ~ 0
+    )
+    
+    # Player Vote 2
+    
+    df$inmot2 <- case_when(
+      (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$PlayerVote2 == "SatchelCharge") | 
+        (df$toolsLabel == "BlackPowder,Dynamite" & df$PlayerVote2 == "Dynamite") |
+        (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote2 == "RDX") |
+        (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote2 == "RDX") |
+        (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote2 == "Mine2") |
+        (df$toolsLabel == "Mine4,Mine3" & df$PlayerVote2 == "Mine4") |
+        (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote2 == "Mine1") |
+        (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote2 == "Mine2") |
+        (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote2 == "Mine3") |
+        (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote2 == "Mine4") ~ 1,
+      (df$toolsLabel == "TNTbarrel,Dynamite") |
+        (df$toolsLabel == "BlackPowder,SatchelCharge") |
+        (df$toolsLabel == "SatchelCharge,RDX") |
+        (df$toolsLabel == "Dynamite,SatchelCharge") ~ NA_real_,
+      TRUE ~ 0
+    )
+    
     # eligible: at least one round before game suspend
     suspend <- ifelse(length(grep("GameSuspended", data))==0,length(data), min(grep("GameSuspended", data)))
     vote_1st <- min(grep("StartVotation", data))
@@ -314,16 +358,132 @@ game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
 # Variable name changes to conform with analysis
 
-game_data$inmot1 <- game_data$innovation
+game_data$round <- game_data$roundid_short  
+game_data$group <- game_data$matchid
 game_data$player <- game_data$playerid
 game_data$structure <- game_data$organizationalStructure
 game_data$pressure <- cut(game_data$roundid_short,
                           breaks=c(0, 3, 6, 9, 11, 13),
                           labels=c("low","high","low", "high", "low"))
 
+# CPT predictions
+
+game_data$toolsCPT <- 1
+game_data$toolsCPT[game_data$tools==1] <- 0
+game_data$toolsCPT[game_data$tools==2] <- 0
+game_data$toolsCPT[game_data$tools==8] <- 0
+game_data$toolsCPT<-factor(game_data$toolsCPT)
+
+# EUT predictions
+
+game_data$toolsEUT <- 0
+game_data$toolsEUT[game_data$tools==5] <- 1
+game_data$toolsEUT[game_data$tools==7] <- 1
+game_data$toolsEUT<-factor(game_data$toolsEUT)
+
+# PT predictions
+
+game_data$toolsPT <- 1
+game_data$toolsPT[game_data$tools==8] <- 0
+game_data$toolsPT<-factor(game_data$toolsPT)
+
+# CPT+Expectancy predictions
+
+game_data$toolsCPTEXP <- 1
+game_data$toolsCPTEXP[game_data$tools==1] <- 0
+game_data$toolsCPTEXP[game_data$tools==2] <- 0
+game_data$toolsCPTEXP[game_data$tools==5] <- 0
+game_data$toolsCPTEXP<-factor(game_data$toolsCPTEXP)
+
+# Risk
+
+game_data$risk[game_data$tools==1] <- 0.23
+game_data$risk[game_data$tools==2] <- 0.23
+game_data$risk[game_data$tools==3] <- 0.06
+game_data$risk[game_data$tools==4] <- -0.17
+game_data$risk[game_data$tools==5] <- 0
+game_data$risk[game_data$tools==6] <- 0.05
+game_data$risk[game_data$tools==7] <- 0.24
+game_data$risk[game_data$tools==8] <- 0
+
+# Probability
+
+game_data$prb[game_data$tools==1] <- 1.10
+game_data$prb[game_data$tools==2] <- 1.10
+game_data$prb[game_data$tools==3] <- 1.39
+game_data$prb[game_data$tools==4] <- 1.26
+game_data$prb[game_data$tools==5] <- 1.03
+game_data$prb[game_data$tools==6] <- 1.03
+game_data$prb[game_data$tools==7] <- 7.43
+game_data$prb[game_data$tools==8] <- 0
+
+# Structure dummies
+
+game_data$structureHie <- 0
+game_data$structureHie[game_data$structure=="Hierarchical"] <- 1
+game_data$structureCel <- 0
+game_data$structureCel[game_data$structure=="Cellular"] <- 1
+game_data$structureNet <- 0
+game_data$structureNet[game_data$structure=="Network"] <- 1
+
+# Centralization scores (see pre-registration)
+
+game_data$centralization <- NA
+game_data$centralization[game_data$structure=="Hierarchical"] <- 0.42
+game_data$centralization[game_data$structure=="Cellular"] <- 0
+game_data$centralization[game_data$structure=="Network"] <- 0.83
+
+# Leader Weight scores (see pre-registration)
+
+game_data$leaderWeight <- NA
+game_data$leaderWeight[game_data$structure=="Hierarchical"] <- 0.45
+game_data$leaderWeight[game_data$structure=="Cellular"] <- 0.2
+game_data$leaderWeight[game_data$structure=="Network"] <- 0
+
+# Competition dummy
+
+game_data$compStrong <- 0
+game_data$compStrong [game_data$competitionLabel=="Strong"] <- 1
+
+# Conformity measures 
+
+game_data$groupRound <- as.numeric(game_data$group)*100+as.numeric(game_data$round)
+game_data$playernum <- as.integer(factor(game_data$player))
+
+game_dataNum <- game_data
+game_dataNum[] <- lapply(game_dataNum, as.numeric)
+game_dataNum$grmot1 <- ave(game_dataNum$inmot1, game_data$groupRound)
+game_dataNum$grmot2 <- ave(game_dataNum$inmot2, game_data$groupRound)
+game_dataNum$conformity<-ifelse(
+  game_dataNum$grmot1>0.5 & game_dataNum$inmot1==0 & game_dataNum$inmot2==1,1,
+  ifelse(
+    game_dataNum$grmot1<0.5 & game_dataNum$inmot1==1 & game_dataNum$inmot2==0, 1, 0))
+
+# Generate aggregate dataset
+
+game_dataGroup <-aggregate(game_dataNum, 
+                           by=list(game_dataNum$groupRound), FUN=mean, 
+                           na.rm=TRUE)
+game_dataGroup$nPlayers <- aggregate(playernum ~ groupRound, 
+                                     data = game_dataNum, FUN = length)$playernum
+game_dataGroup$unanimity <- (game_dataGroup$nPlayers-1)/game_dataGroup$nPlayers
+game_dataGroup$unanimous <-ifelse(game_dataGroup$grmot1 == game_dataGroup$unanimity,1,0)
+game_dataGroup2 <- game_dataGroup
+game_dataGroup2[] <- lapply(game_dataGroup, factor)
+game_dataGroup2$conformity <- as.numeric(game_dataGroup$conformity)
+game_dataGroup2$grmot1 <- as.numeric(game_dataGroup$grmot1)
+game_dataGroup2$grmot2 <- as.numeric(game_dataGroup$grmot2)
+game_dataGroup2$risk <- as.numeric(game_dataGroup$risk)
+game_dataGroup2$innovation <- as.numeric(game_dataGroup$innovation)-1
+game_dataGroup <- game_dataGroup2
+
+# Merge conformity and group motivation vars back with individual level data
+
+game_data <- merge(game_data, 
+                   game_dataGroup[c("grmot1", "grmot2", "conformity", "groupRound")], 
+                   by="groupRound")
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
-
 
 ## Part 5: survey data cleaning ----
 # read in data
@@ -361,8 +521,8 @@ if (any(duplicated(survey_2["MatchId_PlayerId"]))) {
   stop(paste("There are duplicated match_player_ids in survey_results_2.csv. Remove duplicates before proceeding."))
 }
 
-
 ## Part 6: merge game data with survey data at the match level ----
+
 game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names(game_data))],
                             by = list(matchid = game_data[,"matchid"], playerid = game_data[,"playerid"]),
                             FUN = unique)
@@ -371,6 +531,7 @@ game_data_aggr <- game_data_aggr %>% mutate(matchid_playerid = paste(matchid, pl
 # merge game_data_aggr with survey_1 using palyer id first, and then merge with survey_2 using matchid_playerid
 game_survey_data <- merge(game_data_aggr, survey_1, by.x = "playerid", by.y = "PlayerId", all.x = T)
 game_survey_data <- merge(game_survey_data, survey_2, by.x = "matchid_playerid", by.y = "MatchId_PlayerId", all.x = T)
+
 
 # check value ranges for each variable
 check_range(data = game_survey_data)

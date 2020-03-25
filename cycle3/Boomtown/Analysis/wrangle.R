@@ -312,6 +312,15 @@ group_vote <- aggregate(x = game_data[, c("PlayerVote1","PlayerVote2")],
 names(group_vote) <- c("roundid", "GroupVote1", "GroupVote2")
 game_data <- merge(game_data, group_vote, by="roundid", all.x=TRUE)
 
+# Variable name changes to conform with analysis
+
+game_data$inmot1 <- game_data$innovation
+game_data$player <- game_data$playerid
+game_data$structure <- game_data$organizationalStructure
+game_data$pressure <- cut(game_data$roundid_short,
+                          breaks=c(0, 3, 6, 9, 11, 13),
+                          labels=c("low","high","low", "high", "low"))
+
 # output data
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
 

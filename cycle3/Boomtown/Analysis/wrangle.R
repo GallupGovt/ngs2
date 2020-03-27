@@ -488,10 +488,12 @@ game_dataGroup <- game_dataGroup2
 # Merge conformity and group motivation vars back with individual level data
 
 game_data <- merge(game_data, 
-                   game_dataGroup[c("grmot1", "grmot2", "conformity", "groupRound")], 
+                   game_dataGroup[c("grmot1", "grmot2", "conformity", "unanimous", "groupRound")], 
                    by="groupRound")
-# output data
+
+# output data (individual and group level)
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
+write.csv(game_dataGroup, paste(dd_output, 'game_data_group.csv', sep = '/'), row.names = FALSE)
 
 ## Part 5: survey data cleaning ----
 # read in data
@@ -539,7 +541,6 @@ game_data_aggr <- game_data_aggr %>% mutate(matchid_playerid = paste(matchid, pl
 # merge game_data_aggr with survey_1 using palyer id first, and then merge with survey_2 using matchid_playerid
 game_survey_data <- merge(game_data_aggr, survey_1, by.x = "playerid", by.y = "PlayerId", all.x = T)
 game_survey_data <- merge(game_survey_data, survey_2, by.x = "matchid_playerid", by.y = "MatchId_PlayerId", all.x = T)
-
 
 # check value ranges for each variable
 check_range(data = game_survey_data)

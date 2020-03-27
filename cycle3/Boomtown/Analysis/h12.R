@@ -6,7 +6,7 @@ formula.h12.2<-as.formula("conformity~unanimous+framing+complexity+timeUncertain
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- stan_glmer(formula.h12.2, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
+fittedGlmer <- stan_glmer(formula.h12.2, data=factorial, family=gaussian(link = "identity"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors
@@ -21,10 +21,10 @@ h12.2 <- normal(location = c(0.3, rep(0, ndim)), scale = c(0.1, rep(2.5,ndim)), 
 
 # Run models 
 
-bridge_12.1null <- bayesLmer(formula.h12.1, h12.0, factorialGroup)
-bridge_12.1 <- bayesLmer(formula.h12.1, h12.1, factorialGroup)
-bridge_12.2null <- bayesLmer(formula.h12.2, h12.0, factorialGroup)
-bridge_12.2 <- bayesLmer(formula.h12.2, h12.2, factorialGroup)
+bridge_12.1null <- bayesLmer(formula.h12.1, h12.0, factorial)
+bridge_12.1 <- bayesLmer(formula.h12.1, h12.1, factorial)
+bridge_12.2null <- bayesLmer(formula.h12.2, h12.0, factorial)
+bridge_12.2 <- bayesLmer(formula.h12.2, h12.2, factorial)
 
 # Calculate BFs for all comparisons
 

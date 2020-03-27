@@ -45,6 +45,7 @@ source("functions.R")
 factorial <- read.csv(file="game_data.csv")
 factorial$density <-1
 factorialGroup <- read.csv(file="game_data_group.csv")
+factorialGroup$density <-1
 survey <- read.csv(file="survey_data.csv")
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("analytics.R")

@@ -84,8 +84,8 @@ vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "Player
           "matchid", "playerid", "chat_per_round", "conformity", "grmot2", "grmot1", "playernum", 
           "compStrong", "round", "group", "player", "structure", "pressure", "toolsCPT", "toolsEUT", 
           "toolsSPT", "toolsCPTEXP", "risk", "prb", "structureHie","structureCel","structureNet",
-          "centralization", "leaderWeight", "compStrong", "playernum", "grmot1", "grmot2", "conformity", 
-          "inmot1", "inmot2")
+          "centralization", "leaderWeight", "compStrong", "complexity", "playernum", "grmot1", "grmot2", 
+          "conformity", "inmot1", "inmot2")
 
 # Define functions ----
 # function to extract information from one game log file
@@ -444,6 +444,14 @@ game_data$leaderWeight[game_data$structure=="Network"] <- 0
 
 game_data$compStrong <- 0
 game_data$compStrong [game_data$competitionLabel=="Strong"] <- 1
+
+# Tool complexity dummy
+
+game_data$complexity <- 0
+game_data$complexity [game_data$tools==5 | 
+                      game_data$tools==6 |
+                      game_data$tools==7 |
+                      game_data$tools==8 ] <- 1
 
 # Conformity measures 
 

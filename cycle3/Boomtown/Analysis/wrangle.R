@@ -85,7 +85,7 @@ vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "Player
           "compStrong", "round", "group", "player", "structure", "pressure", "toolsCPT", "toolsEUT", 
           "toolsSPT", "toolsCPTEXP", "risk", "prb", "structureHie","structureCel","structureNet",
           "centralization", "leaderWeight", "compStrong", "complexity", "playernum", "grmot1", "grmot2", 
-          "conformity", "inmot1", "inmot2")
+          "conformity", "unanimous", "inmot1", "inmot2")
 
 # Define functions ----
 # function to extract information from one game log file

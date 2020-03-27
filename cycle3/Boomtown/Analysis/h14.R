@@ -5,7 +5,7 @@ formula.h14.1<-as.formula("conformity~competition+pressure+grmot1+framing+comple
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- stan_glmer(formula.h14.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
+fittedGlmer <- stan_glmer(formula.h14.1, data=factorial, family=gaussian(link = "identity"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-4
 
 # Declare priors
@@ -20,8 +20,8 @@ h14.1 <- normal(location = c(-0.15, 0.0, 0.15, rep(0, ndim)),
 
 # Run models 
 
-bridge_14.0 <- bayesLmer(formula.h14.1, h14.0, factorialGroup)
-bridge_14.1 <- bayesLmer(formula.h14.1, h14.1, factorialGroup)
+bridge_14.0 <- bayesLmer(formula.h14.1, h14.0, factorial)
+bridge_14.1 <- bayesLmer(formula.h14.1, h14.1, factorial)
 
 # Calculate BFs for all comparisons
 

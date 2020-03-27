@@ -198,7 +198,7 @@ gamelog_process <- function(data){
       df$toolsLabel == "BlackPowder,RDX" ~ 3, 
       df$toolsLabel == "RDX,Dynamite" ~ 4, 
       df$toolsLabel == "Mine1,Mine2" ~ 5, 
-      df$toolsLabel == "Mine4,Mine3" ~ 6, 
+      df$toolsLabel == "Mine3,Mine4" ~ 6, 
       df$toolsLabel == "Mine1,BlackPowder" ~ 7,
       df$toolsLabel == "Mine2,BlackPowder" ~ 7, 
       df$toolsLabel == "Mine3,BlackPowder" ~ 8, 

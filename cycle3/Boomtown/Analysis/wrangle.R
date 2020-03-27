@@ -217,7 +217,7 @@ gamelog_process <- function(data){
         (df$toolsLabel == "BlackPowder,RDX" & df$FinalItemSelected == "RDX") |
         (df$toolsLabel == "RDX,Dynamite" & df$FinalItemSelected == "RDX") |
         (df$toolsLabel == "Mine1,Mine2" & df$FinalItemSelected == "Mine2") |
-        (df$toolsLabel == "Mine4,Mine3" & df$FinalItemSelected == "Mine4") |
+        (df$toolsLabel == "Mine3,Mine4" & df$FinalItemSelected == "Mine4") |
         (df$toolsLabel == "Mine1,BlackPowder" & df$FinalItemSelected == "Mine1") |
         (df$toolsLabel == "Mine2,BlackPowder" & df$FinalItemSelected == "Mine2") |
         (df$toolsLabel == "Mine3,BlackPowder" & df$FinalItemSelected == "Mine3") |
@@ -236,7 +236,7 @@ gamelog_process <- function(data){
         (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote1 == "RDX") |
         (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote1 == "RDX") |
         (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote1 == "Mine2") |
-        (df$toolsLabel == "Mine4,Mine3" & df$PlayerVote1 == "Mine4") |
+        (df$toolsLabel == "Mine3,Mine4" & df$PlayerVote1 == "Mine4") |
         (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote1 == "Mine1") |
         (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote1 == "Mine2") |
         (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote1 == "Mine3") |
@@ -256,7 +256,7 @@ gamelog_process <- function(data){
         (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote2 == "RDX") |
         (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote2 == "RDX") |
         (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote2 == "Mine2") |
-        (df$toolsLabel == "Mine4,Mine3" & df$PlayerVote2 == "Mine4") |
+        (df$toolsLabel == "Mine3,Mine4" & df$PlayerVote2 == "Mine4") |
         (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote2 == "Mine1") |
         (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote2 == "Mine2") |
         (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote2 == "Mine3") |

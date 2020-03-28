@@ -81,11 +81,11 @@ selected_columns_2 <- c(
 
 vars <- c("roundid", "roundid_short", "toolsLabel", "FinalItemSelected", "PlayerVote1",
           "PlayerVote2", "tools", "innovation", "eligible", "framing", "GroupVote1", "GroupVote2", 
-          "matchid", "playerid", "chat_per_round", "conformity", "grmot2", "grmot1", "playernum", 
+          "matchid", "playerid", "chat_per_round", "conformity", "unanimous", "playernum", 
           "compStrong", "round", "group", "player", "structure", "pressure", "toolsCPT", "toolsEUT", 
           "toolsSPT", "toolsCPTEXP", "risk", "prb", "structureHie","structureCel","structureNet",
-          "centralization", "leaderWeight", "compStrong", "complexity", "playernum", "grmot1", "grmot2", 
-          "conformity", "unanimous", "inmot1", "inmot2")
+          "centralization", "density", "leaderWeight", "compStrong", "complexity", "playernum", 
+          "grmot1", "grmot2", "inmot1", "inmot2")
 
 # Define functions ----
 # function to extract information from one game log file
@@ -453,7 +453,32 @@ game_data$complexity [game_data$tools==5 |
                       game_data$tools==7 |
                       game_data$tools==8 ] <- 1
 
-# Conformity measures 
+# Network density (pre-calculated on the basis of network structure and role disconnections in each round per game settings)
+
+densities <- read.csv("densities.csv", stringsAsFactors = FALSE)
+densities <- (densities[,9:15])
+densities <- reshape(densities, varying=c("V8","V9","V10","V11","V12","V13"),
+                     direction="long", v.names="density", idvar=c("settingsNum"), 
+                     timevar="round2")
+
+game_data$round2[game_data$roundid_short == 1 | 
+                  game_data$roundid_short == 2 | 
+                  game_data$roundid_short == 3] <- 1 
+game_data$round2[game_data$roundid_short == 4 | 
+                   game_data$roundid_short == 5 | 
+                   game_data$roundid_short == 6] <- 2
+game_data$round2[game_data$roundid_short == 7 | 
+                   game_data$roundid_short == 8 | 
+                   game_data$roundid_short == 9] <- 3
+game_data$round2[game_data$roundid_short == 10 | 
+                   game_data$roundid_short == 11] <- 4
+game_data$round2[game_data$roundid_short == 12 | 
+                   game_data$roundid_short == 13] <- 5
+
+game_data <- read.csv(file="game_data.csv")
+game_data <- merge(game_data, densities, by= c("settingsNum","round2"), all=TRUE)
+
+# Conformity measures (aggregate level)
 
 game_data$groupRound <- as.numeric(game_data$group)*100+as.numeric(game_data$round)
 game_data$playernum <- as.integer(factor(game_data$player))

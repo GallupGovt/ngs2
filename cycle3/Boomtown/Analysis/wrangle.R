@@ -610,10 +610,6 @@ game_data <- merge(game_data,
                    game_dataGroup[c("grmot1", "grmot2", "conformity", "unanimous", "groupRound")], 
                    by="groupRound")
 
-# output data (individual and group level)
-write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
-write.csv(game_dataGroup, paste(dd_output, 'game_data_group.csv', sep = '/'), row.names = FALSE)
-
 ## Part 5: survey data cleaning ----
 # read in data
 # Need to remove duplicated rows in "survey_results_2" to makes sure the match_player_id is unique.
@@ -664,5 +660,21 @@ game_survey_data <- merge(game_survey_data, survey_2, by.x = "matchid_playerid",
 # check value ranges for each variable
 check_range(data = game_survey_data)
 
-# output data
+# Drop scrap variables
+
+dropvars <- c("groupRound", 
+              "round2", 
+              "matchSetting1Label", 
+              "roundid_short", 
+              "playerid", 
+              "competitive.level", 
+              "consumableKey")
+
+game_data <- game_data[ , -which(names(game_data) %in% dropvars)]
+game_dataGroup <- game_dataGroup[ , -which(names(game_dataGroup) %in% dropvars)]
+
+# output all data (individual and group level)
+
+write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
+write.csv(game_dataGroup, paste(dd_output, 'game_data_group.csv', sep = '/'), row.names = FALSE)
 write.csv(game_survey_data, paste(dd_output, "game_survey_data.csv", sep="/"), row.names = F)

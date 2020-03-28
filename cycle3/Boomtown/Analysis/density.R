@@ -111,12 +111,12 @@ for (row in 1:96){
 head(gameSettings2)
 gameSettings2 <- as.data.frame(gameSettings2)
 colnames(gameSettings2)[14] <- c("settingsNum")
-write.csv(gameSettings2, paste(dd_output, 'densities2.csv', sep = '/'), row.names = FALSE)
+write.csv(gameSettings2, 'densities2.csv', row.names = FALSE)
 
-densities <- read.csv(paste(dd_output, 'densities.csv', sep = '/'), stringsAsFactors = FALSE)
+densities <- read.csv('densities2.csv', stringsAsFactors = FALSE)
 densities <- (densities[,9:15])
 densities <- reshape(densities, varying=c("V8","V9","V10","V11","V12","V13"),
                      direction="long", v.names="density", idvar=c("settingsNum"), 
                      timevar="round2")
 
-write.csv(densities, paste(dd_output, 'densities.csv', sep = '/'), row.names = FALSE)
+write.csv(densities, 'densities.csv', row.names = FALSE)

@@ -114,7 +114,7 @@ colnames(gameSettings2)[14] <- c("settingsNum")
 write.csv(gameSettings2, 'densities2.csv', row.names = FALSE)
 
 densities <- read.csv('densities2.csv', stringsAsFactors = FALSE)
-densities <- (densities[,9:15])
+densities <- (densities[,8:14])
 densities <- reshape(densities, varying=c("V8","V9","V10","V11","V12","V13"),
                      direction="long", v.names="density", idvar=c("settingsNum"), 
                      timevar="round2")

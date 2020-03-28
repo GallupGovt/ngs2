@@ -84,4 +84,39 @@ densityCalc("Network", rolesMuted) # Density should be = 0.00
 densityCalc("Hierarchical", rolesMuted) # Density should be = 0.00
 densityCalc("Cellular", rolesMuted) # Density should be = 0.00 
 
+# Generate frame of densities based on Boomtown Json generation loop
 
+roleSampler<- function() {
+  nRoles  <- c(0,0,0,1,1,1,1,1,1,1,2,2,3,3,4)
+  roles  <- c("Engineer", "LeadShotfirer", "LeadHewer", "LeadScout", "Shotfirer", "Hewer", "Scout")
+  sampledRoles<-paste (sample (roles, sample(nRoles, 1)), collapse=',')
+  return(sampledRoles)
+}
+
+gameSettings2 <- matrix (NA, 96, 14)
+for (row in seq(1, 96, by=3)){
+  gameSettings2[row,7]<- "Hierarchical"
+  gameSettings2[row+1,7]<- "Cellular"
+  gameSettings2[row+2,7]<- "Network"
+}
+for (row in 1:96){
+  gameSettings2[row,14]<- row
+  for (col in 1:6){
+    set.seed((row*10)+col+1)
+    gameSettings2[row,col]<- roleSampler()
+    gameSettings2[row,col+7]<- densityCalc(paste(gameSettings2[row,7]), 
+                                           strsplit(gameSettings2[row,col], ",")[[1]])
+  }
+}
+head(gameSettings2)
+gameSettings2 <- as.data.frame(gameSettings2)
+colnames(gameSettings2)[14] <- c("settingsNum")
+write.csv(gameSettings2, paste(dd_output, 'densities2.csv', sep = '/'), row.names = FALSE)
+
+densities <- read.csv(paste(dd_output, 'densities.csv', sep = '/'), stringsAsFactors = FALSE)
+densities <- (densities[,9:15])
+densities <- reshape(densities, varying=c("V8","V9","V10","V11","V12","V13"),
+                     direction="long", v.names="density", idvar=c("settingsNum"), 
+                     timevar="round2")
+
+write.csv(densities, paste(dd_output, 'densities.csv', sep = '/'), row.names = FALSE)

@@ -570,7 +570,6 @@ game_data$round2[game_data$roundid_short == 10 |
 game_data$round2[game_data$roundid_short == 12 | 
                    game_data$roundid_short == 13] <- 5
 
-game_data <- read.csv(file="game_data.csv")
 game_data <- merge(game_data, densities, by= c("settingsNum","round2"), all=TRUE)
 
 # Conformity measures (aggregate level)

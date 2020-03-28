@@ -453,8 +453,10 @@ game_data$complexity [game_data$tools==5 |
                       game_data$tools==7 |
                       game_data$tools==8 ] <- 1
 
-# Network density (pre-calculated on the basis of network structure and role disconnections in each round per game settings)
-# See https://github.com/GallupGovt/ngs2/blob/master/cycle3/Boomtown/Analysis/density.R
+# Network density 
+# Densities could not be reproduced in different platforms (even using the same random seeds)
+# So densities were pre-calculated on the basis of network structure and role disconnections in each round, per game settings
+# Find density estimator here: https://github.com/GallupGovt/ngs2/blob/master/cycle3/Boomtown/Analysis/density.R
 
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
 fileHolder <- getURL(paste(githubRepo, "densities.csv", sep = "/"), ssl.verifypeer = FALSE)

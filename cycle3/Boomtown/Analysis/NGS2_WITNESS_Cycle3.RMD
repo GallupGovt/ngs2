@@ -168,13 +168,13 @@ PC_comp_aov$boxplot
 + Check test items show that tool choices were adequately understood by participants. 
 
 ```{r toolControls}
-#toolControls
+toolControls
 ```
 
 + Only `r #length(allWrong$matchid)` games failed all three check test items. 
 
 ```{r allwrong}
-#allWrong
+allWrong
 ```
 
 ## Exogenous Uncertainty

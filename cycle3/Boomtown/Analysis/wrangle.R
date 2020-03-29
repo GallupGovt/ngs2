@@ -366,6 +366,25 @@ game_data$pressure <- cut(game_data$roundid_short,
                           breaks=c(0, 3, 6, 9, 11, 13),
                           labels=c("low","high","low", "high", "low"))
 
+# There is no 'FinalItemSelected' event for rounds 10 or 12, as mines are selected over two rounds 
+# We still need to define the choice on each round as innovative or not.
+# We can define the 'FinalItemSelected' in rounds 10 or 12, as it will be the same as the mine shown in 'toolsLabel' for rounds 11 & 13. 
+# Create subset with data for rounds 11 and 13
+game_data_r11_13 <- game_data [game_data$round==11 | game_data$round==13,]
+# Assign innovative choice in rounds 10 or 12 according to mine choice available in round 11 or 13
+game_data_r11_13$innovation2 <- case_when(
+ (game_data_r11_13$toolsLabel == "Mine2,BlackPowder" |
+    game_data_r11_13$toolsLabel == "Mine4,BlackPowder") ~ 1, 
+  TRUE ~ 0)
+game_data_r11_13$roundid <- game_data_r11_13$roundid-1
+game_data_r11_13 <- unique(subset (game_data_r11_13, select = c(innovation2, roundid)))
+# Merge innovative choice in rounds 10 and 12. 
+game_data <- merge(game_data, game_data_r11_13, by="roundid", all.x=TRUE)
+filter <- game_data$round==10 | game_data$round==12
+game_data$innovation[filter] <- game_data$innovation2[filter]
+# Drop 'innovation2' var 
+game_data <- subset(game_data, select = -c(innovation2))
+
 # CPT predictions
 
 game_data$toolsCPT <- 1

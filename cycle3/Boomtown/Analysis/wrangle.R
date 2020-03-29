@@ -15,7 +15,7 @@
 rm(list = ls())
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
-pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr, RCurl)
+pacman::p_load(dplyr, Hmisc, car, tidyr, RCurl)
 
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder

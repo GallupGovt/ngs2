@@ -80,3 +80,18 @@ tool_rate3 <- factorial.tests %>%
   summarise(mean(choice2))
 
 allWrong<-as.data.frame(tool_rate3  %>% filter(`mean(choice2)` == 0))
+
+#Availability heuristic check 
+                 
+availdf <- factorial %>% group_by(framing) %>% 
+  summarise_at(c("inmot1", "inmot2", "innovation"), mean, na.rm = TRUE) %>% 
+  gather(Outcome, value, -c(framing))
+
+avail <- ggplot(availdf, aes(fill=Outcome, y=value, x=framing)) + 
+  geom_bar(position="dodge", stat="identity") +
+  ylab ("Probability of innovation") +
+  scale_x_continuous ("Framing Condition", breaks=0:2,
+                    labels=c("0" = "No framing", 
+                             "1" = "Negative framing",
+                             "2" = "Positive framing"))
+avail

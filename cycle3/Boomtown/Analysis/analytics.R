@@ -81,6 +81,89 @@ tool_rate3 <- factorial.tests %>%
 
 allWrong<-as.data.frame(tool_rate3  %>% filter(`mean(choice2)` == 0))
 
+# Manipulation checks
+                 
+oneway_anova_test2 <- function(data, key.var, key.var.label = gsub("_", " ", key.var), group.var, group.var.label = gsub("_", " ", group.var), question = ""){
+  
+  data <- data[, c(group.var, key.var)]
+  colnames(data) <- c("condition","measurement")
+  
+  # stat_summary
+  stat_summary <- data %>%
+    group_by(condition) %>%
+    summarise(
+      count = n(), 
+      mean = round( mean(measurement, na.rm = T), 2 ), 
+      median = round( median(measurement, na.rm = T), 2 ), 
+      sd = round( sd(measurement, na.rm = T), 2 ), 
+      IQR = round( IQR(measurement, na.rm = T), 2))
+  
+  # one-way anova
+  anova <- aov(measurement ~ condition, data = data)
+  
+  # test of homogeneity of variance: residuals versus fits plot + Levene's test
+  
+  homogeneity_check_test <- leveneTest(measurement ~ condition, data = data)
+  # Non-parametric alternative to one-way ANOVA test: Kruskal-Wallis rank sum test
+  kruskal <- kruskal.test(measurement ~ condition, data = data)
+  
+  # test_summary
+  test_summary <- data.frame(
+    'key var' = rep(key.var.label, 2), 
+    "group var" = rep(group.var.label, 2), 
+    "test" = c("One-way ANOVA Test", "Kruskal-Wallis Test"),
+    "statistic" = round(c(summary(anova)[[1]][[1,"F value"]], kruskal$statistic),3),
+    "df" = c(paste0("(", summary(anova)[[1]][[1,"Df"]],", ", summary(anova)[[1]][[2,"Df"]], ")"), kruskal$parameter),
+    "p value" = round(c(summary(anova)[[1]][[1,"Pr(>F)"]], kruskal$p.value),3),
+    stringsAsFactors = F)
+  row.names(test_summary) <-  NULL
+  
+  # barplot
+  bar_plot <- ggplot(data = stat_summary, aes(x = condition, y = mean, fill = condition)) +
+    geom_bar(stat = "identity") + 
+    geom_text(aes(label = mean), vjust = -0.5, color = "black", size = 3.5) +
+    labs(title = paste0("Average ", key.var.label, " by ", group.var.label, " Condition"),
+         subtitle = paste0(
+           question, "\n",
+           "One-way ANOVA test: F(", summary(anova)[[1]][[1,"Df"]], ",", summary(anova)[[1]][[2,"Df"]], ") = ", 
+           round(summary(anova)[[1]][[1,"F value"]],3),", ", 
+           "p value = ", round(summary(anova)[[1]][[1,"Pr(>F)"]], 3), ". \n", 
+           "Kruskal-Wallis test: X²(", kruskal$parameter,") = ", round(kruskal$statistic, 3), ", ", 
+           "p value = ", round(kruskal$p.value, 3), "."),
+         x = paste0(group.var.label, " Condition"),  
+         y = paste0("Average ", key.var.label, collapse = ), 
+         fill = paste0(group.var.label, " Condition")) +
+    theme_classic() +
+    theme(legend.position = "bottom")
+  
+  
+  # boxplot 
+  box_plot <-  ggplot() +
+    geom_boxplot(data = data, aes(x = condition, y = measurement, color = condition)) +
+    geom_point(data = stat_summary, aes(x = condition, y = mean, color = condition), shape = 1) +
+    geom_text(data = stat_summary, aes(x = condition, y = mean, color = condition, label = mean), vjust = 1.5) +
+    labs(title = paste0(key.var.label, " by ", group.var.label, " Condition"), 
+         subtitle = paste0(
+           question, "\n",
+           "One-way ANOVA test: F(", summary(anova)[[1]][[1,"Df"]], ",", summary(anova)[[1]][[2,"Df"]], ") = ", 
+           round(summary(anova)[[1]][[1,"F value"]],3),", ", 
+           "p value = ", round(summary(anova)[[1]][[1,"Pr(>F)"]], 3), ". \n", 
+           "Kruskal-Wallis test: X²(", kruskal$parameter,") = ", round(kruskal$statistic, 3), ", ", 
+           "p value = ", round(kruskal$p.value, 3), "."),
+         x = paste0(group.var.label, " Condition"), 
+         y = key.var.label,
+         color = paste0(group.var.label, " Condition")) +
+    theme_classic() +
+    theme(legend.position = "bottom")
+  
+  # output result
+  return(list(stat_summary = as.data.frame(stat_summary), 
+              boxplot = box_plot, 
+              barplot = bar_plot, 
+              test_summary = test_summary, 
+              homogeneity_check_test = homogeneity_check_test))
+}
+                 
 #Availability heuristic check 
                  
 availdf <- factorial %>% group_by(framing) %>% 
@@ -94,15 +177,17 @@ avail <- ggplot(availdf, aes(fill=Outcome, y=value, x=framing)) +
                     labels=c("0" = "No framing", 
                              "1" = "Negative framing",
                              "2" = "Positive framing"))
+                 
+factorial$framing2 <- factor(factorial$framing)
+availPlots_inmot1 <- oneway_anova_test2 (
+  data = factorial, key.var="inmot1", group.var="framing2")
+availPlots_inmot2 <- oneway_anova_test2 (
+  data = factorial, key.var="inmot2", group.var="framing2")
+availPlots_innovation <- oneway_anova_test2 (
+  data = factorial, key.var="innovation", group.var="framing2")
 
 # Network Density check 
                  
-density <- subset(factorial, select = c(density, chat_per_round))
-density$density2 <- cut(density$density, seq(0, 1, 0.25), include.lowest = TRUE)
-
-density_rate <- density %>%  group_by(Network_density = density2) %>%
-  summarise(Messages=mean(chat_per_round))
-
-NDplot <-ggplot(density_rate, aes(x = Network_density, y = Messages)) +
-  geom_bar(aes(),stat = "identity") +
-  ggtitle("Average chat messages for each network density level")
+factorial$density2 <- cut(density$density, seq(0, 1, 0.25), include.lowest = TRUE)
+densityPlots <- oneway_anova_test2 (
+  data = factorial, key.var="chat_per_round", group.var="density2")

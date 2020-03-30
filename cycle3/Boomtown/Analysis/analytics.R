@@ -188,6 +188,6 @@ availPlots_innovation <- oneway_anova_test2 (
 
 # Network Density check 
                  
-factorial$density2 <- cut(density$density, seq(0, 1, 0.25), include.lowest = TRUE)
+factorial$density2 <- cut(factorial$density, seq(0, 1, 0.25), include.lowest = TRUE)
 densityPlots <- oneway_anova_test2 (
   data = factorial, key.var="chat_per_round", group.var="density2")

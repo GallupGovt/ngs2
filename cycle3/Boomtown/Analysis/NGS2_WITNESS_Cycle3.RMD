@@ -190,7 +190,7 @@ RC_time_t$boxplot
 Tool choices for each of the three experimental conditions dealing with availability were compared for consistency of voting with the availability heuristic.
 
 ```{r avail}
-#avail
+avail
 ```
 
 ## Group Tolerance of Ambiguity
@@ -231,7 +231,7 @@ IP_tool_pt$boxplot
 The correspondence of organizational density structures and actual communication flows will be measured via a communications density score, measuring active communication channels (at least one message shared over chat) over total communication channels (graph edges). 
 
 ```{r networkDensity}
-#NDplot
+NDplot
 ```
 
 ## 	Network centralization: 

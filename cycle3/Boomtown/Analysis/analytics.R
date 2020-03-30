@@ -70,10 +70,10 @@ toolControls<-ggplot(tool_rate2, aes(x = tools, y = counts)) +
   ggtitle("Correct Choices for Check Test Items") +
   ylab("Number of Choices") +
   scale_x_continuous ("Check Test Item", breaks=9:12,
-                   labels=c("9"  = "100% of 45 vs 35% of 22", 
-                            "10" = "100% of 7 vs 65% of 76",
-                            "11" = "65% of 76 vs 6% of 162",
-                            "12" = "65% of 76 vs 35% of 22"))
+                   labels=c("9"  = "45*100% vs 22*35%", 
+                            "10" = "7*100% vs 76*65%",
+                            "11" = "76*65% vs 162*6%",
+                            "12" = "76*65% vs 22*35%"))
 
 tool_rate3 <- factorial.tests %>%
   group_by(matchid) %>%

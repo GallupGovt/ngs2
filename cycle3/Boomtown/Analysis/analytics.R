@@ -94,4 +94,15 @@ avail <- ggplot(availdf, aes(fill=Outcome, y=value, x=framing)) +
                     labels=c("0" = "No framing", 
                              "1" = "Negative framing",
                              "2" = "Positive framing"))
-avail
+
+# Network Density check 
+                 
+density <- subset(factorial, select = c(density, chat_per_round))
+density$density2 <- cut(density$density, seq(0, 1, 0.25), include.lowest = TRUE)
+
+density_rate <- density %>%  group_by(Network_density = density2) %>%
+  summarise(Messages=mean(chat_per_round))
+
+NDplot <-ggplot(density_rate, aes(x = Network_density, y = Messages)) +
+  geom_bar(aes(),stat = "identity") +
+  ggtitle("Average chat messages for each network density level")

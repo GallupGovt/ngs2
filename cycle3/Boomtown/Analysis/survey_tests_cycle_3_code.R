@@ -221,7 +221,7 @@ two_proportions_test <- function( data = gs, key.var, key.var.label = "Percent",
     group_by(condition) %>%
     summarise(
       N = n(), 
-      n = sum(measurement == "Yes"),
+      n = sum(measurement == "Yes", na.rm = T),
       prop = round(n/N, 2))
   
   # two-proportion z-test

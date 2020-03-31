@@ -18,7 +18,7 @@ TA_calc <- function(x){
 }
 
 chisq_test_plot <- function(data, key.var, group.var){
-  
+  data <- data[!is.na(data[,key.var]),]
   # Chi-sq test
   chisq_test <- chisq.test(table(data[,key.var], data[,group.var]))
   test_summary <- data.frame('key var' = gsub("_", " ", key.var),

@@ -31,8 +31,9 @@ dlScripts <- function (scriptNames) {
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
 tests <- c("survey_tests_cycle_3_code.R")
-data <- c("game_data.csv", "survey_data.csv", "game_survey_data.csv")
+data <- c("game_survey_data.csv")
 lapply(c(tests,data), dlScripts)
+game_survey_data <- read.csv(file="game_survey_data.csv")
 source("survey_tests_cycle_3_code.R")
 ```
 

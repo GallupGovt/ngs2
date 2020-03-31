@@ -31,7 +31,7 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-setup <- c("functions.R", "analytics.R", "survey_analytics.R", "survey_tests_cycle_3_code.R")
+setup <- c("functions.R", "analytics.R")
 hypotheses <- c("h1.R", "h2.R", "h3.R", "h4.R", "h5.R", "h6.R", "h7.R",
                 "h8.R", "h9.R", "h10.R", "h11.R", "h12.R", "h13.R", "h14.R", "h15.R", "h16.R", "h17.R", "h18.R", "h19.R",
                 "h20.R", "h21.R", "h22.R", "h25.R", "h26.R", "h27.R")

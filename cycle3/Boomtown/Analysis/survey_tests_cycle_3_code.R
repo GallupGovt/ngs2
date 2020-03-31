@@ -2,7 +2,7 @@
 age_breaks <- c(18, 24, 34, 44, 54, 999)
 age_label  <- c("18-24","25-34","35-44", "45-54", "55+")
 gend_label <- c("Male", "Female", "Other", "RF")
-educ_label <- c("No education", "Elementrary School", "High School", "Some colleage", "Colleage Degree", "Post-Graducate")
+educ_label <- c("No Education", "Elementary School", "High School", "Some College", "Colleage Degree", "Post-Graduate")
 empl_label <- c("Yes", "No")
 onre_label <- c("Yes", "No")
 comp_label <- c("None", "Weak", "Normal", "Strong")
@@ -72,7 +72,7 @@ unpaired_samples_test <- function(data, key.var, key.var.label = gsub("_", " ", 
     paired = FALSE,
     var.equal = t.var.equal)
   
-  # wilcoxin test
+  # wilcoxon test
   wilcox_test <- wilcox.test(
     x = data$measurement[data$condition==levels(data$condition)[1]],
     y = data$measurement[data$condition==levels(data$condition)[2]],
@@ -87,7 +87,7 @@ unpaired_samples_test <- function(data, key.var, key.var.label = gsub("_", " ", 
          subtitle = paste0(question, "\nUnpaired two-Samples t-test: t(", round(t_test$parameter,0), ") = ", round(t_test$statistic,3),
                            ", p value = ", round(t_test$p.value, 3), 
                            ", 95% CI = (", paste(round(t_test$conf.int,3), collapse = ", "),
-                           "). \nUnpaired two-samples wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
+                           "). \nUnpaired two-samples Wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
                            ", p value = ", round(wilcox_test$p.value, 3), "."),
          x = paste0(group.var.label, " Condition"),  
          y = paste0("Average ", key.var.label, collapse = ), 
@@ -104,7 +104,7 @@ unpaired_samples_test <- function(data, key.var, key.var.label = gsub("_", " ", 
          subtitle = paste0(question, "\nUnpaired two-Samples t-test: t(", round(t_test$parameter,0), ") = ", round(t_test$statistic,3),
                            ", p value = ", round(t_test$p.value, 3), 
                            ", 95% CI = (", paste(round(t_test$conf.int,3), collapse = ", "),
-                           "). \nUnpaired two-samples wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
+                           "). \nUnpaired two-samples Wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
                            ", p value = ", round(wilcox_test$p.value, 3), "."),
          x = paste0(group.var.label, " Condition"), 
          y = key.var.label,
@@ -154,7 +154,7 @@ paired_samples_test <- function(data, vars, conditions, names, question,alternat
     paired = TRUE,
     var.equal = t.var.equal)
   
-  # wilcoxin test
+  # wilcoxon test
   wilcox_test <- wilcox.test(
     x = data$measurement[data$condition==levels(data$condition)[1]],
     y = data$measurement[data$condition==levels(data$condition)[2]],
@@ -169,7 +169,7 @@ paired_samples_test <- function(data, vars, conditions, names, question,alternat
          subtitle = paste0(question, "\nUnpaired two-Samples t-test: t(", round(t_test$parameter,0), ") = ", round(t_test$statistic,3),
                            ", p value = ", round(t_test$p.value, 3), 
                            ", 95% CI = (", paste(round(t_test$conf.int,3), collapse = ", "),
-                           "). \nUnpaired two-samples wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
+                           "). \nUnpaired two-samples Wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
                            ", p value = ", round(wilcox_test$p.value, 3), "."),
          x = paste0(names[1]),  
          y = paste("Average", names[2]), 
@@ -186,7 +186,7 @@ paired_samples_test <- function(data, vars, conditions, names, question,alternat
          subtitle = paste0(question, "\nUnpaired two-Samples t-test: t(", round(t_test$parameter,0), ") = ", round(t_test$statistic,3),
                            ", p value = ", round(t_test$p.value, 3), 
                            ", 95% CI = (", paste(round(t_test$conf.int,3), collapse = ", "),
-                           "). \nUnpaired two-samples wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
+                           "). \nUnpaired two-samples Wilcoxon test: W = ", round(wilcox_test$statistic, 3), 
                            ", p value = ", round(wilcox_test$p.value, 3), "."),
          x = names[1], 
          y = names[2], 

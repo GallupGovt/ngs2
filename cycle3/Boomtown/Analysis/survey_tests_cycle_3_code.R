@@ -352,12 +352,12 @@ gs <- game_survey_data %>%
                     breaks = age_breaks,
                     labels = age_label,
                     include.lowest = T),
-    Gender = factor(gend_label[Q14_1], levels = gend_label),
-    Education_Group = factor(educ_label[Q15_1], levels = educ_label),
-    Employment_Status = factor(empl_label[Q16_1], levels = empl_label),
-    Online_Research_Experience = factor(onre_label[Q17_1], levels = onre_label),
+    Gender = factor(gend_label[Q14_1+1], levels = gend_label),
+    Education_Group = factor(educ_label[Q15_1+1], levels = educ_label),
+    Employment_Status = factor(empl_label[Q16_1+1], levels = empl_label),
+    Online_Research_Experience = factor(onre_label[Q17_1+1], levels = onre_label),
     competitionLabel = factor(competitionLabel, levels = comp_label),
-    timeUncertaintyLabel = factor(timeUncertaintyLabel, levels = time_label),
+    timeUncertaintyLabel = factor(timeUncertaintyLabel, labels = time_label),
     toleranceLabel = factor(toleranceLabel, levels = tole_label),
     supportLabel = factor(supportLabel, levels = supp_label),
     TA_score = TA_calc(game_survey_data)
@@ -500,7 +500,3 @@ test_summary <- bind_rows(
   FD_round_pt$test_summary,
   IP_tool_pt$test_summary,
   RC_time_t$test_summary)
-
-
-
-

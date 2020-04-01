@@ -48,7 +48,7 @@ survey <- read.csv(file="survey_data.csv")
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("analytics.R")
 nChains <- 3
-nIter <- 10000
+nIter <- 20000
 registerDoParallel(cores=25)
 getDoParWorkers()
 hypothesis_files = hypotheses

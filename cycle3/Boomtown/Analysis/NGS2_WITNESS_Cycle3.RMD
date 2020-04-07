@@ -44,6 +44,18 @@ lapply(c(setup, hypotheses, data), dlScripts)
 source("functions.R")
 factorial <- read.csv(file="game_data.csv")
 factorialGroup <- read.csv(file="game_data_group.csv")
+factorialGroup2 <- factorialGroup
+factorialGroup2[] <- lapply(factorialGroup, factor)
+factorialGroup2$conformity <- as.numeric(factorialGroup$conformity)
+factorialGroup2$grmot1 <- as.numeric(factorialGroup$grmot1)
+factorialGroup2$grmot2 <- as.numeric(factorialGroup$grmot2)
+factorialGroup2$risk <- as.numeric(factorialGroup$risk)
+factorialGroup2$density <- as.numeric(factorialGroup$density)
+factorialGroup2$centralization <- as.numeric(factorialGroup$centralization)
+factorialGroup2$leaderWeight <- as.numeric(factorialGroup$leaderWeight)
+factorialGroup2$innovation <- as.numeric(factorialGroup$innovation)-1
+factorialGroup <- factorialGroup2
+factorialGroup$innovation <- factorialGroup$innovation+2
 survey <- read.csv(file="survey_data.csv")
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("analytics.R")

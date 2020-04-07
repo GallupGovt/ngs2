@@ -12,15 +12,15 @@ ndim<-length(fittedGlmer$covmat[1,])-4
 # Baseline priors based on Cycle 2 data: log-odds = 0.5, SD = 0.2
 priorSD <- 0.2
 # h26.0 priors (null): Competition has no effect on innovation
-h26.0 <- normal(location = c(0.00, 0.00, 0.00, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
+h26.0 <- normal(location = c(0.00, 0.00, 0.00, rep(0, ndim)), scale = c(rep(priorSD,3), rep(2.5,ndim)), autoscale=FALSE)
 # h26.1 priors: Intergroup competition increases group motivation to innovate
-h26.1 <- normal(location = c(-0.50, 0.00, 0.50, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
+h26.1 <- normal(location = c(-0.50, 0.00, 0.50, rep(0, ndim)), scale = c(rep(priorSD,3), rep(2.5,ndim)), autoscale=FALSE)
 # h26.2 priors: Group motivation to innovate is u-shaped on intergroup competition
-h26.2 <- normal(location = c(-0.50, 0.00, -0.50, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
+h26.2 <- normal(location = c(-0.50, 0.00, -0.50, rep(0, ndim)), scale = c(rep(priorSD,3), rep(2.5,ndim)), autoscale=FALSE)
 # h26.3 priors: Intergroup competition decreases group motivation to innovate
-h26.3 <- normal(location = c(0.50, 0.00, -0.50, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
+h26.3 <- normal(location = c(0.50, 0.00, -0.50, rep(0, ndim)), scale = c(rep(priorSD,3), rep(2.5,ndim)), autoscale=FALSE)
 # h26.4 priors: Low intergroup competition decreases group motivation to innovate
-h26.4 <- normal(location = c(-0.50, 0.00, 0.00, rep(0, 18)), scale = c(rep(priorSD,3), rep(2.5,18)), autoscale=FALSE)
+h26.4 <- normal(location = c(-0.50, 0.00, 0.00, rep(0, ndim)), scale = c(rep(priorSD,3), rep(2.5,ndim)), autoscale=FALSE)
 
 # Run models 
 

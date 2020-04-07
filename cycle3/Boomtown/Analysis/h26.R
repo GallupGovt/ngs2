@@ -24,11 +24,11 @@ h26.4 <- normal(location = c(-0.50, 0.00, 0.00, rep(0, 18)), scale = c(rep(prior
 
 # Run models 
 
-bridge_26.0 <- bayesGlmer(formula.h26, h26.0)
-bridge_26.1 <- bayesGlmer(formula.h26, h26.1)
-bridge_26.2 <- bayesGlmer(formula.h26, h26.2)
-bridge_26.3 <- bayesGlmer(formula.h26, h26.3)
-bridge_26.4 <- bayesGlmer(formula.h26, h26.4)
+bridge_26.0 <- bayesGlmer(formula.h26, h26.0, dataset = factorialGroup)
+bridge_26.1 <- bayesGlmer(formula.h26, h26.1, dataset = factorialGroup)
+bridge_26.2 <- bayesGlmer(formula.h26, h26.2, dataset = factorialGroup)
+bridge_26.3 <- bayesGlmer(formula.h26, h26.3, dataset = factorialGroup)
+bridge_26.4 <- bayesGlmer(formula.h26, h26.4, dataset = factorialGroup)
 
 # Calculate BFs for all comparisons
 test_1_2<-bf(bridge_26.1, bridge_26.2)$bf

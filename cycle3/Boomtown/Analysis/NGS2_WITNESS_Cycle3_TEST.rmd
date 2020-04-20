@@ -68,7 +68,7 @@ source("h25.R")
 - Null: Group Aggregate motivation to innovate (T2) will not increase Group Motivation to Innovate.
 
 ```{r h25null}
-load (file ="bayesGlmer_h25.1_h25.0")
+load (file ="bayesLmer_h25_h25.0")
 summary(fittedGlmer, digits = 2)
 ```
 - Prediction 1: Group Aggregate motivation to innovate (T2) will increase Group Motivation to Innovate.

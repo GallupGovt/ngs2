@@ -59,7 +59,7 @@ game_survey_data <- read.csv(file="game_survey_data.csv")
 source("analytics.R")
 source("survey_tests_cycle_3_code.R")
 nChains <- 3
-nIter <- 1000
+nIter <- 10000
 source("h25.R")
 ```
 

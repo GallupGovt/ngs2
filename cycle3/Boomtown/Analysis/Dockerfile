@@ -13,8 +13,7 @@ RUN conda update -n base -c defaults conda \
  && conda install -c conda-forge pandoc \
  && conda install -c anaconda libcurl \
  && conda install -c anaconda make \
- && conda install -c r r-mvtnorm
 
 ADD . /app
 
-CMD /opt/conda/envs/ngs2/bin/Rscript --vanilla ngs2.R 
+CMD /opt/conda/envs/ngs2/bin/Rscript --vanilla ngs2.R

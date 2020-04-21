@@ -28,7 +28,7 @@ pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr,
 - Null: Intergroup competition has no effect on individual motivation to innovate (T1).
 
 ```{r h1null}
-load (file ="bayesGlmer_h1_h1.1")
+load (file ="bayesGlmer_h1_h1.0")
 fittedGlmer
 ```
 - Prediction 1: Intergroup competition increases Individual Motivation to Innovate (T1).

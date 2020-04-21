@@ -5,6 +5,9 @@ pilot/
 cycle1/
 misc/
 *.json
+*.html
+*bayes*
+*diag*
 
 # python bytecode files
 *.pyc

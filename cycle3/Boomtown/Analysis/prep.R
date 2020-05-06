@@ -3,7 +3,6 @@
 factorial <- read.csv(file="game_data.csv")
 factorial2 <- factorial
 factorial2[] <- lapply(factorial, factor)
-str(factorial2)
 factorial2$nConnected <- as.numeric(factorial$nConnected)
 factorial2$nRound <- as.numeric(factorial$nRound)
 factorial2$chat_per_round <- as.numeric(factorial$chat_per_round)

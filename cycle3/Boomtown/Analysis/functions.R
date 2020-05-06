@@ -130,3 +130,19 @@ summarize_delete <- function (file_name) {
   print(plot(fittedGlmer, "trace", pars="beta"))
   dev.off()
 }
+
+summarize_delete_lmer <- function (file_name) {
+  load (file=file_name)
+  summary <- summary(fittedLmer, pars="beta", digits = 3)
+  summary_name <- paste (file_name, "_summary", ".csv", sep = "")
+  file_root <- gsub ("bayesLmer_", "", file_name)
+  lapply(list.files(pattern = file_root), file.remove)
+  write.csv(summary, summary_name)
+  sink(paste (file_name, "_summary", ".txt", sep = ""))
+  print (summary)
+  sink()
+  pdf(paste (file_name, "_summary", ".pdf", sep = ""))
+  print(plot(fittedLmer, pars="beta"))
+  print(plot(fittedLmer, "trace", pars="beta"))
+  dev.off()
+}

@@ -112,3 +112,21 @@ bayesPlotter3 <- function (model, priorList, priors1, priors2, priors3, priorSca
   plots<-bayesPlotter(plotdf, plotBF)
   return(plots)
 }
+
+# Function to summarize models and delete files to release memory
+
+summarize_delete <- function (file_name) {
+  load (file=file_name)
+  summary <- summary(fittedGlmer, pars="beta", digits = 3)
+  summary_name <- paste (file_name, "_summary", ".csv", sep = "")
+  file_root <- gsub ("bayesGlmer_", "", file_name)
+  lapply(list.files(pattern = file_root), file.remove)
+  write.csv(summary, summary_name)
+  sink(paste (file_name, "_summary", ".txt", sep = ""))
+  print (summary)
+  sink()
+  pdf(paste (file_name, "_summary", ".pdf", sep = ""))
+  print(plot(fittedGlmer, pars="beta"))
+  print(plot(fittedGlmer, "trace", pars="beta"))
+  dev.off()
+}

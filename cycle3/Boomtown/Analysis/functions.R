@@ -146,3 +146,10 @@ summarize_delete_lmer <- function (file_name) {
   print(plot(fittedLmer, "trace", pars="beta"))
   dev.off()
 }
+
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}

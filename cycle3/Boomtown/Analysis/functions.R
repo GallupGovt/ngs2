@@ -153,3 +153,10 @@ dlScripts <- function (scriptNames) {
   writeLines(fileHolder, fileConn)
   close(fileConn)
 }
+
+displayResults <- function (filename) {
+  cat(readLines(paste (filename, ".txt", sep = "")), sep = '\n')
+  pdf_plots <- image_read_pdf(paste (filename, ".pdf", sep = ""))
+  plot(pdf_plots[1])
+  plot(pdf_plots[2])
+}

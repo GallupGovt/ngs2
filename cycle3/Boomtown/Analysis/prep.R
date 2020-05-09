@@ -13,6 +13,7 @@ factorial2$grmot2 <- as.numeric(factorial$grmot2)
 factorial2$risk <- as.numeric(factorial$risk)
 factorial2$prb <- as.numeric(factorial$prb)
 factorial2$density <- as.numeric(factorial$density)
+factorial <- factorial2
 
 # Group-level data
 

@@ -6,8 +6,8 @@
 factorial$round <- as.numeric(factorial$round)
 
 # Formula
-formula.h6.1<-as.formula("inmot1~timeUncertainty+framing+competition+tools+tolerance+support+centralization+leaderWeight+pressure+density+(1|player)+(1|group)")
-formula.h6.2<-as.formula("inmot1~timeUncertainty*round+framing+competition+tools+tolerance+support+centralization+leaderWeight+pressure+density+(1|player)+(1|group)")
+formula.h6.1<-as.formula("inmot1~timeUncertainty+framing+competition+tools+tolerance+support+centralization+leaderWeight+pressure+density+(1|player)")
+formula.h6.2<-as.formula("inmot1~timeUncertainty*round+framing+competition+tools+tolerance+support+centralization+leaderWeight+pressure+density+(1|player)")
 
 # Extract number of prior parameters ('ndim') to be declared
 

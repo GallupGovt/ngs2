@@ -3,6 +3,9 @@
 
 bayesGlmer<-function(formula, priors, dataset = factorial) {
   set.seed(12345)
+  con <- file(paste("errors_",label, sep=""))
+  sink(con, append=TRUE)
+  sink(con, append=TRUE, type="message")
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
@@ -20,11 +23,15 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
   save (fittedGlmer, file = paste("bayesGlmer_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedGlmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
+  sink()
   return(bridge_priors)
 }
 
 bayesLmer<-function(formula, priors, dataset = factorial) {
   set.seed(12345)
+  con <- file(paste("errors_",label, sep=""))
+  sink(con, append=TRUE)
+  sink(con, append=TRUE, type="message")
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
@@ -42,6 +49,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
+  sink()
   return(bridge_priors)
 }
 

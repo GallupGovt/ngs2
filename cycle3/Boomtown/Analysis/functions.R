@@ -3,12 +3,12 @@
 
 bayesGlmer<-function(formula, priors, dataset = factorial) {
   set.seed(12345)
-  con <- file(paste("errors_",label, sep=""))
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
+  con <- file(paste("errors_",label, sep=""))
+  sink(con, append=TRUE)
+  sink(con, append=TRUE, type="message")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlmer<- stan_glmer(formula,
                            data=dataset,
@@ -29,12 +29,12 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
 
 bayesLmer<-function(formula, priors, dataset = factorial) {
   set.seed(12345)
-  con <- file(paste("errors_",label, sep=""))
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
+  con <- file(paste("errors_",label, sep=""))
+  sink(con, append=TRUE)
+  sink(con, append=TRUE, type="message")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedLmer<- stan_glmer(formula,
                            data=dataset,

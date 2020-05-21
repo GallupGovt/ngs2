@@ -1,0 +1,49 @@
+variable_name,variable_type,variable_description
+matchid_playerid,factor,Unique id for each combination of player and game
+playerid,factor,Unique id for each player
+matchid,factor,Unique id for each game
+settingsNum,factor,Experimental condition (factorial)
+matchDate,factor,Date of the game
+competitionLabel,factor,Competition level (label)
+competition,factor,Competition level 
+timeUncertaintyLabel,factor,Time uncertainty level (label)
+timeUncertainty,factor,Time uncertainty level
+supportLabel,factor,Support for innovation (label)
+support,factor,Support for innovation
+nRound,numeric,Round number
+nConnected,numeric,Number of players connected
+date.time,date,Date and time of survey
+competitive.level,factor,Competition level 
+replay,factor,Player has previously played a game in this cycle
+organizationalStructure,factor,Organizational structure (label)
+toleranceLabel,factor,Group average tolerance of ambiguity (label)
+tolerance,factor,Group average tolerance of ambiguity
+Q1_1,factor,I avoid settings where people don t share my values 
+Q2_1,factor,I can enjoy being with people whose values are very different from mine 
+Q3_1,factor,I would like to live in a foreign country for a while 
+Q4_1,factor,I like to surround myself with things that are familiar to me 
+Q5_1,factor,The sooner we all acquire similar values and ideals the better 
+Q6_1,factor,I can be comfortable with nearly all kinds of people 
+Q7_1,factor,If given a choice  I will usually visit a foreign country rather than vacation at home 
+Q8_1,factor,A good teacher is one who makes you wonder about your way of looking at things 
+Q9_1,factor,A good job is one where what is to be done and how it is to be done are always clear 
+Q10_1,factor,A person who leads an even  regular life in which few surprises or unexpected happenings arise really has a lot to be grateful for 
+Q11_1,factor,What we are used to is always preferable to what is unfamiliar 
+Q12_1,factor,I like parties where I know most of the people more than ones where all or most of the people are complete strangers 
+Q13_1,factor,Age
+Q14_1,factor,Gender
+Q15_1,factor,What is the highest level of education you completed 
+Q16_1,factor,Do you currently have a job 
+Q17_1,factor,Have you ever participated in an on line research experiment before 
+Q18_1,factor,Do we have permission to occasionally send survey invitations and reminders to your mobile phone number using text messages 
+ToA_Calculated,numeric,Tolerance of Ambiguity score
+Q1_2,factor,A few questions before you go  Please indicate how much you agree or disagree with the following statements 
+Q2_2,factor,The opposing teams were stronger than my team 
+Q3_2,factor,The relationship between my team and the other teams was competitive 
+Q4_2,factor,During quick voting rounds  I felt a great amount of time pressure when voting for an item 
+Q5_2,factor,During quick voting rounds  I had to make my decisions very fast 
+Q6_2,factor,During slow voting rounds  I felt a great amount of time pressure when voting for an item 
+Q7_2,factor,During slow voting rounds  I had to make my decisions very fast 
+Q8_2,factor,When I had to choose between different types of explosives  I felt like I had to process too much information 
+Q9_2,factor,When I had to choose between different types of mines  I felt like I had to process too much information 
+Q10_2,factor,When I was playing the game I was certain about the number of rounds I had to play 

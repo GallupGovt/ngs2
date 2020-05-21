@@ -1,0 +1,42 @@
+variable_name,variable_type,variable_description
+Group.1,factor,Grouping variable
+settingsNum,factor,Experimental condition (factorial)
+roundid,factor,Unique id for each round within each game
+matchid,factor,Unique id for each game
+matchDate,factor,Date of the game
+competition,factor,Competition level 
+timeUncertainty,factor,Time uncertainty level
+support,factor,Support for innovation
+nRound,numeric,Round number
+nConnected,numeric,Number of players connected
+chat_per_round,numeric,Number of chat messages within the current round
+tools,factor,Tool choices available
+innovation,factor,Group motivation to innovate
+inmot1,factor,Individual motivation to innovate during the first round of voting
+inmot2,factor,Individual motivation to innovate during the second round of voting
+tolerance,factor,Group average tolerance of ambiguity
+framing,factor,Framing condition
+round,factor,Round number
+group,factor,Individual group id
+pressure,factor,Time pressure (label)
+toolsCPT,factor,Expected tool choice according to Cumulative Prospect Theory
+toolsEUT,factor,Expected tool choice according to Expected Utility Theory
+toolsPT,factor,Expected tool choice according to Probability Theory
+toolsCPTEXP,factor,Expected tool choice according to Cumulative Prospect Theory and Expectancy Theory
+risk,numeric,Tool risk
+prb,numeric,Tool probability of success
+structureHie,factor,Organizational structure is Hierarchical
+structureCel,factor,Organizational structure is Cellular
+structureNet,factor,Organizational structure is Network
+centralization,factor,Organzational network centralization
+leaderWeight,factor,Weight of leader's vote over the total group vote
+compStrong,factor,Intergroup competition is strong
+complexity,factor,Tool complexity
+density,numeric,Organizational network density
+playernum,factor,Player id
+grmot1,factor,Group motivation to innovate during voting round 1
+grmot2,factor,Group motivation to innovate during voting round 2
+conformity,numeric,Group conformity level
+nPlayers,numeric,Number of players voting
+unanimity,numeric,Proportion of votes required to achieve unanimity
+unanimous,factor,Unanimous vote for a tool choice

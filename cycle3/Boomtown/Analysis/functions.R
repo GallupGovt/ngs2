@@ -130,6 +130,7 @@ bayesPlotter3 <- function (model, priorList, priors1, priors2, priors3, priorSca
 # Function to summarize models and delete files to release memory
 
 summarize_delete <- function (file_name) {
+  closeAllConnections()
   load (file=file_name)
   summary <- summary(fittedGlmer, pars="beta", digits = 3)
   summary_name <- paste (file_name, "_summary", ".csv", sep = "")
@@ -146,6 +147,7 @@ summarize_delete <- function (file_name) {
 }
 
 summarize_delete_lmer <- function (file_name) {
+  closeAllConnections()
   load (file=file_name)
   summary <- summary(fittedLmer, pars="beta", digits = 3)
   summary_name <- paste (file_name, "_summary", ".csv", sep = "")

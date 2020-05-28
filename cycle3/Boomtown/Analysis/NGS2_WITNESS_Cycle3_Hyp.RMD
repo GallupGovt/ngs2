@@ -41,7 +41,6 @@ lapply(c(setup, hypotheses, data), dlScripts)
 # run scripts in order
 source("functions.R")
 source("prep.R")
-source("analytics.R")
 # Pending parallel running of hypotheses scripts
 ```
 ### Hypothesis 1. Intergroup Competition and Individual Motivation to Innovate (T1)

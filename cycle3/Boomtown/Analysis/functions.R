@@ -171,19 +171,21 @@ Bf_plotter <- function (BF_file) {
   BFs <-read.csv(paste(od, BF_file, sep = '/'))                      
   BFs <- t(BFs[-c(1,2)])
   colnames(BFs) <- "Bayes Factor"
-  BFs_1 <- BFs[1:3,1]
-  BFs_2 <- BFs[4:6,1]
+  BFs_2 <- BFs[grep("Null", rownames(BFs)),1]
   par(mar=c(5,12,2,2))
   plot_null <- barplot(rev(BFs_2), horiz = TRUE, col="darkolivegreen3",
                        main="Bayes Factors - Hyp vs. Null",
                        ylab = "", xlab="",
                        names.arg = rownames(BFs_2), las=2)
+  plot_null
+  BFs_1 <- BFs[grep("Null", rownames(BFs), invert = TRUE),1]
+  if (length(BFs_1)>0) {
   par(mar=c(5,12,2,2))
   plot_hyp <- barplot(rev(BFs_1), horiz = TRUE, col="darkolivegreen3",
                       main="Bayes Factors - Hyp vs. Hyp",
                       ylab = "", xlab="",
                       names.arg = rownames(BFs_1), las=2)
-  plot_null
   plot_hyp
+  }
   BFs
 }

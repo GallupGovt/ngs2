@@ -31,7 +31,7 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-setup <- c("functions.R", , "prep.R", "analytics.R")
+setup <- c("functions.R", "prep.R")
 hypotheses <- c("h1.R", "h2.R", "h3.R", "h4.R", "h5.R", "h6.R", "h7.R","h8.R", "h9.R", "h10.R", "h11.R", "h12.R", "h13.R", "h14.R", "h15.R", "h16.R", "h17.R", "h18.R", "h19.R", "h20.R", "h21.R", "h22.R", "h25.R", "h26.R", "h27.R")
 data <- c("game_data.csv", "game_data_group.csv", "survey_data.csv", "game_survey_data.csv")
 lapply(c(setup, hypotheses, data), dlScripts)
@@ -119,7 +119,7 @@ BFs5
 - Null: Increased exogenous uncertainty (ignorance) will not affect individual motivation to innovate (T1)
 
 ```{r}
-cat(readLines("bayesGlmer_h6_h6.0_summary.txt"), sep = '\n')
+cat(readLines("bayesGlmer_h6.1_h6.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Increased exogenous uncertainty (ignorance) will increase individual motivation to innovate (T1).
 - Prediction 2: Exogenous uncertainty (ignorance) will decrease individual motivation to innovate (T1) in the early stages of the game.

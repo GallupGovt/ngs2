@@ -188,21 +188,45 @@ summarize_delete <- function (file_name) {
   load (file=file_name)
   if (grepl("bayesGlmer_", file_name)){
     file_root <- gsub ("bayesGlmer_", "", file_name)
-  } else {
+  } else if (grepl("bayesGlm_", file_name)) {
+    file_root <- gsub ("bayesGlm_", "", file_name)
+  } else if (grepl("bayesLm_", file_name)) {
+    file_root <- gsub ("bayesLm_", "", file_name)
+  } else  {
     file_root <- gsub ("bayesLmer_", "", file_name)
   }
-  errors <-  read.delim(paste ("errors_", file_root, ".txt", sep = ""))
-  summary <- summary(fittedGlmer, pars="beta", digits = 3)
+  tryCatch(errors <-  read.delim(paste ("errors_", file_root, ".txt", sep = "")), 
+           error=function(e) NULL)
+  if (grepl("bayesGlmer_", file_name)){
+    summary <- summary(fittedGlmer, pars="beta", digits = 3)
+  } else if (grepl("bayesGlm_", file_name)) {
+    summary <- summary(fittedGlm, pars="beta", digits = 3)
+  } else if (grepl("bayesLm_", file_name)) {
+    summary <- summary(fittedLm, pars="beta", digits = 3)
+  } else  {
+    summary <- summary(fittedLmer, pars="beta", digits = 3)
+  }
   summary_name <- paste (file_name, "_summary", ".csv", sep = "")
   lapply(list.files(pattern = file_root), file.remove)
   write.csv(summary, summary_name)
   sink(paste (file_name, "_summary", ".txt", sep = ""))
   print (summary)
-  print (errors)
+  tryCatch(print (errors), error=function(e) NULL) 
   sink()
   pdf(paste (file_name, "_summary", ".pdf", sep = ""))
-  print(plot(fittedGlmer, pars="beta"))
-  print(plot(fittedGlmer, "trace", pars="beta"))
+  if (grepl("bayesGlmer_", file_name)){
+    print(plot(fittedGlmer, pars="beta"))
+    print(plot(fittedGlmer, "trace", pars="beta"))
+  } else if (grepl("bayesGlm_", file_name)) {
+    print(plot(fittedGlm, pars="beta"))
+    print(plot(fittedGlm, "trace", pars="beta"))
+  } else if (grepl("bayesLm_", file_name)) {
+    print(plot(fittedLm, pars="beta"))
+    print(plot(fittedLm, "trace", pars="beta"))
+  } else  {
+    print(plot(fittedLmer, pars="beta"))
+    print(plot(fittedLmer, "trace", pars="beta"))
+  }
   dev.off()
   closeAllConnections()
 }

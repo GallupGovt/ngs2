@@ -1,11 +1,11 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
 # Formula
-formula.h13.1<- as.formula("conformity~pressure+grmot1+(1|group)+(1|settingsNum)")
+formula.h13.1<- as.formula("conformity~pressure+grmot1+framing+complexity+timeUncertainty+tolerance+competition+support+centralization+leaderWeight+density")
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- stan_glmer(formula.h13.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
+fittedGlmer <- stan_glm(formula.h13.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors
@@ -18,8 +18,8 @@ h13.1 <- normal(location = c(0.2, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim
 
 # Run models 
 
-bridge_13.0 <- bayesLmer(formula.h13.1, h13.0, factorialGroup)
-bridge_13.1 <- bayesLmer(formula.h13.1, h13.1, factorialGroup)
+bridge_13.0 <- bayesLm(formula.h13.1, h13.0, factorialGroup)
+bridge_13.1 <- bayesLm(formula.h13.1, h13.1, factorialGroup)
 
 # Calculate BFs for all comparisons
 

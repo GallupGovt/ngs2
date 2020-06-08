@@ -82,6 +82,33 @@ bayesGlm<-function(formula, priors, dataset = factorial) {
   return(bridge_priors)
 }
 
+bayesLm<-function(formula, priors, dataset = factorial) {
+  set.seed(12345)
+  formulatext <- gsub("formula.", "",deparse(substitute(formula)))
+  priorstext <- deparse(substitute(priors))
+  label<-paste(formulatext, "_", priorstext, sep="")
+  con <- file(paste("errors_",label, ".txt", sep=""))
+  sink(con, append=TRUE)
+  sink(con, append=TRUE, type="message")
+  diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
+  fittedGlm<- stan_glm(formula,
+                           data=dataset,
+                           family=gaussian(link = "identity"),
+                           prior = priors,
+                           prior_intercept = normal(0, 2.5),
+                           chains = nChains, 
+                           iter = nIter, 
+                           seed = 12345,
+                           diagnostic_file = diagnostic)
+  fittedGlm$call$diagnostic_file <- diagnostic
+  save (fittedGlm, file = paste("bayesGlm_",label, sep=""))
+  bridge_priors <- bridge_sampler(fittedGlm, silent=TRUE)
+  save (bridge_priors, file = paste("bridge_",label, sep=""))
+  sink()
+  closeAllConnections()
+  return(bridge_priors)
+}
+
 # Bayesian plotting functions
 
 modelPlotter<- function (model, ivs) {

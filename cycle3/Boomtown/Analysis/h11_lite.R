@@ -1,11 +1,11 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
 # Formula
-formula.h11<-as.formula("inmot1~framing*complexity+(1|player)+(1|settingsNum)")
+formula.h11<-as.formula("inmot1~framing*complexity+timeUncertainty+pressure+tolerance+competition+support+centralization+leaderWeight+density")
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- stan_glmer(formula.h11, data=factorial, family=binomial(link="logit"), iter=3, chains=1)
+fittedGlmer <- stan_glm(formula.h11, data=factorial, family=binomial(link="logit"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-3
 
 # Declare priors
@@ -18,8 +18,8 @@ h11.1 <- normal(location = c(rep(0, ndim), -0.5, 0.5), scale = c(rep(2.5,ndim), 
 
 # Run models 
 
-bridge_11.0 <- bayesGlmer(formula.h11, h11.0)
-bridge_11.1 <- bayesGlmer(formula.h11, h11.1)
+bridge_11.0 <- bayesGlm(formula.h11, h11.0)
+bridge_11.1 <- bayesGlm(formula.h11, h11.1)
 
 # Calculate BFs for all comparisons
 

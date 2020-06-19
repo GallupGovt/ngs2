@@ -17,4 +17,6 @@ RUN conda update -n base -c defaults conda \
 
 ADD . /app
 
-CMD /opt/conda/envs/ngs2/bin/Rscript --vanilla ngs2.R
+ENV HYPOTHESIS=1
+
+CMD /opt/conda/envs/ngs2/bin/Rscript h${HYPOTHESIS}.R

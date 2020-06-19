@@ -91,6 +91,12 @@ If you would rather run this program in the background, you can add the `-d` fla
 $ docker run -d -v ~/.ngs2_output:/app/output ngs2:latest # notice that ~/.ngs2_output is the folder we created in the last step
 ```
 
+The default hypothesis that is being run is `1`. If you wish to run a different hypothesis, for example `3`, at runtime pass the variable as such:
+
+```bash
+$ docker run -v ~/.ngs2_output:/app/output -e "HYPOTHESIS=3" ngs2:latest # notice that ~/.ngs2_output is the folder we created in the last step
+```
+
 2. To verify we are running
 
 You can check the running of a `docker` container by running the following command:

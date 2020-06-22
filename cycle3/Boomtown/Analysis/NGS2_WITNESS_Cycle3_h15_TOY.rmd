@@ -1,0 +1,69 @@
+---
+title: "Group Innovation under Competition and Uncertanity - Cycle 3 Results"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- paste(getwd(), "/output", sep="")
+od <- paste(getwd(), "/output", sep="")
+# load libraries
+if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
+library ("pacman")
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car, evaluate)
+opts_knit$set(root.dir = od)
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "prep.R")
+hypotheses <- c("h15.R")
+data <- c("game_data.csv", "game_data_group.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+```
+
+```{r run_scripts, include=F}
+# run scripts in order
+source("functions.R")
+source("prep.R")
+nIter <- 2000
+nChains <- 3
+options(mc.cores = parallel::detectCores())
+source("h15.R")
+summarize <- function (file_name) {
+  load (file=file_name)
+  print(summary(fittedLmer, pars="beta", digits = 3))
+  print(plot(fittedLmer, pars="beta"))
+  print(plot(fittedLmer, "trace", pars="beta"))
+}
+```
+# Hypothesis 15. Tolerance of Ambiguity and Conformity {-}
+
+- Null: Tolerance of Ambiguity does not decrease Conformity. 
+
+```{r comment=''}
+summarize ("bayesLmer_h15.1_h15.0")
+```
+<br />
+- Prediction 1: Tolerance of Ambiguity decreases Conformity.
+
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs15.csv")
+```
+
+<br />
+<br />

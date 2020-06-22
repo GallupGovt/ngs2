@@ -43,7 +43,6 @@ source("prep.R")
 nIter <- 2000
 nChains <- 3
 options(mc.cores = parallel::detectCores())
-source("h15.R")
 summarize <- function (file_name) {
   load (file=file_name)
   print(summary(fittedLmer, pars="beta", digits = 3))
@@ -52,6 +51,22 @@ summarize <- function (file_name) {
 }
 ```
 # Hypothesis 15. Tolerance of Ambiguity and Conformity {-}
+
+```{r run_hyp, include=F}
+formula.h15.1<-as.formula("conformity~tolerance+competition+pressure+grmot1+framing+complexity+timeUncertainty+support+centralization+leaderWeight+density+(1|group)")
+fittedGlmer <- stan_glmer(formula.h15.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
+ndim<-length(fittedGlmer$covmat[1,])-2
+priorSD <- 0.05
+h15.0 <- normal(location = c(0.0, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
+h15.1 <- normal(location = c(-0.1, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
+bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
+bridge_15.1 <- bayesLmer(formula.h15.1, h15.1, factorialGroup)
+test_1_0<-bf(bridge_15.1, bridge_15.0)$bf
+BFs <- data.frame(15, test_1_0)
+colnames(BFs) <- c("Hypothesis", 
+                   "Prediction 1 vs. Null")
+write.csv(BFs, "BFs15.csv")
+```
 
 - Null: Tolerance of Ambiguity does not decrease Conformity. 
 

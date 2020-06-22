@@ -207,6 +207,7 @@ summarize_delete <- function (file_name) {
     summary <- summary(fittedLmer, pars="beta", digits = 3)
   }
   summary_name <- paste (file_name, "_summary", ".csv", sep = "")
+  closeAllConnections()
   lapply(list.files(pattern = file_root), file.remove)
   write.csv(summary, summary_name)
   sink(paste (file_name, "_summary", ".txt", sep = ""))

@@ -247,7 +247,7 @@ displayResults <- function (filename) {
 }
 
 Bf_plotter <- function (BF_file) {
-  BFs <-read.csv(paste(od, BF_file, sep = '/'))                      
+  BFs <-read.csv(BF_file)                      
   BFs <- t(BFs[-c(1,2)])
   colnames(BFs) <- "Bayes Factor"
   BFs_2 <- BFs[grep("Null", rownames(BFs)),1]

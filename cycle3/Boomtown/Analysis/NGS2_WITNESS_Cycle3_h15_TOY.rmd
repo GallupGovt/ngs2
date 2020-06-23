@@ -59,10 +59,31 @@ ndim<-length(fittedGlmer$covmat[1,])-2
 priorSD <- 0.05
 h15.0 <- normal(location = c(0.0, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
 h15.1 <- normal(location = c(-0.1, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
+bayesLmer<-function(formula, priors, dataset = factorial) {
+  set.seed(12345)
+  formulatext <- gsub("formula.", "",deparse(substitute(formula)))
+  priorstext <- deparse(substitute(priors))
+  label<-paste(formulatext, "_", priorstext, sep="")
+  diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
+  fittedLmer<- stan_glmer(formula,
+                           data=dataset,
+                           family = gaussian(link = "identity"),
+                           prior = priors,
+                           prior_intercept = normal(0, 2.5),
+                           chains = nChains, 
+                           iter = nIter,
+                           seed = 12345,
+                           diagnostic_file = diagnostic)
+  fittedLmer$call$diagnostic_file <- diagnostic
+  save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
+  bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
+  save (bridge_priors, file = paste("bridge_",label, sep=""))
+  return(bridge_priors)
+}
 bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
 bridge_15.1 <- bayesLmer(formula.h15.1, h15.1, factorialGroup)
 test_1_0<-bf(bridge_15.1, bridge_15.0)$bf
-BFs <- data.frame(15, test_1_0)
+BFs <- data.frame(15, 12)
 colnames(BFs) <- c("Hypothesis", 
                    "Prediction 1 vs. Null")
 write.csv(BFs, "BFs15.csv")

@@ -30,9 +30,9 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-setup <- c("functions.R", "prep.R")
-hypotheses <- c("h15.R")
-data <- c("game_data.csv", "game_data_group.csv")
+setup <- c("./functions.R", "./prep.R")
+hypotheses <- c("./h15.R")
+data <- c("./game_data.csv", "./game_data_group.csv")
 lapply(c(setup, hypotheses, data), dlScripts)
 ```
 

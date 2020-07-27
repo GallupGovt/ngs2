@@ -1,6 +1,6 @@
 ---
 title: |
-  | NGS2 Cycle 3 Survey Test Results
+  | NGS2 Cycle 4 Survey Test Results
 author: "Ying Han, PhD, Gallup, Inc."
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:

@@ -1,0 +1,294 @@
+---
+title: "Group Innovation under Competition and Uncertanity - Cycle 3 Results"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+setwd("C:/Users/C_Pablo_Diego-Rosell/Documents")
+dd <- getwd()
+od <- getwd()
+nIter <- 20000
+# load libraries
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr, knitr, RCurl, DT)
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "analytics.R", "survey_tests_cycle_3_code.R")
+hypotheses <- c("h1.R", "h2.R", "h3.R", "h4.R", "h5.R", "h6.R", "h7.R",
+                "h8.R", "h9.R", "h10.R", "h11.R", "h12.R", "h13.R", "h14.R", "h15.R", "h16.R", "h17.R", "h18.R", "h19.R",
+                "h20.R", "h21.R", "h22.R", "h25.R", "h26.R", "h27.R")
+data <- c("game_data.csv", "game_data_group.csv", "survey_data.csv", "game_survey_data.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+source("functions.R")
+factorial <- read.csv(file="game_data.csv")
+factorialGroup <- read.csv(file="game_data_group.csv")
+factorialGroup2 <- factorialGroup
+factorialGroup2[] <- lapply(factorialGroup, factor)
+factorialGroup2$conformity <- as.numeric(factorialGroup$conformity)
+factorialGroup2$grmot1 <- as.numeric(factorialGroup$grmot1)
+factorialGroup2$grmot2 <- as.numeric(factorialGroup$grmot2)
+factorialGroup2$risk <- as.numeric(factorialGroup$risk)
+factorialGroup2$density <- as.numeric(factorialGroup$density)
+factorialGroup2$centralization <- as.numeric(factorialGroup$centralization)
+factorialGroup2$leaderWeight <- as.numeric(factorialGroup$leaderWeight)
+factorialGroup2$innovation <- as.numeric(factorialGroup$innovation)-1
+factorialGroup <- factorialGroup2
+factorialGroup$innovation <- factorialGroup$innovation+2
+survey <- read.csv(file="survey_data.csv")
+game_survey_data <- read.csv(file="game_survey_data.csv")
+source("analytics.R")
+source("survey_tests_cycle_3_code.R")
+```
+# Descriptives
+
+* Valid experimental instances included games with at least seven players and one tool choice. 
+* Each round of data collection included:
+    + 96 experimental conditions in the full factorial space.
+    + 672 players (7 players per instance)
+    + 1,248 group choices (13 rounds per instance)
+    + 8,736 individual choices (7 players * 13 rounds per instance)
+* Since Cycle 3 experiments were launched, Gallup has: 
+    + Ran a total of `r nGames` valid instances.
+    + Obtained usable data from a total of `r nPlayers` players.
+    + Completed data collection for `r nConditions` of the 96 experimental conditions in the full factorial space.
+
+```{r samplePlots}
+barplot(table(dates$matchDate))
+table(dates$matchDate)
+dates$month <- format(dates$matchDate, "%m/%Y")
+dates %>% group_by(month) %>% summarise(games = n())
+```
+
+```{r descriptives}
+# Number of rounds
+nByround=factorial%>%
+  group_by(round=as.factor(round))%>%
+  summarise(counts  = n())
+nChoices<-sum(nByround$counts)
+nMax<- max(nByround$counts)
+ggplot(data=nByround, aes(x=round, y=counts)) +
+  geom_bar(stat="identity") +
+  ggtitle("Number of Choices") + 
+  xlab("Round") +
+  ylab("Total Choices by Round")+
+  annotate("text", x=7, y=nMax*1.15, label = paste("Total to date =", nChoices, "valid decisions in 13 rounds")) +
+  scale_y_continuous(limits = c(0, nMax*1.25))
+# By tool choice
+factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
+factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
+tool_rate1<-factorial.tools%>%
+  group_by(tools)%>%
+  summarise(rate_inn=mean(innovation2, na.rm=TRUE))
+ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
+  geom_bar(stat="identity") +
+  ggtitle("Innovative Choices by Tool Choice") + 
+  xlab("Tool Choice") +
+  ylab("Innovative Choice Rate")
+```
+
+# Manipulation Checks
+## Perceived Intergroup Competition
+
+The post-game survey included two questions about perceived inter-group competition. Results are summarized below for each of the four experimental conditions.   
+
++The opposing teams were stronger than my team. 
++The relationship between my team and the other teams was competitive.. 
+  
+```{r competitionPlots}
+POS_comp_aov$boxplot
+PC_comp_aov$boxplot
+```
+
+## Uncertainty/Risk
+
++ Check test items propose obvious choices to test whether participants are paying attention.   
++ Check test items show that tool choices were adequately understood by participants. 
+
+```{r toolControls}
+toolControls
+```
+
++ A total of `r length(allWrong$matchid)` games failed all four check test items. 
+
+```{r allwrong}
+allWrong
+```
+## 	Network density: 
+
+The correspondence of organizational density structures and actual communication flows will be measured via a communications density score, measuring active communication channels (at least one message shared over chat) over total communication channels (graph edges). 
+
+```{r networkDensity}
+densityPlots$barplot
+```
+
+# Hypothesis 26. Intergroup Competition and Group Motivation to Innovate {-}
+
+## Null: Competition has no effect on Group Motivation to Innovate {-}
+
+```{r START1null}
+load (file ="bayesGlmer_h26_h26.0")
+BFs26 <-read.csv(paste(od, "BFs26.csv", sep = '/'))
+competitionPars <- c("competition1", "competition2", "competition3")
+summary(fittedGlmer, digits = 2, pars=competitionPars)
+priorSD.26<-0.2
+```
+
+## Prediction 1: Intergroup competition increases group motivation to innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h26_h26.1")
+summary(fittedGlmer, digits = 2, pars=competitionPars)
+```
+
+```{r START1_plot1}
+priors.h26.1 <- list(low_competition = -0.5, 
+                   mid_competition = 0, 
+                   hi_competition = 0.5)
+plotsh26.1<-bayesPlotter3 (fittedGlmer, priors.h26.1, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.1.vs..Null)
+plotsh26.1[[3]]
+```
+
+## Prediction 2: Group motivation to innovate is u-shaped on intergroup competition {-}
+
+```{r }
+load (file ="bayesGlmer_h26_h26.2")
+summary(fittedGlmer, digits = 2, pars=competitionPars)
+```
+
+```{r START1_plot2}
+priors.h26.2 <- list(low_competition = -0.5, 
+                   mid_competition = 0, 
+                   hi_competition = -0.5)
+load (file ="bayesGlmer_h26_h26.2")
+plotsh26.2<-bayesPlotter3 (fittedGlmer, priors.h26.2, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.2.vs..Null)
+plotsh26.2[[3]]
+```
+
+## Prediction 3: Intergroup competition decreases group motivation to innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h26_h26.3")
+summary(fittedGlmer, digits = 2, pars=competitionPars)
+```
+
+```{r START1_plot3}
+priors.h26.3 <- list(low_competition = 0.5, 
+                   mid_competition = 0, 
+                   hi_competition = -0.5)
+load (file ="bayesGlmer_h26_h26.3")
+plotsh26.3<-bayesPlotter3 (fittedGlmer, priors.h26.3, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.3.vs..Null)
+plotsh26.3[[3]]
+```
+
+## Prediction 4: Low intergroup competition decreases group motivation to innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h26_h26.4")
+summary(fittedGlmer, digits = 2, pars=competitionPars)
+```
+
+```{r START1_plot4}
+priors.h26.4 <- list(low_competition = 0.5, 
+                   mid_competition = 0, 
+                   hi_competition = -0.5)
+load (file ="bayesGlmer_h26_h26.4")
+plotsh26.4<-bayesPlotter3 (fittedGlmer, priors.h26.4, "low_competition", "mid_competition", "hi_competition", priorSD.26, "competition1", "competition2", "competition3", BFs26$Prediction.4.vs..Null)
+plotsh26.4[[3]]
+```
+Bayes factors for all hypothesis tests are shown below, including comparisons among all predictions and vs null: 
+
+```{r START1BFs}
+datatable(t(BFs26[-c(1,2)]), colnames=c("Bayes Factor")) %>% formatRound("V1", 3)
+```
+
+# Hypothesis 27. Organizational Structure and Group Motivation to Innovate {-}
+
+## Null: Organizational Structure has no effect on Group Motivation to Innovate {-}
+
+```{r START2null}
+BFs27 <-read.csv(paste(od, "BFs27.csv", sep = '/'))
+priorSD.27<-0.2
+load (file ="bayesGlmer_h27.1_h27.0")
+summary(fittedGlmer, digits = 2, pars="structureNet1")
+load (file ="bayesGlmer_h27.2_h27.0")
+summary(fittedGlmer, digits = 2, pars="structureHie1")
+load (file ="bayesGlmer_h27.3_h27.0")
+summary(fittedGlmer, digits = 2, pars="structureCel1")
+```
+
+## Prediction 1: Network structure reduces Group Motivation to Innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h27.1_h27.1")
+summary(fittedGlmer, digits = 2, pars="structureNet1")
+```
+
+```{r START2plot1}
+priors.h27.1 <- list(Network_Structure = -0.5)
+plotsh27.1<-bayesPlotter1 (fittedGlmer, priors.h27.1, "Network_Structure", priorSD.27, "structureNet1", BFs27$Prediction.1.vs..Null)
+plotsh27.1[[3]]
+```
+
+## Prediction 2: Hierarchical structure increases Group Motivation to Innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h27.2_h27.2")
+summary(fittedGlmer, digits = 2, pars="structureHie1")
+```
+
+```{r START2plot2}
+priors.h27.2<- list(Hierarchical_Structure = 0.5)
+plotsh27.2<-bayesPlotter1 (fittedGlmer, priors.h27.2, "Hierarchical_Structure", priorSD.27, "structureHie1", BFs27$Prediction.2.vs..Null)
+plotsh27.2[[3]]
+```
+
+## Prediction 3: Cellular structure increases Group Motivation to Innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h27.3_h27.3")
+summary(fittedGlmer, digits = 2, pars="structureCel1")
+```
+
+```{r START2plot3}
+priors.h27.3<- list(Cellular_Structure = 0.5)
+plotsh27.3<-bayesPlotter1 (fittedGlmer, priors.h27.3, "Cellular_Structure", priorSD.27, "structureCel1", BFs27$Prediction.3.vs..Null)
+plotsh27.3[[3]]
+```
+
+## Prediction 4: Network structure increases Group Motivation to Innovate {-}
+
+```{r }
+load (file ="bayesGlmer_h27.4_h27.4")
+summary(fittedGlmer, digits = 2, pars="structureNet1")
+```
+
+```{r START2plot4}
+priors.h27.4<- list(Network_Structure = 0.5)
+plotsh27.4<-bayesPlotter1 (fittedGlmer, priors.h27.4, "Network_Structure", priorSD.27, "structureNet1", BFs27$Prediction.4.vs..Null)
+plotsh27.4[[3]]
+```
+
+Bayes factors for all hypothesis tests are shown below, including comparisons among all predictions and vs null: 
+
+```{r START2BFs}
+datatable(t(BFs27[-c(1, 2)]), colnames=c("Bayes Factor")) %>% formatRound("V1", 3)
+```

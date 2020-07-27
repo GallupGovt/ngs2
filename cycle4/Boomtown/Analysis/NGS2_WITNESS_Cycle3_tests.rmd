@@ -1,0 +1,227 @@
+---
+title: |
+  | NGS2 Cycle 3 Survey Test Results
+author: "Ying Han, PhD, Gallup, Inc."
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+
+if (!require("pacman")) install.packages("pacman")
+library ("pacman")
+pacman::p_load(dplyr, ggplot2, Hmisc, gplots, car, tidyr, knitr, RCurl)
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+tests <- c("survey_tests_cycle_3_code.R")
+data <- c("game_survey_data.csv")
+lapply(c(tests,data), dlScripts)
+game_survey_data <- read.csv(file="game_survey_data.csv")
+source("survey_tests_cycle_3_code.R")
+```
+
+# Hypothesis Test Results Summary
+```{r table, echo=FALSE}
+kable(test_summary)
+```
+
+# Players Composition
+## Age
+### Age by Competition Condition
+```{r age_comp_aov, echo=FALSE}
+age_comp_aov$barplot
+age_comp_aov$boxplot
+```
+
+### Age by Time Uncertainty Condition
+```{r age_time_t, echo=FALSE}
+age_time_t$barplot
+age_time_t$boxplot
+```
+
+### Age by Tolerance Condition
+```{r age_tole_t, echo=FALSE}
+age_tole_t$barplot
+age_tole_t$boxplot
+```
+
+### Age by Support Condition
+```{r age_supp_t, echo=FALSE}
+age_supp_t$barplot
+age_supp_t$boxplot
+```
+
+### Age Group by Competition Condition
+```{r age_comp_chisq, echo=FALSE}
+age_comp_chisq$barplot
+```
+
+### Age Group by Time Uncertainty Condition
+```{r age_time_chisq, echo=FALSE}
+age_time_chisq$barplot
+```
+
+### Age Group by Tolerance Condition
+```{r age_tole_chisq, echo=FALSE}
+age_tole_chisq$barplot
+```
+
+### Age Group by Support Condition
+```{r age_supp_chisq, echo=FALSE}
+age_supp_chisq$barplot
+```
+
+## Gender
+### Gender by Competition Condition
+```{r gen_comp_chisq, echo=FALSE}
+gen_comp_chisq$barplot
+```
+
+### Gender by Time Uncertainty Condition
+```{r gen_time_chisq, echo=FALSE}
+gen_time_chisq$barplot
+```
+
+### Gender by Tolerance Condition
+```{r gen_tole_chisq, echo=FALSE}
+gen_tole_chisq$barplot
+```
+
+### Gender by Support Condition
+```{r gen_supp_chisq, echo=FALSE}
+gen_supp_chisq$barplot
+```
+
+## Education Group
+### Education Group by Competition Condition
+```{r edu_comp_chisq, echo=FALSE}
+edu_comp_chisq$barplot
+```
+
+### Education Group by Time Uncertainty Condition
+```{r edu_time_chisq, echo=FALSE}
+edu_time_chisq$barplot
+```
+
+### Education Group by Tolerance Condition
+```{r edu_tole_chisq, echo=FALSE}
+edu_tole_chisq$barplot
+```
+
+### Education Group by Support Condition
+```{r edu_supp_chisq, echo=FALSE}
+edu_supp_chisq$barplot
+```
+
+## Employment Status
+### Employment Status by Competition Condition
+```{r emp_comp_chisq, echo=FALSE}
+emp_comp_chisq$barplot
+```
+
+### Employment Status by Time Uncertainty Condition
+```{r emp_time_prop, echo=FALSE}
+emp_time_prop$barplot
+```
+
+### Employment Status by Tolerance Condition
+```{r emp_tole_prop, echo=FALSE}
+emp_tole_prop$barplot
+```
+
+### Employment Status by Support Condition
+```{r emp_supp_prop, echo=FALSE}
+emp_supp_prop$barplot
+```
+
+## Online Research Experiment Experience
+### Online Research Experiment Experience by Competition Condition
+```{r ore_comp_chisq, echo=FALSE}
+ore_comp_chisq$barplot
+```
+
+### Online Research Experiment Experience by Time Uncertainty Condition
+```{r ore_time_prop, echo=FALSE}
+ore_time_prop$barplot
+```
+
+### Online Research Experiment Experience by Tolerance Condition
+```{r ore_tole_prop, echo=FALSE}
+ore_tole_prop$barplot
+```
+
+### Online Research Experiment Experience by Support Condition
+```{r ore_supp_prop, echo=FALSE}
+ore_supp_prop$barplot
+```
+
+## Tolerance of Ambiguity (TA) by Tolerance Condition
+```{r TA_tole_t, echo=FALSE}
+TA_tole_t$barplot
+TA_tole_t$boxplot
+```
+
+# Post-Game Survey
+## Perceived Opponent Strength by Competition Condition
+```{r POS_comp_aov, echo=FALSE}
+POS_comp_aov$barplot
+POS_comp_aov$boxplot
+```
+
+## Perceived Competition by Competition Condition
+```{r PC_comp_aov, echo=FALSE}
+PC_comp_aov$barplot
+PC_comp_aov$boxplot
+```
+
+## Time Pressure by Round Type
+```{r TP_round_pt, echo=FALSE}
+TP_round_pt$barplot
+TP_round_pt$boxplot
+```
+
+## Need of Fast Decision by Round Type
+```{r FD_round_pt, echo=FALSE}
+FD_round_pt$barplot
+FD_round_pt$boxplot
+```
+
+## Amount of Information Processed by Votting Chioces
+```{r IP_tool_pt, echo=FALSE}
+IP_tool_pt$barplot
+IP_tool_pt$boxplot
+```
+
+## Certainty about Number of Rounds by Time Uncertaint Condition
+```{r RC_time_t, echo=FALSE}
+RC_time_t$barplot
+RC_time_t$boxplot
+```
+
+
+
+
+
+
+
+
+
+
+

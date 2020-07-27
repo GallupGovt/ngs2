@@ -1,5 +1,5 @@
 ---
-title: "Group Innovation under Competition and Uncertanity - Cycle 3 Results"
+title: "Group Innovation under Competition and Uncertanity - Cycle 4 Results"
 author: "Pablo Diego-Rosell, PhD  - Gallup"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:

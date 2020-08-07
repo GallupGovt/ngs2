@@ -8,8 +8,8 @@
 # Save all game logs and metadata to the dd_input folder before running script. 
 ## Link to metadata: https://volunteerscience.com/gallup/boomtown_metadata
 # Run "Wrangle.R"
-# Copy "game_data.csv" and "survey_data.csv" from \\gallup\dod_clients\DARPA_NGS2\CONSULTING\Ying_Han\Data_Wrangling_Cycle_3
-# Upload both csv files above to github https://github.com/GallupGovt/ngs2/edit/master/cycle3/Boomtown/Analysis/
+# Copy "game_data.csv" and "survey_data.csv" from \\gallup\dod_clients\DARPA_NGS2\CONSULTING\Ying_Han\Data_Wrangling_Cycle_4
+# Upload both csv files above to github https://github.com/GallupGovt/ngs2/edit/master/cycle4/Boomtown/Analysis/
 
 # Set up enviroment ----
 rm(list = ls())
@@ -475,9 +475,9 @@ game_data$complexity [game_data$tools==5 |
 # Network density 
 # Densities could not be reproduced in different platforms (even using the same random seeds)
 # So densities were pre-calculated on the basis of network structure and role disconnections in each round, per game settings
-# Find density estimator here: https://github.com/GallupGovt/ngs2/blob/master/cycle3/Boomtown/Analysis/density.R
+# Find density estimator here: https://github.com/GallupGovt/ngs2/blob/master/cycle4/Boomtown/Analysis/density.R
 
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
 fileHolder <- getURL(paste(githubRepo, "densities.csv", sep = "/"), ssl.verifypeer = FALSE)
 fileConn<-file("densities.csv")
 writeLines(fileHolder, fileConn)

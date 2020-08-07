@@ -57,7 +57,7 @@ source("analytics.R")
     + 672 players (7 players per instance)
     + 1,248 group choices (13 rounds per instance)
     + 8,736 individual choices (7 players * 13 rounds per instance)
-* Since Cycle 3 experiments were launched, Gallup has: 
+* Since Cycle 4 experiments were launched, Gallup has: 
     + Ran a total of `r nGames` valid instances.
     + Obtained usable data from a total of `r nPlayers` players.
     + Completed data collection for `r nConditions` of the 96 experimental conditions in the full factorial space.

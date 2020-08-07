@@ -30,8 +30,8 @@ dlScripts <- function (scriptNames) {
   writeLines(fileHolder, fileConn)
   close(fileConn)
 }
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-setup <- c("functions.R", "analytics.R", "survey_tests_cycle_3_code.R")
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
+setup <- c("functions.R", "analytics.R", "survey_tests_cycle_4_code.R")
 hypotheses <- c("h1.R", "h2.R", "h3.R", "h4.R", "h5.R", "h6.R", "h7.R",
                 "h8.R", "h9.R", "h10.R", "h11.R", "h12.R", "h13.R", "h14.R", "h15.R", "h16.R", "h17.R", "h18.R", "h19.R",
                 "h20.R", "h21.R", "h22.R", "h25.R", "h26.R", "h27.R")
@@ -59,7 +59,7 @@ factorialGroup$innovation <- factorialGroup$innovation+2
 survey <- read.csv(file="survey_data.csv")
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("analytics.R")
-source("survey_tests_cycle_3_code.R")
+source("survey_tests_cycle_4_code.R")
 nChains <- 3
 nIter <- 1000
 registerDoParallel(cores=25)
@@ -72,11 +72,11 @@ foreach(n = 1:length(hypothesis_files)) %dopar% {
 
 # Introduction
 
-This document presents the results of team NGS2 WITNESS's cycle 3 experiments on the Boomtown platform. The project's overall background, motivation, goals and theoretical rationale remains the same as in Cycle 2, with a continued focus on the effect of intergroup competition and uncertainty on group motivation to innovate. Pre-registration form is available at: https://osf.io/c57b8/
+This document presents the results of team NGS2 WITNESS's cycle 4 experiments on the Boomtown platform. The project's overall background, motivation, goals and theoretical rationale remains the same as in Cycles 2 & 3, with a continued focus on the effect of intergroup competition and uncertainty on group motivation to innovate. Pre-registration form is available at: https://osf.io/c57b8/
 
 The main changes for Cycle 3 can be summarized into the following categories:
 
-* Abduction from Cycle 2: Observations from Cycle 2 data and are incorporated into Cycle 3 by either eliminating null variables from the design or formulating new hypotheses where existing predictions could not readily account for observed effects. Variables that had a null effect on group motivation to innovate were removed from the design, including:
+* Abduction from Cycles 2 & 3: Observations from Cycles 2 & 3 are incorporated into Cycle 4 by either eliminating null variables from the design or formulating new hypotheses where existing predictions could not readily account for observed effects. Variables that had a null effect on group motivation to innovate were removed from the design, including:
 
 + Leader Tolerance of Ambiguity
 + Group Status and Legitimacy
@@ -110,7 +110,7 @@ Variables where existing predictions could not fully account for observed effect
     + 672 players (7 players per instance)
     + 1,248 group choices (13 rounds per instance)
     + 8,736 individual choices (7 players * 13 rounds per instance)
-* Since Cycle 3 experiments were launched, Gallup has: 
+* Since Cycle 4 experiments were launched, Gallup has: 
     + Ran a total of `r nGames` valid instances.
     + Obtained usable data from a total of `r nPlayers` players.
     + Completed data collection for `r nConditions` of the 96 experimental conditions in the full factorial space.

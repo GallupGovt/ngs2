@@ -208,7 +208,7 @@ factorial$inmot2 <- rbinom(playerEvents,1,log.inmot1.1)
 factorial <- subset (factorial, select = -c(odds, ind_random_effect, group_random_effect))
 
 # Recode tools into the predicted choice according to different theories in:
-# "NGS2 WITNESS Cycle 3 FINAL.xlsx", "Tools" tab
+# "NGS2 WITNESS Cycle 4 FINAL.xlsx", "Tools" tab
 # CPT predictions
 
 factorial$toolsCPT <- 1

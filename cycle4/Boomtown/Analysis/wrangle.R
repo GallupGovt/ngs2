@@ -19,11 +19,11 @@ pacman::p_load(dplyr, Hmisc, car, tidyr, RCurl)
 
 # Define constants -----
 # directory to input (storing game logs, metadata, and survey results) and output folder
-dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3/GameLogs_Metadata_SurveyResults" 
-dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_3" 
+dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_4/GameLogs_Metadata_SurveyResults" 
+dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_4" 
 
 # fieldwork start date
-field_start <- "01-01-2020"
+field_start <- "08-05-2020"
 
 # game events of interest
 events <- c("SetupMatch", 

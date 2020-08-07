@@ -29,12 +29,12 @@ dlScripts <- function (scriptNames) {
   writeLines(fileHolder, fileConn)
   close(fileConn)
 }
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-tests <- c("survey_tests_cycle_3_code.R")
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
+tests <- c("survey_tests_cycle_4_code.R")
 data <- c("game_survey_data.csv")
 lapply(c(tests,data), dlScripts)
 game_survey_data <- read.csv(file="game_survey_data.csv")
-source("survey_tests_cycle_3_code.R")
+source("survey_tests_cycle_4_code.R")
 ```
 
 # Hypothesis Test Results Summary

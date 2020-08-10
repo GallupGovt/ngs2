@@ -542,7 +542,7 @@ game_data <- merge(game_data,
 # read in data
 # Need to remove duplicated rows in "survey_results_2" to makes sure the match_player_id is unique.
 survey_1 = read.csv(paste(dd_input, "survey_results_1.csv", sep="/"), skip = 1, header = 1, stringsAsFactors = F)
-survey_2 = read.csv(paste(dd_input, "survey_results_2_cleaned.csv", sep="/"), header = 1, stringsAsFactors = F)
+survey_2 = read.csv(paste(dd_input, "survey_results_2.csv", sep="/"), skip = 1, header = 1, stringsAsFactors = F)
 
 # cleaning survey_results_1
 survey_1 <- survey_1 %>%

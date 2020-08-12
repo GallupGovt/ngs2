@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  ngs2:
+    image: gallupgovt/ngs2_witness:stable
+    volumes:
+      - ./:/app
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h15_TOY.rmd")'

@@ -452,7 +452,7 @@ IP_tool_pt <- paired_samples_test(
   vars = c("Q8_2", "Q9_2"),
   conditions = c("Explosives","Mines"),
   names = c("Tool Type", "Amount of Information Processed"), 
-  question = "Q: When I had to choose between different types of explosives/mins, I felt like I had to process too much information."
+  question = "Q: When I had to choose between different types of explosives/mines, I felt like I had to process too much information."
 )
 
 ## one way ANOVA -----------

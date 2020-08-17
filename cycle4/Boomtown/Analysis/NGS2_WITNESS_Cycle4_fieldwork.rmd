@@ -32,15 +32,13 @@ dlScripts <- function (scriptNames) {
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
 setup <- c("wrangle.R", "analytics.R")
-data <- c("game_data.csv", "survey_data.csv") # Run "wrangle.R" and upload resulting files to Github
+data <- c("game_data.csv", "survey_data.csv") # Run "wrangle.R" first and upload these resulting files to Github
 lapply(c(setup, data), dlScripts)
-source("wrangle.R")
 ```
 
 - Boomtown data processed successfully!
 - There are no duplicate values of 'playerid'
 - The values of survey items are in their correct range
-- Remember to upload 'game_data.csv' and 'survey_data.csv' to Github: https://github.com/GallupGovt/ngs2/tree/master/cycle4/Boomtown/Analysis
 
 # Data Summary
 

@@ -17,16 +17,15 @@ setting_counts<- merge(df, agg, by="settingsNum", all=TRUE)
 setting_counts[is.na(setting_counts)] <- 0
 
 # Game dates
-factorial$matchDate <- as.POSIXct(factorial$matchDate,format="%Y-%m-%d")
+factorial$matchDate <- as.POSIXct(factorial$matchDate,format="%d/%m/%Y")
 dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
 
 # Game times
-factorial$date.time <- as.POSIXct(factorial$date.time,format="%Y-%m-%d %H:%M:%S")
+factorial$date.time <- as.POSIXct(factorial$date.time,format="%d/%m/%Y %H:%M")
 times<-aggregate(date.time ~ matchid, data=factorial, mean)
 
 # Games by hour
-
-times$hour <- strftime(times$date.time, format="%Y-%m-%d %H")
+times$hour <- strftime(times$date.time, format="%d/%m/%Y %H")
 times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
 times$day <- strftime(times$date.time, format="%Y-%m-%d")
 

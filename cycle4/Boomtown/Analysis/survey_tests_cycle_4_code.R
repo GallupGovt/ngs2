@@ -6,7 +6,7 @@ educ_label <- c("No Education", "Elementary School", "High School", "Some Colleg
 empl_label <- c("Yes", "No")
 onre_label <- c("Yes", "No")
 comp_label <- c("None", "Weak", "Normal", "Strong")
-time_label <- c("Certain Rounds", "Uncertain Rounds")
+time_label <- c("Uncertain Rounds", "Certain Rounds")
 tole_label <- c("Ambiguity Low", "Ambiguity High")
 supp_label <- c("HighStatus_HighLegitimacy", "LowStatus_HighLegitimacy")
 

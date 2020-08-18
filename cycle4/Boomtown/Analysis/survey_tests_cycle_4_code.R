@@ -433,7 +433,7 @@ TP_round_pt <- paired_samples_test(
   data = gs, 
   vars = c("Q4_2", "Q6_2"),
   conditions = c("Quick Voting","Slow Voting"),
-  names = c("Round Type", "Preceived Time Pressure"), 
+  names = c("Round Type", "Perceived Time Pressure"), 
   question = "Q: I felt a great amount of time pressure when voting for an item."
 )
 
@@ -442,7 +442,7 @@ FD_round_pt <- paired_samples_test(
   data = gs, 
   vars = c("Q5_2", "Q7_2"),
   conditions = c("Quick Voting","Slow Voting"),
-  names = c("Round Type", "Preceived Fast Decision Need"), 
+  names = c("Round Type", "Perceived Fast Decision Need"), 
   question = "Q: I had to make my decisions very fast."
 )
 

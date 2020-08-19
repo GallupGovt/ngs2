@@ -23,7 +23,7 @@ dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling
 dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_4" 
 
 # fieldwork start date
-field_start <- "08-05-2020"
+field_start <- "08-01-2020"
 
 # game events of interest
 events <- c("SetupMatch", 

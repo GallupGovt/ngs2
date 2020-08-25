@@ -1,0 +1,85 @@
+---
+title: "NGS2-WITNESS - Cycle 4 Results: Hypothesis 7"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+# load libraries
+if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
+library ("pacman")
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+
+# Setup Stan parameters
+
+options(mc.cores = parallel::detectCores())
+nChains <- 3
+nIter <- 50000
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "prep.R")
+hypotheses <- c("h7.R")
+data <- c("game_data.csv", "game_data_group.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+
+# Prepare data
+source("functions.R")
+source("prep.R")
+source ("h7.R")
+summarize_delete ("bayesGlmer_h7_h7.0")
+summarize_delete ("bayesGlmer_h7_h7.1")
+summarize_delete ("bayesGlmer_h7_h7.2")
+print ("h7.R complete!")
+```
+### Hypothesis 7. Perceived Intergroup Competition and Heuristic Reasoning
+
+- Null: Perceived intergroup competition does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals facing strong competition as those facing balanced or weak competition.
+
+```{r h7null}
+load (file ="bayesGlmer_h7_h7.0")
+fittedGlmer
+```
+- Prediction 1: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals facing strong competition than those facing balanced or weak competition. 
+
+```{r }
+load (file ="bayesGlmer_h7_h7.1")
+fittedGlmer
+```
+
+- Prediction 2: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals facing strong competition than those facing balanced or weak competition.
+
+```{r }
+load (file ="bayesGlmer_h7_h7.2")
+fittedGlmer
+```
+
+```{r h7BFs}
+BFs7 <-read.csv(paste(od, "BFs7.csv", sep = '/'))                      
+BFs7
+```
+
+End Time: `r format(Sys.time(), '%d %B, %Y')`
+
+<br />
+<br />
+<br />

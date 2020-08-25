@@ -1,0 +1,78 @@
+---
+title: "NGS2-WITNESS - Cycle 4 Results: Hypothesis 18"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+# load libraries
+if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
+library ("pacman")
+pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+
+# Setup Stan parameters
+
+options(mc.cores = parallel::detectCores())
+nChains <- 3
+nIter <- 50000
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "prep.R")
+hypotheses <- c("h18.R")
+data <- c("game_data.csv", "game_data_group.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+
+# Prepare data
+source("functions.R")
+source("prep.R")
+source ("h18.R")
+summarize_delete ("bayesGlmer_h18_h18.0")
+summarize_delete ("bayesGlmer_h18_h18.1")
+print ("h18.R complete!")
+```
+
+### Hypothesis 18. Conformity and Individual Motivation to Innovate (T2)
+
+- Null: Group Conformity will not moderate Individual Motivation to Innovate (T2).
+
+```{r h18null}
+load (file ="bayesGlmer_h18_h18.0")
+fittedGlmer
+```
+- Prediction 1: Group Conformity will moderate Individual Motivation to Innovate (T2). When group motivation to innovate is positive, conformity increases Individual Motivation to Innovate (T2). When group motivation to innovate is negative, conformity decreases Individual Motivation to Innovate (T2).
+
+```{r }
+load (file ="bayesGlmer_h18_h18.1")
+fittedGlmer
+```
+
+```{r h18BFs}
+BFs18 <-read.csv(paste(od, "BFs18.csv", sep = '/'))                      
+BFs18
+```
+
+End Time: `r format(Sys.time(), '%d %B, %Y')`
+
+<br />
+<br />
+<br />

@@ -36,7 +36,7 @@ dlScripts <- function (scriptNames) {
   writeLines(fileHolder, fileConn)
   close(fileConn)
 }
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
 setup <- c("functions.R", "prep.R")
 hypotheses <- c("h8.R")
 data <- c("game_data.csv", "game_data_group.csv")

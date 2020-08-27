@@ -282,8 +282,12 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
   
   # test of normality: QQ plot + Shapiro-Wilk test
   plot(anova, 2)
-  normality_check_test <- shapiro.test(residuals(anova))
-  
+  if (length(residuals(anova))>5000) {
+    normality_check_test <- shapiro.test(residuals(anova)[0:5000])
+  } else {
+    normality_check_test <- shapiro.test(residuals(anova))
+  }
+    
   # Non-parametric alternative to one-way ANOVA test: Kruskal-Wallis rank sum test
   kruskal <- kruskal.test(measurement ~ condition, data = data)
   

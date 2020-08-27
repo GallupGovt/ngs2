@@ -8,7 +8,8 @@ onre_label <- c("No", "Yes")
 comp_label <- c("None", "Weak", "Normal", "Strong")
 time_label <- c("Uncertain Rounds", "Certain Rounds")
 tole_label <- c("Ambiguity Low", "Ambiguity High")
-supp_label <- c("HighStatus_HighLegitimacy", "LowStatus_HighLegitimacy")
+supp_label <- c("Low Support", "High Support")
+str_label <- c("Hierarchical", "Cellular", "Network")
 
 ## define functions ----
 TA_calc <- function(x){
@@ -22,12 +23,12 @@ chisq_test_plot <- function(data, key.var, group.var){
   # Chi-sq test
   chisq_test <- chisq.test(table(data[,key.var], data[,group.var]))
   test_summary <- data.frame('key var' = gsub("_", " ", key.var),
-                           'group var' = gsub("_", " ", group.var),
-                           "test" = "Chi-square Test of Indepedence",
-                           'statistic' = round(chisq_test$statistic,3), 
-                           'df' = as.character(chisq_test$parameter),
-                           'p value' = round(chisq_test$p.value,3), 
-                           stringsAsFactors = F)
+                             'group var' = gsub("_", " ", group.var),
+                             "test" = "Chi-square Test of Indepedence",
+                             'statistic' = round(chisq_test$statistic,3), 
+                             'df' = as.character(chisq_test$parameter),
+                             'p value' = round(chisq_test$p.value,3), 
+                             stringsAsFactors = F)
   row.names(test_summary) <- NULL
   
   # barplot
@@ -48,8 +49,8 @@ chisq_test_plot <- function(data, key.var, group.var){
 }
 
 unpaired_samples_test <- function(data, key.var, key.var.label = gsub("_", " ", key.var), 
-  group.var, group.var.label = gsub("_", " ", group.var), question = "", 
-  alternative = c("two.sided", "less", "greater"), t.var.equal = FALSE){
+                                  group.var, group.var.label = gsub("_", " ", group.var), question = "", 
+                                  alternative = c("two.sided", "less", "greater"), t.var.equal = FALSE){
   
   data <- data[,c(group.var, key.var)]
   colnames(data) <- c("condition", "measurement")
@@ -287,7 +288,7 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
   } else {
     normality_check_test <- shapiro.test(residuals(anova))
   }
-    
+  
   # Non-parametric alternative to one-way ANOVA test: Kruskal-Wallis rank sum test
   kruskal <- kruskal.test(measurement ~ condition, data = data)
   
@@ -349,6 +350,8 @@ oneway_anova_test <- function(data, key.var, key.var.label = gsub("_", " ", key.
 }
 
 ## recode variables (where analysis starts) ----
+
+levels (game_survey_data$supportLabel) <- supp_label
 gs <- game_survey_data %>%
   mutate(
     Age = Q13_1, 
@@ -363,7 +366,8 @@ gs <- game_survey_data %>%
     competitionLabel = factor(competitionLabel, levels = comp_label),
     timeUncertaintyLabel = factor(timeUncertaintyLabel, labels = time_label),
     toleranceLabel = factor(toleranceLabel, levels = tole_label),
-    supportLabel = factor(supportLabel, levels = supp_label),
+    supportLabel = factor(supportLabel),
+    organizationalStructure = factor(organizationalStructure),
     TA_score = TA_calc(game_survey_data)
   ) %>%
   rename(
@@ -371,29 +375,33 @@ gs <- game_survey_data %>%
     Time_Uncertainty = timeUncertaintyLabel,
     Tolerance = toleranceLabel,
     Support = supportLabel, 
+    Structure = organizationalStructure,
     Perceived_Opponent_Strength = Q2_2,
     Perceived_Competition = Q3_2,
     Rounds_Certainty = Q10_2
   )
 
 ## Chi-square Test of Indepedence ----
-# Age_Group by Competition, Time Urcertainty, Tolerance and Support Conditions
+# Age_Group by Competition, Time Urcertainty, Tolerance, Support and Structure Conditions
 age_comp_chisq <- chisq_test_plot(data = gs, key.var = "Age_Group", group.var = "Competition")
 age_time_chisq <- chisq_test_plot(data = gs, key.var = "Age_Group", group.var = "Time_Uncertainty")
 age_tole_chisq <- chisq_test_plot(data = gs, key.var = "Age_Group", group.var = "Tolerance")
 age_supp_chisq <- chisq_test_plot(data = gs, key.var = "Age_Group", group.var = "Support")
+age_stru_chisq <- chisq_test_plot(data = gs, key.var = "Age_Group", group.var = "Structure")
 
 # Gender by Competition, Time Urcertainty, Tolerance and Support Conditions
 gen_comp_chisq <- chisq_test_plot(data = gs, key.var = "Gender", group.var = "Competition")
 gen_time_chisq <- chisq_test_plot(data = gs, key.var = "Gender", group.var = "Time_Uncertainty")
 gen_tole_chisq <- chisq_test_plot(data = gs, key.var = "Gender", group.var = "Tolerance")
 gen_supp_chisq <- chisq_test_plot(data = gs, key.var = "Gender", group.var = "Support")
+gen_stru_chisq <- chisq_test_plot(data = gs, key.var = "Gender", group.var = "Structure")
 
 # Education Group by Competition, Time Urcertainty, Tolerance and Support Conditions
 edu_comp_chisq <- chisq_test_plot(data = gs, key.var = "Education_Group", group.var = "Competition")
 edu_time_chisq <- chisq_test_plot(data = gs, key.var = "Education_Group", group.var = "Time_Uncertainty")
 edu_tole_chisq <- chisq_test_plot(data = gs, key.var = "Education_Group", group.var = "Tolerance")
 edu_supp_chisq <- chisq_test_plot(data = gs, key.var = "Education_Group", group.var = "Support")
+edu_stru_chisq <- chisq_test_plot(data = gs, key.var = "Education_Group", group.var = "Structure")
 
 # Employment Status by Competition
 emp_comp_chisq <- chisq_test_plot(data = gs, key.var = "Employment_Status", group.var = "Competition")
@@ -423,6 +431,7 @@ ore_supp_prop <- two_proportions_test(data = gs, key.var = "Employment_Status", 
 age_time_t <- unpaired_samples_test(data = gs, key.var = "Age", group.var = "Time_Uncertainty")
 age_tole_t <- unpaired_samples_test(data = gs, key.var = "Age", group.var = "Tolerance")
 age_supp_t <- unpaired_samples_test(data = gs, key.var = "Age", group.var = "Support")
+age_stru_t <- unpaired_samples_test(data = gs, key.var = "Age", group.var = "Structure")
 
 # TA score by Tolerance Condition
 TA_tole_t <- unpaired_samples_test(data = gs, key.var = "TA_score", group.var = "Tolerance")
@@ -477,18 +486,22 @@ test_summary <- bind_rows(
   age_time_t$test_summary,
   age_tole_t$test_summary,
   age_supp_t$test_summary,
+  age_stru_t$test_summary,
   age_comp_chisq$test_summary,
   age_time_chisq$test_summary,
   age_tole_chisq$test_summary,
   age_supp_chisq$test_summary,
+  age_stru_chisq$test_summary,
   gen_comp_chisq$test_summary,
   gen_time_chisq$test_summary,
   gen_tole_chisq$test_summary,
   gen_supp_chisq$test_summary,
+  gen_stru_chisq$test_summary,
   edu_comp_chisq$test_summary,
   edu_time_chisq$test_summary,
   edu_tole_chisq$test_summary,
   edu_supp_chisq$test_summary,
+  edu_stru_chisq$test_summary,
   emp_comp_chisq$test_summary,
   emp_time_prop$test_summary,
   emp_tole_prop$test_summary,

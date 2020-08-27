@@ -68,6 +68,12 @@ age_supp_t$barplot
 age_supp_t$boxplot
 ```
 
+### Age by Organizational Structure Condition
+```{r age_stru_t, echo=FALSE}
+age_stru_t$barplot
+age_stru_t$boxplot
+```
+
 ### Age Group by Competition Condition
 ```{r age_comp_chisq, echo=FALSE}
 age_comp_chisq$barplot
@@ -86,6 +92,11 @@ age_tole_chisq$barplot
 ### Age Group by Support Condition
 ```{r age_supp_chisq, echo=FALSE}
 age_supp_chisq$barplot
+```
+
+### Age Group by Organizational Structure Condition
+```{r age_stru_chisq, echo=FALSE}
+age_stru_chisq$barplot
 ```
 
 ## Gender
@@ -109,6 +120,11 @@ gen_tole_chisq$barplot
 gen_supp_chisq$barplot
 ```
 
+### Gender by Organizational Structure Condition
+```{r gen_stru_chisq, echo=FALSE}
+gen_stru_chisq$barplot
+```
+
 ## Education Group
 ### Education Group by Competition Condition
 ```{r edu_comp_chisq, echo=FALSE}
@@ -128,6 +144,11 @@ edu_tole_chisq$barplot
 ### Education Group by Support Condition
 ```{r edu_supp_chisq, echo=FALSE}
 edu_supp_chisq$barplot
+```
+
+### Education Group by Organizational Structure Condition
+```{r edu_stru_chisq, echo=FALSE}
+edu_stru_chisq$barplot
 ```
 
 ## Employment Status
@@ -151,6 +172,11 @@ emp_tole_prop$barplot
 emp_supp_prop$barplot
 ```
 
+### Employment Status by Organizational Structure Condition
+```{r emp_stru_prop, echo=FALSE}
+emp_stru_chisq$barplot
+```
+
 ## Online Research Experiment Experience
 ### Online Research Experiment Experience by Competition Condition
 ```{r ore_comp_chisq, echo=FALSE}
@@ -170,6 +196,11 @@ ore_tole_prop$barplot
 ### Online Research Experiment Experience by Support Condition
 ```{r ore_supp_prop, echo=FALSE}
 ore_supp_prop$barplot
+```
+
+### Online Research Experiment Experience by Organizational Structure Condition
+```{r ore_stru_chisq, echo=FALSE}
+ore_stru_chisq$barplot
 ```
 
 ## Tolerance of Ambiguity (TA) by Tolerance Condition
@@ -203,25 +234,14 @@ FD_round_pt$barplot
 FD_round_pt$boxplot
 ```
 
-## Amount of Information Processed by Votting Chioces
+## Amount of Information Processed by Voting Choices
 ```{r IP_tool_pt, echo=FALSE}
 IP_tool_pt$barplot
 IP_tool_pt$boxplot
 ```
 
-## Certainty about Number of Rounds by Time Uncertaint Condition
+## Certainty about Number of Rounds by Time Uncertainty Condition
 ```{r RC_time_t, echo=FALSE}
 RC_time_t$barplot
 RC_time_t$boxplot
 ```
-
-
-
-
-
-
-
-
-
-
-

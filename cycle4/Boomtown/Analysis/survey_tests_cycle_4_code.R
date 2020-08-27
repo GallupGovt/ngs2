@@ -405,9 +405,11 @@ edu_stru_chisq <- chisq_test_plot(data = gs, key.var = "Education_Group", group.
 
 # Employment Status by Competition
 emp_comp_chisq <- chisq_test_plot(data = gs, key.var = "Employment_Status", group.var = "Competition")
+emp_stru_chisq <- chisq_test_plot(data = gs, key.var = "Employment_Status", group.var = "Structure")
 
 # Online Research Experience by Competition
 ore_comp_chisq <- chisq_test_plot(data = gs, key.var = "Online_Research_Experience", group.var = "Competition")
+ore_stru_chisq <- chisq_test_plot(data = gs, key.var = "Online_Research_Experience", group.var = "Structure")
 
 ## Two-proportions z-test -----
 # Employment Status by Time Uncertainty, Tolerance, and Support
@@ -506,10 +508,12 @@ test_summary <- bind_rows(
   emp_time_prop$test_summary,
   emp_tole_prop$test_summary,
   emp_supp_prop$test_summary,
+  emp_stru_chisq$test_summary,
   ore_comp_chisq$test_summary,
   ore_time_prop$test_summary,
   ore_tole_prop$test_summary,
   ore_supp_prop$test_summary,
+  ore_stru_chisq$test_summary,
   TA_tole_t$test_summary,
   POS_comp_aov$test_summary,
   PC_comp_aov$test_summary,

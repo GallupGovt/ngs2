@@ -22,7 +22,7 @@ od <- getwd()
 # load libraries
 if (!require("pacman")) install.packages("pacman")
 library ("pacman")
-pacman::p_load(ggplot2, httr, dplyr, knitr, RCurl, formatR, DT)
+pacman::p_load(ggplot2, httr, dplyr, knitr, RCurl, formatR, DT, car, tidyr)
 # download scripts and data
 dlScripts <- function (scriptNames) {
   fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
@@ -31,8 +31,8 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
-setup <- c("wrangle.R", "analytics.R")
-data <- c("game_data.csv", "survey_data.csv") # Run "wrangle.R" first and upload these resulting files to Github
+setup <- c("wrangle.R", "analytics.R", "survey_tests_cycle_4_code.R")
+data <- c("game_data.csv", "game_survey_data.csv") # Run "wrangle.R" first and upload these resulting files to Github
 lapply(c(setup, data), dlScripts)
 ```
 
@@ -45,8 +45,10 @@ lapply(c(setup, data), dlScripts)
 ```{r analytics, include=FALSE}
 #Load data processed by "wrangle.r" and run analytics
 factorial <- read.csv(file="game_data.csv")
+game_survey_data <- read.csv(file="game_survey_data.csv")
 survey <- read.csv(file="survey_data.csv")
 source("analytics.R")
+source("survey_tests_cycle_4_code.R")
 ```
 
 * Valid experimental instances included games with at least seven players and one tool choice. 
@@ -66,19 +68,53 @@ print(setting_counts)
 
 # Games completed to date
 
-```{r samplePlots}
+```{r samplePlots, echo=FALSE}
 dates$month <- format(dates$matchDate, "%m/%Y")
 dates %>% group_by(month) %>% summarise(games = n())
 barplot(table(dates$matchDate))
 table(dates$matchDate)
-print (hourly_plot)
+```
+
+# Participant Demos
+
+```{r demos, echo=FALSE}
+initial_survey <- gs[!duplicated(gs[,c('playerid')]),] 
+demos <- c("Age_Group", "Gender", "Education_Group", "Employment_Status", "Online_Research_Experience")
+apply(initial_survey[demos], 2, table, useNA = "always")
+```
+# Descriptives
+```{r descriptives, echo=FALSE}
+# Number of rounds
+nByround=factorial%>%
+  group_by(round=as.factor(round))%>%
+  summarise(counts  = n())
+nChoices<-sum(nByround$counts)
+nMax<- max(nByround$counts)
+ggplot(data=nByround, aes(x=round, y=counts)) +
+  geom_bar(stat="identity") +
+  ggtitle("Number of Choices") + 
+  xlab("Round") +
+  ylab("Total Choices by Round")+
+  annotate("text", x=7, y=nMax*1.15, label = paste("Total to date =", nChoices, "valid decisions in 13 rounds")) +
+  scale_y_continuous(limits = c(0, nMax*1.25))
+# By tool choice
+factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
+factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
+tool_rate1<-factorial.tools%>%
+  group_by(tools)%>%
+  summarise(rate_inn=mean(innovation2, na.rm=TRUE))
+ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
+  geom_bar(stat="identity") +
+  ggtitle("Innovative Choices by Tool Choice") + 
+  xlab("Tool Choice") +
+  ylab("Innovative Choice Rate")
 ```
 
 # Data sample
 
 Variables used and a random sample of rows from the final analytical dataset are summarized below. 
 
-```{r data header}
+```{r data header, echo=FALSE}
 names(factorial)
 datatable(sample_n(factorial, 5), 
           caption = "Randomly selected rows of processed data.",

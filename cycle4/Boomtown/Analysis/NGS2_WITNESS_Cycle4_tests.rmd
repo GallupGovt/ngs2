@@ -36,6 +36,13 @@ lapply(c(tests,data), dlScripts)
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("survey_tests_cycle_4_code.R")
 ```
+# Participant Demos
+
+```{r demos, echo=FALSE}
+initial_survey <- gs[!duplicated(gs[,c('playerid')]),] 
+demos <- c("Age_Group", "Gender", "Education_Group", "Employment_Status", "Online_Research_Experience")
+apply(initial_survey[demos], 2, table, useNA = "always")
+```
 
 # Hypothesis Test Results Summary
 ```{r table, echo=FALSE}

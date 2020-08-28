@@ -20,18 +20,18 @@ setting_counts[is.na(setting_counts)] <- 0
 factorial$matchDate <- as.POSIXct(factorial$matchDate,format="%d/%m/%Y")
 dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
 
-# Game times
-factorial$date.time <- as.POSIXct(factorial$date.time,format="%d/%m/%Y %H:%M")
-times<-aggregate(date.time ~ matchid, data=factorial, mean)
+# Game times (date.time deprecated in Cycle 4)
+#factorial$date.time <- as.POSIXct(factorial$date.time,format="%d/%m/%Y %H:%M")
+#times<-aggregate(date.time ~ matchid, data=factorial, mean)
 
 # Games by hour
-times$hour <- strftime(times$date.time, format="%d/%m/%Y %H")
-times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
-times$day <- strftime(times$date.time, format="%Y-%m-%d")
+#times$hour <- strftime(times$date.time, format="%d/%m/%Y %H")
+#times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
+#times$day <- strftime(times$date.time, format="%Y-%m-%d")
 
-hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
-facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
-labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")
+#hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
+#facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
+#labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")
                  
 factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)

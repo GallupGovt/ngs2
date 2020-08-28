@@ -522,3 +522,5 @@ test_summary <- bind_rows(
   FD_round_pt$test_summary,
   IP_tool_pt$test_summary,
   RC_time_t$test_summary)
+
+nPlayers <- length(unique(gs$playerid))

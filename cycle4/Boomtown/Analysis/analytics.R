@@ -5,9 +5,6 @@
 factorial$group <- factorial$matchid
 nGames<-length(unique(factorial$group))
 
-# Number of players connected
-nPlayers<-length(unique(factorial$player))
-
 # Number of unique experimental conditions played
 nConditions<-length(unique(factorial$settingsNum))
 agg <- aggregate(data=factorial, matchid ~ settingsNum, function(x) length(unique(x)))

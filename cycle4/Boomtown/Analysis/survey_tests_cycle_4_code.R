@@ -475,11 +475,12 @@ IP_tool_pt <- paired_samples_test(
 age_comp_aov <- oneway_anova_test(data = gs, key.var = "Age", group.var = "Competition", question = "")
 
 # Perceived Opponent Strength (Q2_2) by Competition
-POS_comp_aov <- oneway_anova_test(data = gs, key.var = "Perceived_Opponent_Strength", group.var = "Competition", 
+gs_comp <- subset (gs, Competition != "None")
+POS_comp_aov <- oneway_anova_test(data = gs_comp, key.var = "Perceived_Opponent_Strength", group.var = "Competition", 
                                   question = "Q: The opposing teams were stronger than my team.")
 
 # Perceived Competition (Q3_2) by Competition 
-PC_comp_aov <- oneway_anova_test(data = gs, key.var = "Perceived_Competition", group.var = "Competition", 
+PC_comp_aov <- oneway_anova_test(data = gs_comp, key.var = "Perceived_Competition", group.var = "Competition", 
                                  question = "Q: The relationship between my team and the other teams was competitive.")
 
 ## Test Results Summary

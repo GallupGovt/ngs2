@@ -30,11 +30,13 @@ dlScripts <- function (scriptNames) {
   close(fileConn)
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
-tests <- c("survey_tests_cycle_4_code.R")
+tests <- c("survey_tests_cycle_4_code.R", "analytics.R")
 data <- c("game_survey_data.csv")
 lapply(c(tests,data), dlScripts)
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("survey_tests_cycle_4_code.R")
+factorial <- read.csv(file="game_data.csv")
+source("analytics.R")
 ```
 # Participant Demos
 
@@ -49,7 +51,7 @@ apply(initial_survey[demos], 2, table, useNA = "always")
 kable(test_summary)
 ```
 
-# Players Composition
+# Randomization Checks
 ## Age
 ### Age by Competition Condition
 ```{r age_comp_aov, echo=FALSE}
@@ -210,13 +212,21 @@ ore_supp_prop$barplot
 ore_stru_chisq$barplot
 ```
 
-## Tolerance of Ambiguity (TA) by Tolerance Condition
-```{r TA_tole_t, echo=FALSE}
-TA_tole_t$barplot
-TA_tole_t$boxplot
+# Manipulation Checks
+## Uncertainty/Risk
+
++ Check test items propose obvious choices to test whether participants are paying attention.   
++ Check test items show that tool choices were adequately understood by participants. 
+
+```{r toolControls}
+toolControls
+```
++ A total of `r length(allWrong$matchid)` games failed all four check test items. 
+
+```{r allwrong}
+allWrong
 ```
 
-# Post-Game Survey
 ## Perceived Opponent Strength by Competition Condition
 ```{r POS_comp_aov, echo=FALSE}
 POS_comp_aov$barplot
@@ -227,6 +237,32 @@ POS_comp_aov$boxplot
 ```{r PC_comp_aov, echo=FALSE}
 PC_comp_aov$barplot
 PC_comp_aov$boxplot
+```
+
+
+## 	Heuristic Reasoning: 
+
+Tool choices for each of the three experimental conditions dealing with availability were compared for consistency of voting with the availability heuristic.
+
+```{r avail}
+avail
+availPlots_inmot1$barplot
+availPlots_inmot2$barplot
+availPlots_innovation$barplot
+```
+
+## 	Network density: 
+
+The correspondence of organizational density structures and actual communication flows will be measured via a communications density score, measuring active communication channels (at least one message shared over chat) over total communication channels (graph edges). 
+
+```{r networkDensity}
+densityPlots$barplot
+```
+
+## Tolerance of Ambiguity (TA) by Tolerance Condition
+```{r TA_tole_t, echo=FALSE}
+TA_tole_t$barplot
+TA_tole_t$boxplot
 ```
 
 ## Time Pressure by Round Type

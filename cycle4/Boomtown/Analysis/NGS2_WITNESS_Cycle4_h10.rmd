@@ -61,13 +61,13 @@ fittedGlmer
 ```
 - Prediction 1: Uncertainty moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals for high uncertainty prospects than low uncertainty prospects.
 
-```{r h10null}
+```{r h10.1}
 load (file ="bayesGlmer_h10_h10.1")
 fittedGlmer
 ```
 - Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
 
-```{r h10null}
+```{r h10.2}
 load (file ="bayesGlmer_h10_h10.2")
 fittedGlmer
 ```

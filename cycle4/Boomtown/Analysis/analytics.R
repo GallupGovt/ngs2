@@ -29,7 +29,7 @@ dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
 #hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
 #facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
 #labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")
-                 
+
 factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
 tool_rate1<-factorial.tools%>%
@@ -43,20 +43,20 @@ ggplot(data=tool_rate1, aes(x=tools, y=rate_inn)) +
 
 # Tool controls
 
-factorial.tests<-subset(factorial, tools=="9" | tools=="10" | tools=="11" | tools=="12")
-factorial.tests$choice <- "Wrong"
-factorial.tests$choice[factorial.tests$tools=="9" & factorial.tests$FinalItemSelected=="TNTbarrel"] <- "Correct"
-factorial.tests$choice[factorial.tests$tools=="10" & factorial.tests$FinalItemSelected=="SatchelCharge"] <- "Correct"
-factorial.tests$choice[factorial.tests$tools=="11" & factorial.tests$FinalItemSelected=="SatchelCharge"] <- "Correct"
-factorial.tests$choice[factorial.tests$tools=="12" & factorial.tests$FinalItemSelected=="SatchelCharge"] <- "Correct"
+tool_checks<-subset(tool_checks, tools=="9" | tools=="10" | tools=="11" | tools=="12")
+tool_checks$choice <- "Wrong"
+tool_checks$choice[tool_checks$tools=="9" & tool_checks$FinalItemSelected=="TNTbarrel"] <- "Correct"
+tool_checks$choice[tool_checks$tools=="10" & tool_checks$FinalItemSelected=="SatchelCharge"] <- "Correct"
+tool_checks$choice[tool_checks$tools=="11" & tool_checks$FinalItemSelected=="SatchelCharge"] <- "Correct"
+tool_checks$choice[tool_checks$tools=="12" & tool_checks$FinalItemSelected=="SatchelCharge"] <- "Correct"
 
-factorial.tests$choice2 <- 0
-factorial.tests$choice2[factorial.tests$tools=="9" & factorial.tests$FinalItemSelected=="TNTbarrel"] <- 1
-factorial.tests$choice2[factorial.tests$tools=="10" & factorial.tests$FinalItemSelected=="SatchelCharge"] <- 1
-factorial.tests$choice2[factorial.tests$tools=="11" & factorial.tests$FinalItemSelected=="SatchelCharge"] <- 1
-factorial.tests$choice2[factorial.tests$tools=="12" & factorial.tests$FinalItemSelected=="SatchelCharge"] <- 1
+tool_checks$choice2 <- 0
+tool_checks$choice2[tool_checks$tools=="9" & tool_checks$FinalItemSelected=="TNTbarrel"] <- 1
+tool_checks$choice2[tool_checks$tools=="10" & tool_checks$FinalItemSelected=="SatchelCharge"] <- 1
+tool_checks$choice2[tool_checks$tools=="11" & tool_checks$FinalItemSelected=="SatchelCharge"] <- 1
+tool_checks$choice2[tool_checks$tools=="12" & tool_checks$FinalItemSelected=="SatchelCharge"] <- 1
 
-tool_rate2 <- factorial.tests %>%
+tool_rate2 <- tool_checks %>%
   group_by(tools, choice) %>%
   summarise(counts  = n()) 
 toolControls<-ggplot(tool_rate2, aes(x = tools, y = counts)) +
@@ -66,19 +66,19 @@ toolControls<-ggplot(tool_rate2, aes(x = tools, y = counts)) +
   ggtitle("Correct Choices for Check Test Items") +
   ylab("Number of Choices") +
   scale_x_continuous ("Check Test Item", breaks=9:12,
-                   labels=c("9"  = "45*100% vs 22*35%", 
-                            "10" = "7*100% vs 76*65%",
-                            "11" = "76*65% vs 162*6%",
-                            "12" = "76*65% vs 22*35%"))
+                      labels=c("9"  = "45*100% vs 22*35%", 
+                               "10" = "7*100% vs 76*65%",
+                               "11" = "76*65% vs 162*6%",
+                               "12" = "76*65% vs 22*35%"))
 
-tool_rate3 <- factorial.tests %>%
+tool_rate3 <- tool_checks %>%
   group_by(matchid) %>%
   summarise(mean(choice2))
 
 allWrong<-as.data.frame(tool_rate3  %>% filter(`mean(choice2)` == 0))
 
 # Manipulation checks
-                 
+
 oneway_anova_test2 <- function(data, key.var, key.var.label = gsub("_", " ", key.var), group.var, group.var.label = gsub("_", " ", group.var), question = ""){
   
   data <- data[, c(group.var, key.var)]
@@ -159,9 +159,9 @@ oneway_anova_test2 <- function(data, key.var, key.var.label = gsub("_", " ", key
               test_summary = test_summary, 
               homogeneity_check_test = homogeneity_check_test))
 }
-                 
+
 #Availability heuristic check 
-                 
+
 availdf <- factorial %>% group_by(framing) %>% 
   summarise_at(c("inmot1", "inmot2", "innovation"), mean, na.rm = TRUE) %>% 
   gather(Outcome, value, -c(framing))
@@ -170,10 +170,10 @@ avail <- ggplot(availdf, aes(fill=Outcome, y=value, x=framing)) +
   geom_bar(position="dodge", stat="identity") +
   ylab ("Probability of innovation") +
   scale_x_continuous ("Framing Condition", breaks=0:2,
-                    labels=c("0" = "No framing", 
-                             "1" = "Negative framing",
-                             "2" = "Positive framing"))
-                 
+                      labels=c("0" = "No framing", 
+                               "1" = "Negative framing",
+                               "2" = "Positive framing"))
+
 factorial$framing2 <- factor(factorial$framing)
 availPlots_inmot1 <- oneway_anova_test2 (
   data = factorial, key.var="inmot1", group.var="framing2")
@@ -183,7 +183,7 @@ availPlots_innovation <- oneway_anova_test2 (
   data = factorial, key.var="innovation", group.var="framing2")
 
 # Network Density check 
-                 
+
 factorial$density2 <- cut(factorial$density, seq(0, 1, 0.25), include.lowest = TRUE)
 densityPlots <- oneway_anova_test2 (
   data = factorial, key.var="chat_per_round", group.var="density2")

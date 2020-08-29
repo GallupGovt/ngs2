@@ -1,7 +1,7 @@
 ---
 title: |
   | NGS2 Cycle 4 Survey Test Results
-author: "Ying Han, PhD, Gallup, Inc."
+author: "Pablo Diego-Rosell & Ying Han, PhD, Gallup, Inc."
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -31,11 +31,12 @@ dlScripts <- function (scriptNames) {
 }
 githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
 tests <- c("survey_tests_cycle_4_code.R", "analytics.R")
-data <- c("game_survey_data.csv")
+data <- c("game_survey_data.csv", "game_data.csv", "tool_checks.csv")
 lapply(c(tests,data), dlScripts)
 game_survey_data <- read.csv(file="game_survey_data.csv")
 source("survey_tests_cycle_4_code.R")
 factorial <- read.csv(file="game_data.csv")
+tool_checks <- read.csv(file="tool_checks.csv")
 source("analytics.R")
 ```
 # Participant Demos
@@ -245,10 +246,8 @@ PC_comp_aov$boxplot
 Tool choices for each of the three experimental conditions dealing with availability were compared for consistency of voting with the availability heuristic.
 
 ```{r avail}
-avail
-availPlots_inmot1$barplot
-availPlots_inmot2$barplot
-availPlots_innovation$barplot
+availPlots_left_vote1$barplot
+availPlots_right_vote1$barplot
 ```
 
 ## 	Network density: 

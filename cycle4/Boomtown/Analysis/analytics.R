@@ -18,17 +18,17 @@ factorial$matchDate <- as.POSIXct(factorial$matchDate,format="%d/%m/%Y")
 dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
 
 # Game times (date.time deprecated in Cycle 4)
-#factorial$date.time <- as.POSIXct(factorial$date.time,format="%d/%m/%Y %H:%M")
-#times<-aggregate(date.time ~ matchid, data=factorial, mean)
+tool_checks$date.time <- as.POSIXct(tool_checks$date.time,format="%d/%m/%Y %H:%M")
+times<-aggregate(date.time ~ matchid, data=tool_checks, mean)
 
 # Games by hour
-#times$hour <- strftime(times$date.time, format="%d/%m/%Y %H")
-#times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
-#times$day <- strftime(times$date.time, format="%Y-%m-%d")
+times$hour <- strftime(times$date.time, format="%d/%m/%Y %H")
+times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
+times$day <- strftime(times$date.time, format="%Y-%m-%d")
 
-#hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
-#facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
-#labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")
+hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
+facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
+labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")
 
 factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
@@ -162,17 +162,80 @@ oneway_anova_test2 <- function(data, key.var, key.var.label = gsub("_", " ", key
 
 #Availability heuristic check 
 
+
+# Framed item
+
+tool_checks <- read.csv(file="tool_checks.csv", stringsAsFactors = FALSE)
+tool_checks <- cbind(tool_checks,
+                     data.frame(do.call('rbind', 
+                                        strsplit(tool_checks$toolsLabel, ',', fixed=TRUE)),
+                                stringsAsFactors = FALSE))
+
+tool_checks$vote1_left <- tool_checks$PlayerVote1 == tool_checks$X1
+tool_checks$vote1_right <- tool_checks$PlayerVote1 == tool_checks$X2
+tool_checks$vote2_left <- tool_checks$PlayerVote2 == tool_checks$X1
+tool_checks$vote2_right <- tool_checks$PlayerVote2 == tool_checks$X2
+tool_checks$finalvote_left <- tool_checks$PlayerVote2 == tool_checks$X1
+tool_checks$finalvote_right <- tool_checks$PlayerVote2 == tool_checks$X2
+
+tool_checks$item_framed <- ifelse(tool_checks$round == 2 | 
+                                tool_checks$round == 6 | 
+                                tool_checks$round == 8 | 
+                                tool_checks$round == 12, 
+                                tool_checks$X2,
+                                ifelse(tool_checks$round == 3 | 
+                                       tool_checks$round == 5 |
+                                       tool_checks$round == 9 |
+                                       tool_checks$round == 10, 
+                                       tool_checks$X1, ""))
+
+tool_checks$left_framing <- ifelse(tool_checks$round == 2 | 
+                                    tool_checks$round == 6 | 
+                                    tool_checks$round == 8 | 
+                                    tool_checks$round == 12, 
+                                  "3. Discouraged-passive",
+                                  ifelse(tool_checks$round == 3 | 
+                                         tool_checks$round == 9, 
+                                         "2. Encouraged-passive", 
+                                         ifelse(tool_checks$round == 5 |
+                                                tool_checks$round == 10, 
+                                                "1. Encouraged-active", 
+                                                "0. No framing")))
+
+tool_checks$right_framing <- ifelse(tool_checks$round == 2 | 
+                                     tool_checks$round == 6 | 
+                                     tool_checks$round == 8 | 
+                                     tool_checks$round == 12, 
+                                   "1. Encouraged-active",
+                                   ifelse(tool_checks$round == 3 | 
+                                            tool_checks$round == 9, 
+                                          "3. Discouraged-active", 
+                                          ifelse(tool_checks$round == 5 |
+                                                   tool_checks$round == 10, 
+                                                 "2. Discouraged-passive", 
+                                                 "0. No framing")))
+
+tool_checks$vote1_left <- as.integer(as.logical(tool_checks$vote1_left))
+
+availPlots_left_vote1 <- oneway_anova_test2 (
+  data = tool_checks, key.var="vote1_left", group.var="left_framing")
+tool_checks$finalvote_left <- as.integer(as.logical(tool_checks$finalvote_left))
+
+availPlots_left_final <- oneway_anova_test2 (
+  data = tool_checks, key.var="finalvote_left", group.var="left_framing")
+
+tool_checks$vote1_right <- as.integer(as.logical(tool_checks$vote1_right))
+
+availPlots_right_vote1 <- oneway_anova_test2 (
+  data = tool_checks, key.var="vote1_right", group.var="right_framing")
+tool_checks$finalvote_right <- as.integer(as.logical(tool_checks$finalvote_right))
+
+availPlots_right_final <- oneway_anova_test2 (
+  data = tool_checks, key.var="finalvote_right", group.var="right_framing")
+
 availdf <- factorial %>% group_by(framing) %>% 
   summarise_at(c("inmot1", "inmot2", "innovation"), mean, na.rm = TRUE) %>% 
   gather(Outcome, value, -c(framing))
-
-avail <- ggplot(availdf, aes(fill=Outcome, y=value, x=framing)) + 
-  geom_bar(position="dodge", stat="identity") +
-  ylab ("Probability of innovation") +
-  scale_x_continuous ("Framing Condition", breaks=0:2,
-                      labels=c("0" = "No framing", 
-                               "1" = "Negative framing",
-                               "2" = "Positive framing"))
 
 factorial$framing2 <- factor(factorial$framing)
 availPlots_inmot1 <- oneway_anova_test2 (

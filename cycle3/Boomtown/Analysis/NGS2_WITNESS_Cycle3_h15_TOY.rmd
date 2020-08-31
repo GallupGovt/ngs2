@@ -1,5 +1,5 @@
 ---
-title: "Group Innovation under Competition and Uncertanity - Cycle 3 Results"
+title: "Group Innovation under Competition and Uncertanity - Cycle 4 Results"
 author: "Pablo Diego-Rosell, PhD  - Gallup"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -13,34 +13,16 @@ output:
     toc: yes
 ---
 
-```{r setup, include=FALSE}
-rm(list = ls(all = TRUE))
-dd <- paste(getwd(), "/output", sep="")
-od <- paste(getwd(), "/output", sep="")
-# load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car, evaluate)
-opts_knit$set(root.dir = od)
-# download scripts and data
-dlScripts <- function (scriptNames) {
-  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
-  fileConn<-file(scriptNames)
-  writeLines(fileHolder, fileConn)
-  close(fileConn)
-}
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
-setup <- c("functions.R", "prep.R")
-hypotheses <- c("h15.R")
-data <- c("game_data.csv", "game_data_group.csv")
-lapply(c(setup, hypotheses, data), dlScripts)
-```
-
 ```{r run_scripts, include=F}
 # run scripts in order
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
 source("functions.R")
 source("prep.R")
-nIter <- 2000
+
+nIter <- 100
 nChains <- 3
 options(mc.cores = parallel::detectCores())
 summarize <- function (file_name) {
@@ -49,10 +31,6 @@ summarize <- function (file_name) {
   print(plot(fittedLmer, pars="beta"))
   print(plot(fittedLmer, "trace", pars="beta"))
 }
-```
-# Hypothesis 15. Tolerance of Ambiguity and Conformity {-}
-
-```{r run_hyp, include=F}
 formula.h15.1<-as.formula("conformity~tolerance+competition+pressure+grmot1+framing+complexity+timeUncertainty+support+centralization+leaderWeight+density+(1|group)")
 fittedGlmer <- stan_glmer(formula.h15.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-2
@@ -81,23 +59,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   return(bridge_priors)
 }
 bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
-bridge_15.1 <- bayesLmer(formula.h15.1, h15.1, factorialGroup)
-test_1_0<-bf(bridge_15.1, bridge_15.0)$bf
-BFs <- data.frame(15, 12)
-colnames(BFs) <- c("Hypothesis", 
-                   "Prediction 1 vs. Null")
-write.csv(BFs, "BFs15.csv")
-```
-
-- Null: Tolerance of Ambiguity does not decrease Conformity. 
-
-```{r comment=''}
 summarize ("bayesLmer_h15.1_h15.0")
-```
-<br />
-- Prediction 1: Tolerance of Ambiguity decreases Conformity.
-
-```{r, fig.hold='hold', out.width = "50%"}
 Bf_plotter("BFs15.csv")
 ```
 

@@ -15,8 +15,13 @@ output:
 
 ```{r run_scripts, include=F}
 # run scripts in order
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
 source("functions.R")
 source("prep.R")
+
 nIter <- 100
 nChains <- 3
 options(mc.cores = parallel::detectCores())

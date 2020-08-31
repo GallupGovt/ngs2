@@ -246,7 +246,9 @@ PC_comp_aov$boxplot
 Tool choices for each of the three experimental conditions dealing with availability were compared for consistency of voting with the availability heuristic.
 
 ```{r avail}
+availPlots_left_vote1_simple$barplot
 availPlots_left_vote1$barplot
+availPlots_right_vote1_simple$barplot
 availPlots_right_vote1$barplot
 ```
 

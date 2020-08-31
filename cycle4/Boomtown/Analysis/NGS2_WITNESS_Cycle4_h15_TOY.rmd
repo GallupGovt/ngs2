@@ -26,10 +26,6 @@ summarize <- function (file_name) {
   print(plot(fittedLmer, pars="beta"))
   print(plot(fittedLmer, "trace", pars="beta"))
 }
-```
-# Hypothesis 15. Tolerance of Ambiguity and Conformity {-}
-
-```{r run_hyp, include=F}
 formula.h15.1<-as.formula("conformity~tolerance+competition+pressure+grmot1+framing+complexity+timeUncertainty+support+centralization+leaderWeight+density+(1|group)")
 fittedGlmer <- stan_glmer(formula.h15.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-2
@@ -64,17 +60,7 @@ BFs <- data.frame(15, 12)
 colnames(BFs) <- c("Hypothesis", 
                    "Prediction 1 vs. Null")
 write.csv(BFs, "BFs15.csv")
-```
-
-- Null: Tolerance of Ambiguity does not decrease Conformity. 
-
-```{r comment=''}
 summarize ("bayesLmer_h15.1_h15.0")
-```
-<br />
-- Prediction 1: Tolerance of Ambiguity decreases Conformity.
-
-```{r, fig.hold='hold', out.width = "50%"}
 Bf_plotter("BFs15.csv")
 ```
 

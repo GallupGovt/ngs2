@@ -54,14 +54,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   return(bridge_priors)
 }
 bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
-bridge_15.1 <- bayesLmer(formula.h15.1, h15.1, factorialGroup)
-test_1_0<-bf(bridge_15.1, bridge_15.0)$bf
-BFs <- data.frame(15, 12)
-colnames(BFs) <- c("Hypothesis", 
-                   "Prediction 1 vs. Null")
-write.csv(BFs, "BFs15.csv")
 summarize ("bayesLmer_h15.1_h15.0")
-Bf_plotter("BFs15.csv")
 ```
 
 <br />

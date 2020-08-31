@@ -162,7 +162,6 @@ oneway_anova_test2 <- function(data, key.var, key.var.label = gsub("_", " ", key
 
 #Availability heuristic check 
 
-
 # Framed item
 
 tool_checks <- read.csv(file="tool_checks.csv", stringsAsFactors = FALSE)
@@ -177,19 +176,6 @@ tool_checks$vote2_left <- tool_checks$PlayerVote2 == tool_checks$X1
 tool_checks$vote2_right <- tool_checks$PlayerVote2 == tool_checks$X2
 tool_checks$finalvote_left <- tool_checks$PlayerVote2 == tool_checks$X1
 tool_checks$finalvote_right <- tool_checks$PlayerVote2 == tool_checks$X2
-
-tool_checks$item_framed <- ifelse(tool_checks$round == 2 | 
-                                    tool_checks$round == 6 | 
-                                    tool_checks$round == 8 | 
-                                    tool_checks$round == 12, 
-                                  tool_checks$X2,
-                                  ifelse(tool_checks$round == 3 | 
-                                           tool_checks$round == 5 |
-                                           tool_checks$round == 9 |
-                                           tool_checks$round == 10 |
-                                           tool_checks$round == 11 |
-                                           tool_checks$round == 13, 
-                                         tool_checks$X1, ""))
 
 tool_checks[,"left_framing"] <- case_when(
   tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",

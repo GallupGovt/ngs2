@@ -1,0 +1,90 @@
+---
+title: "NGS2-WITNESS - Cycle 3 Results: Hypothesis 1"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+# load libraries
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
+# Setup Stan parameters
+
+options(mc.cores = parallel::detectCores())
+nChains <- 3
+nIter <- 100000
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "prep.R")
+hypotheses <- c("h1.R")
+data <- c("game_data.csv", "game_data_group.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+
+# Prepare data
+source("functions.R")
+source("prep.R")
+source ("h1.R")
+summarize_delete ("bayesGlmer_h1_h1.0")
+summarize_delete ("bayesGlmer_h1_h1.1")
+summarize_delete ("bayesGlmer_h1_h1.2")
+summarize_delete ("bayesGlmer_h1_h1.3")
+print ("h1.R complete!")
+```
+### Hypothesis 1. Intergroup Competition and Individual Motivation to Innovate (T1)
+
+- Null: Intergroup competition has no effect on individual motivation to innovate (T1).
+
+```{r h1null}
+load (file ="bayesGlmer_h1_h1.0")
+fittedGlmer
+```
+- Prediction 1: Intergroup competition increases Individual Motivation to Innovate (T1).
+
+```{r }
+load (file ="bayesGlmer_h1_h1.1")
+fittedGlmer
+```
+- Prediction 2: Individual Motivation to Innovate (T1) is u-shaped on intergroup competition.
+```{r }
+load (file ="bayesGlmer_h1_h1.2")
+fittedGlmer
+```
+- Prediction 3: Low intergroup competition decreases Individual Motivation to Innovate (T1).
+
+```{r }
+load (file ="bayesGlmer_h1_h1.3")
+fittedGlmer
+```
+
+```{r h1BFs}
+BFs1 <-read.csv(paste(od, "BFs1.csv", sep = '/'))                      
+BFs1
+```
+
+End Time: `r format(Sys.time(), '%d %B, %Y')`
+
+<br />
+<br />
+<br />

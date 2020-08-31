@@ -1,0 +1,77 @@
+---
+title: "NGS2-WITNESS - Cycle 3 Results: Hypothesis 15"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+# load libraries
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
+# Setup Stan parameters
+
+options(mc.cores = parallel::detectCores())
+nChains <- 3
+nIter <- 30000
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "prep.R")
+hypotheses <- c("h15.R")
+data <- c("game_data.csv", "game_data_group.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+
+# Prepare data
+source("functions.R")
+source("prep.R")
+source ("h15.R")
+summarize_delete ("bayesLmer_h15.1_h15.0")
+summarize_delete ("bayesLmer_h15.1_h15.1")
+print ("h15.R complete!")
+```
+### Hypothesis 15. Tolerance of Ambiguity and Conformity
+
+- Null: Tolerance of Ambiguity does not decrease Conformity. 
+
+```{r h15null}
+load (file ="bayesLmer_h15.1_h15.0")
+fittedLmer
+```
+- Prediction 1: Tolerance of Ambiguity decreases Conformity.
+
+```{r }
+load (file ="bayesLmer_h15.1_h15.1")
+fittedLmer
+```
+
+```{r h15BFs}
+BFs15 <-read.csv(paste(od, "BFs15.csv", sep = '/'))                      
+BFs15
+```
+
+End Time: `r format(Sys.time(), '%d %B, %Y')`
+
+<br />
+<br />
+<br />

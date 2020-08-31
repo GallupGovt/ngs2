@@ -1,0 +1,85 @@
+---
+title: "NGS2-WITNESS - Cycle 3 Results: Hypothesis 8"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+# load libraries
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
+# Setup Stan parameters
+
+options(mc.cores = parallel::detectCores())
+nChains <- 3
+nIter <- 50000
+
+# download scripts and data
+dlScripts <- function (scriptNames) {
+  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
+  fileConn<-file(scriptNames)
+  writeLines(fileHolder, fileConn)
+  close(fileConn)
+}
+githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle3/Boomtown/Analysis"
+setup <- c("functions.R", "prep.R")
+hypotheses <- c("h8.R")
+data <- c("game_data.csv", "game_data_group.csv")
+lapply(c(setup, hypotheses, data), dlScripts)
+
+# Prepare data
+source("functions.R")
+source("prep.R")
+source ("h8.R")
+summarize_delete ("bayesGlmer_h8_h8.0")
+summarize_delete ("bayesGlmer_h8_h8.1")
+summarize_delete ("bayesGlmer_h8_h8.2")
+print ("h8.R complete!")
+```
+### Hypothesis 8. Tolerance of Ambiguity and Heuristic Reasoning
+
+- Null: TA does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals with high TA than those with low TA. 
+
+```{r h8null}
+load (file ="bayesGlmer_h8_h8.0")
+fittedGlmer
+```
+- Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
+
+```{r }
+load (file ="bayesGlmer_h8_h8.1")
+fittedGlmer
+```
+
+- Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
+
+```{r }
+load (file ="bayesGlmer_h8_h8.2")
+fittedGlmer
+```
+
+```{r h8BFs}
+BFs8 <-read.csv(paste(od, "BFs8.csv", sep = '/'))                      
+BFs8
+```
+
+End Time: `r format(Sys.time(), '%d %B, %Y')`
+
+<br />
+<br />
+<br />

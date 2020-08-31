@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -52,22 +52,16 @@ print ("h14.R complete!")
 ```
 ### Hypothesis 14. Intergroup Competition and Conformity
 
+
 - Null: Intergroup Competition does not increase Conformity.
 
-```{r h14null}
-load (file ="bayesLmer_h14.1_h14.0")
-fittedLmer
+```{r comment=''}
+cat(readLines("bayesLmer_h14.1_h14.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Intergroup Competition increases Conformity.
 
-```{r }
-load (file ="bayesLmer_h14.1_h14.1")
-fittedLmer
-```
-
-```{r h14BFs}
-BFs14 <-read.csv(paste(od, "BFs14.csv", sep = '/'))                      
-BFs14
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs14.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,29 +55,15 @@ print ("h5.R complete!")
 
 - Null: Availability of positive or negative examples will not affect individual motivation to innovate (T1).
 
-```{r h5null}
-load (file ="bayesGlmer_h5_h5.0")
-fittedGlmer
+```{r}
+cat(readLines("bayesGlmer_h5_h5.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Availability of a positive example will increase individual motivation to innovate (T1), while availability of a negative example will decrease individual motivation to innovate (T1).
-
-```{r }
-load (file ="bayesGlmer_h5_h5.1")
-fittedGlmer
-```
-
 - Prediction 2: Availability of a negative example will decrease individual motivation to innovate (T1).
 
-```{r }
-load (file ="bayesGlmer_h5_h5.2")
-fittedGlmer
-```
-
 ```{r h5BFs}
-BFs5 <-read.csv(paste(od, "BFs5.csv", sep = '/'))                      
-BFs5
+Bf_plotter("BFs5.csv")
 ```
-
 End Time: `r format(Sys.time(), '%d %B, %Y')`
 
 <br />

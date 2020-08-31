@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -54,20 +54,13 @@ print ("h13.R complete!")
 
 - Null: Time Pressure does not increase Conformity.
 
-```{r h13null}
-load (file ="bayesLmer_h13.1_h13.0")
-fittedLmer
+```{r comment=''}
+cat(readLines("bayesLmer_h13.1_h13.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Time Pressure increases Conformity.
 
-```{r }
-load (file ="bayesLmer_h13.1_h13.1")
-fittedLmer
-```
-
-```{r h13BFs}
-BFs13 <-read.csv(paste(od, "BFs13.csv", sep = '/'))                      
-BFs13
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs13.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

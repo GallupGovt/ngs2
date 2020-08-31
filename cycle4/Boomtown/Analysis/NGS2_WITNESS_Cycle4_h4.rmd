@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -54,20 +54,13 @@ print ("h4.R complete!")
 
 - Null: TA will not moderate the effect of Innovation Uncertainty on Innovative Prospect Value. Individuals high in TA will show the same certainty effect than individuals low in TA. 
 
-```{r h4null}
-load (file ="bayesGlmer_h4_h4.0")
-fittedGlmer
+```{r}
+cat(readLines("bayesGlmer_h4_h4.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: TA will moderate the effect of Innovation Uncertainty on Innovative Prospect Value. Individuals high in TA will show a lower certainty effect than individuals low in TA.
 
-```{r }
-load (file ="bayesGlmer_h4_h4.1")
-fittedGlmer
-```
-
-```{r h4BFs}
-BFs4 <-read.csv(paste(od, "BFs4.csv", sep = '/'))                      
-BFs4
+```{r, fig.hold='hold', fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs4.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

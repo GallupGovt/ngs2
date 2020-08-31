@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,27 +55,14 @@ print ("h8.R complete!")
 
 - Null: TA does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals with high TA than those with low TA. 
 
-```{r h8null}
-load (file ="bayesGlmer_h8_h8.0")
-fittedGlmer
+```{r comment=''}
+cat(readLines("bayesGlmer_h8_h8.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
-
-```{r }
-load (file ="bayesGlmer_h8_h8.1")
-fittedGlmer
-```
-
 - Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
 
-```{r }
-load (file ="bayesGlmer_h8_h8.2")
-fittedGlmer
-```
-
-```{r h8BFs}
-BFs8 <-read.csv(paste(od, "BFs8.csv", sep = '/'))                      
-BFs8
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs8.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

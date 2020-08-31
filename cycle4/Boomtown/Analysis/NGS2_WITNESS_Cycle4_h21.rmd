@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -54,20 +54,13 @@ print ("h21.R complete!")
 
 - Null: Leader vote weight will not increase Group Motivation to Innovate (T2). 
 
-```{r h21null}
-load (file ="bayesLmer_h21_h21.0")
-fittedLmer
+```{r comment=''}
+cat(readLines("bayesLmer_h21_h21.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Leader vote weight will increase Group Motivation to Innovate (T2).
 
-```{r }
-load (file ="bayesLmer_h21_h21.1")
-fittedLmer
-```
-
-```{r h21BFs}
-BFs21 <-read.csv(paste(od, "BFs21.csv", sep = '/'))                      
-BFs21
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs21.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

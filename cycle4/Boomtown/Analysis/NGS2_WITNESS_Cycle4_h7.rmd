@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,27 +55,14 @@ print ("h7.R complete!")
 
 - Null: Perceived intergroup competition does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals facing strong competition as those facing balanced or weak competition.
 
-```{r h7null}
-load (file ="bayesGlmer_h7_h7.0")
-fittedGlmer
+```{r comment=''}
+cat(readLines("bayesGlmer_h7_h7.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals facing strong competition than those facing balanced or weak competition. 
-
-```{r }
-load (file ="bayesGlmer_h7_h7.1")
-fittedGlmer
-```
-
 - Prediction 2: Perceived intergroup competition moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals facing strong competition than those facing balanced or weak competition.
 
-```{r }
-load (file ="bayesGlmer_h7_h7.2")
-fittedGlmer
-```
-
-```{r h7BFs}
-BFs7 <-read.csv(paste(od, "BFs7.csv", sep = '/'))                      
-BFs7
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs7.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

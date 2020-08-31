@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,20 +55,13 @@ print ("h20.R complete!")
 
 - Null: Network Centralization will not decrease Individual motivation to innovate (T2).
 
-```{r h20null}
-load (file ="bayesGlmer_h20_h20.0")
-fittedGlmer
+```{r comment=''}
+cat(readLines("bayesGlmer_h20_h20.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Network Centralization will decrease Individual motivation to innovate (T2)
 
-```{r }
-load (file ="bayesGlmer_h20_h20.1")
-fittedGlmer
-```
-
-```{r h20BFs}
-BFs20 <-read.csv(paste(od, "BFs20.csv", sep = '/'))                      
-BFs20
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs20.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

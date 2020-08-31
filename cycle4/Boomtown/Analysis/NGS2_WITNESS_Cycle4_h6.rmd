@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,31 +55,15 @@ print ("h6.R complete!")
 ### Hypothesis 6. Exogenous Uncertainty and Individual Motivation (T1)
 
 - Null: Increased exogenous uncertainty (ignorance) will not affect individual motivation to innovate (T1)
+
+```{r}
+cat(readLines("bayesGlmer_h6.1_h6.0_summary.txt"), sep = '\n')
+```
 - Prediction 1: Increased exogenous uncertainty (ignorance) will increase individual motivation to innovate (T1).
-
-```{r h6null}
-load (file ="bayesGlmer_h6.1_h6.1null")
-fittedGlmer
-```
-```{r }
-load (file ="bayesGlmer_h6.1_h6.1")
-fittedGlmer
-```
-
 - Prediction 2: Exogenous uncertainty (ignorance) will decrease individual motivation to innovate (T1) in the early stages of the game.
 
-```{r }
-load (file ="bayesGlmer_h6.2_h6.2null")
-fittedGlmer
-```
-```{r }
-load (file ="bayesGlmer_h6.2_h6.2")
-fittedGlmer
-```
-
-```{r h6BFs}
-BFs6 <-read.csv(paste(od, "BFs6.csv", sep = '/'))                      
-BFs6
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs6.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

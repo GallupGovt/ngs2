@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,22 +55,14 @@ print ("h16.R complete!")
 
 - Null: Innovation Complexity does not decrease Conformity. 
 
-```{r h16null}
-load (file ="bayesLmer_h16.1_h16.0")
-fittedLmer
+```{r comment=''}
+cat(readLines("bayesLmer_h16.1_h16.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Innovation Complexity increases Conformity.
 
-```{r }
-load (file ="bayesLmer_h16.1_h16.1")
-fittedLmer
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs16.csv")
 ```
-
-```{r h16BFs}
-BFs16 <-read.csv(paste(od, "BFs16.csv", sep = '/'))                      
-BFs16
-```
-
 End Time: `r format(Sys.time(), '%d %B, %Y')`
 
 <br />

@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -56,31 +56,16 @@ print ("h1.R complete!")
 
 - Null: Intergroup competition has no effect on individual motivation to innovate (T1).
 
-```{r h1null}
-load (file ="bayesGlmer_h1_h1.0")
-fittedGlmer
+```{r comment=''}
+cat(readLines("bayesGlmer_h1_h1.0_summary.txt"), sep = '\n')
 ```
-- Prediction 1: Intergroup competition increases Individual Motivation to Innovate (T1).
 
-```{r }
-load (file ="bayesGlmer_h1_h1.1")
-fittedGlmer
-```
+- Prediction 1: Intergroup competition increases Individual Motivation to Innovate (T1).
 - Prediction 2: Individual Motivation to Innovate (T1) is u-shaped on intergroup competition.
-```{r }
-load (file ="bayesGlmer_h1_h1.2")
-fittedGlmer
-```
 - Prediction 3: Low intergroup competition decreases Individual Motivation to Innovate (T1).
 
-```{r }
-load (file ="bayesGlmer_h1_h1.3")
-fittedGlmer
-```
-
-```{r h1BFs}
-BFs1 <-read.csv(paste(od, "BFs1.csv", sep = '/'))                      
-BFs1
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs1.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

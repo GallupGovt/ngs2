@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -54,22 +54,14 @@ print ("h22.R complete!")
 
 - Null: Individual motivation to innovate (T1) will not increase Individual motivation to innovate (T2).
 
-```{r h22null}
-load (file ="bayesGlmer_h22_h22.0")
-fittedGlmer
+```{r comment=''}
+cat(readLines("bayesGlmer_h22_h22.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Individual motivation to innovate (T1) will increase Individual motivation to innovate (T2).
 
-```{r }
-load (file ="bayesGlmer_h22_h22.1")
-fittedGlmer
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs22.csv")
 ```
-
-```{r h22BFs}
-BFs22 <-read.csv(paste(od, "BFs22.csv", sep = '/'))                      
-BFs22
-```
-
 End Time: `r format(Sys.time(), '%d %B, %Y')`
 
 <br />

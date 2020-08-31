@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -55,33 +55,16 @@ print ("h12.R complete!")
 ### Hypothesis 12. Group Aggregate Motivation to Innovate (T1) and Conformity
 
 - Null: Group Aggregate Motivation to Innovate (T1) will not increase Conformity.
+
+```{r comment=''}
+cat(readLines("bayesLmer_h12.1_h12.0_summary.txt"), sep = '\n')
+```
 - Prediction 1: Group Aggregate Motivation to Innovate (T1) will increase Conformity.
-
-```{r }
-load (file ="bayesLmer_h12.1_h12.0")
-fittedGlmer
-```
-```{r }
-load (file ="bayesLmer_h12.1_h12.1")
-fittedGlmer
-```
-
 - Prediction 2: Group Aggregate Motivation to Innovate (T1) will increase Conformity when the group is unanimous. 
 
-```{r }
-load (file ="bayesLmer_h12.2_h12.0")
-fittedGlmer
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs12.csv")
 ```
-```{r }
-load (file ="bayesLmer_h12.2_h12.1")
-fittedGlmer
-```
-
-```{r h12BFs}
-BFs12 <-read.csv(paste(od, "BFs12.csv", sep = '/'))                      
-BFs12
-```
-
 End Time: `r format(Sys.time(), '%d %B, %Y')`
 
 <br />

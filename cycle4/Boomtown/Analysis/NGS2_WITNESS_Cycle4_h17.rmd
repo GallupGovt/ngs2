@@ -19,9 +19,9 @@ dd <- getwd()
 od <- getwd()
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
 # load libraries
-if (!require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org')
-library ("pacman")
-pacman::p_load(rstan, rstanarm, ggplot2, Hmisc, httr, bridgesampling, DT, dplyr, bayesplot, knitr, lme4, RCurl, formatR, caret, pROC, formatR, foreach, doParallel, forcats, tidyr, car)
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
 
 # Setup Stan parameters
 
@@ -40,7 +40,7 @@ githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/B
 setup <- c("functions.R", "prep.R")
 hypotheses <- c("h17.R")
 data <- c("game_data.csv", "game_data_group.csv")
-lapply(c(setup, hypotheses, data), dlScripts)
+#lapply(c(setup, hypotheses, data), dlScripts)
 
 # Prepare data
 source("functions.R")
@@ -55,20 +55,13 @@ print ("h17.R complete!")
 
 - Null: Group Support for Innovation will not increase Individual Motivation to Innovate (T2).
 
-```{r h17null}
-load (file ="bayesGlmer_h17_h17.0")
-fittedGlmer
+```{r comment=''}
+cat(readLines("bayesGlmer_h17_h17.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Group Support for Innovation will increase Individual Motivation to Innovate (T2).
 
-```{r }
-load (file ="bayesGlmer_h17_h17.1")
-fittedGlmer
-```
-
-```{r h17BFs}
-BFs17 <-read.csv(paste(od, "BFs17.csv", sep = '/'))                      
-BFs17
+```{r, fig.hold='hold', out.width = "50%"}
+Bf_plotter("BFs17.csv")
 ```
 
 End Time: `r format(Sys.time(), '%d %B, %Y')`

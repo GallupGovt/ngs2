@@ -54,9 +54,6 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
                            diagnostic_file = diagnostic)
   fittedLmer$call$diagnostic_file <- diagnostic
   save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
-  bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
-  save (bridge_priors, file = paste("bridge_",label, sep=""))
-  return(bridge_priors)
 }
 bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
 summarize ("bayesLmer_h15.1_h15.0")

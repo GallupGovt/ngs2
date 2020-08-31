@@ -60,7 +60,6 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
 }
 bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
 summarize ("bayesLmer_h15.1_h15.0")
-Bf_plotter("BFs15.csv")
 ```
 
 <br />

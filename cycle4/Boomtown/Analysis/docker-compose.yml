@@ -143,7 +143,7 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_MODELS.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_Hyp.RMD")'
 
   ngs2-toy:
     image: gallupgovt/ngs2_witness:stable

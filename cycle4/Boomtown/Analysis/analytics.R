@@ -27,8 +27,8 @@ times$hour2 <- substr(times$hour, nchar(times$hour) - 2 + 1, nchar(times$hour))
 times$day <- strftime(times$date.time, format="%Y-%m-%d")
 
 hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
-facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
-labs(title="Number of Experiments by Hour and Day", x="Hour of the Day", y="Number of Experiments Played")
+  facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
+  labs(title="Number of Experiments by Hour and Day", x="Hour of the Day", y="Number of Experiments Played")
 
 factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)
@@ -179,59 +179,60 @@ tool_checks$finalvote_left <- tool_checks$PlayerVote2 == tool_checks$X1
 tool_checks$finalvote_right <- tool_checks$PlayerVote2 == tool_checks$X2
 
 tool_checks$item_framed <- ifelse(tool_checks$round == 2 | 
-                                tool_checks$round == 6 | 
-                                tool_checks$round == 8 | 
-                                tool_checks$round == 12, 
-                                tool_checks$X2,
-                                ifelse(tool_checks$round == 3 | 
-                                       tool_checks$round == 5 |
-                                       tool_checks$round == 9 |
-                                       tool_checks$round == 10, 
-                                       tool_checks$X1, ""))
-
-tool_checks$left_framing <- ifelse(tool_checks$round == 2 | 
                                     tool_checks$round == 6 | 
                                     tool_checks$round == 8 | 
                                     tool_checks$round == 12, 
-                                  "3. Discouraged-passive",
+                                  tool_checks$X2,
                                   ifelse(tool_checks$round == 3 | 
-                                         tool_checks$round == 9, 
-                                         "2. Encouraged-passive", 
-                                         ifelse(tool_checks$round == 5 |
-                                                tool_checks$round == 10, 
-                                                "1. Encouraged-active", 
-                                                "0. No framing")))
+                                           tool_checks$round == 5 |
+                                           tool_checks$round == 9 |
+                                           tool_checks$round == 10 |
+                                           tool_checks$round == 11 |
+                                           tool_checks$round == 13, 
+                                         tool_checks$X1, ""))
 
-tool_checks$right_framing <- ifelse(tool_checks$round == 2 | 
-                                     tool_checks$round == 6 | 
-                                     tool_checks$round == 8 | 
-                                     tool_checks$round == 12, 
-                                   "1. Encouraged-active",
-                                   ifelse(tool_checks$round == 3 | 
-                                            tool_checks$round == 9, 
-                                          "3. Discouraged-active", 
-                                          ifelse(tool_checks$round == 5 |
-                                                   tool_checks$round == 10, 
-                                                 "2. Discouraged-passive", 
-                                                 "0. No framing")))
+tool_checks[,"left_framing"] <- case_when(
+  tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(2, 6, 8, 12) ~ "3. Discouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(3, 9) ~ "2. Encouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(5, 10) ~ "1. Encouraged-active",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(3, 5, 9) ~ "3. Discouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(2, 8, 10) ~ "2. Encouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(6, 11, 12) ~ "1. Encouraged-active", 
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(13) ~ "4. Discouraged-active")
+
+
+tool_checks[,"right_framing"] <- case_when(
+  tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(2, 6, 8, 12) ~ "1. Encouraged-active",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(11) ~ "2. Encouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(3, 9) ~ "4. Discouraged-active",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(5, 10, 13) ~ "3. Discouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(3, 5, 9) ~ "1. Encouraged-active",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(2, 8, 10) ~ "4. Discouraged-active",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(6, 11, 12) ~ "3. Discouraged-passive",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(13) ~ "2. Encouraged-passive")
 
 tool_checks$vote1_left <- as.integer(as.logical(tool_checks$vote1_left))
-
-availPlots_left_vote1 <- oneway_anova_test2 (
-  data = tool_checks, key.var="vote1_left", group.var="left_framing")
 tool_checks$finalvote_left <- as.integer(as.logical(tool_checks$finalvote_left))
-
-availPlots_left_final <- oneway_anova_test2 (
-  data = tool_checks, key.var="finalvote_left", group.var="left_framing")
-
 tool_checks$vote1_right <- as.integer(as.logical(tool_checks$vote1_right))
-
-availPlots_right_vote1 <- oneway_anova_test2 (
-  data = tool_checks, key.var="vote1_right", group.var="right_framing")
 tool_checks$finalvote_right <- as.integer(as.logical(tool_checks$finalvote_right))
 
+tool_checks_vote1_left <- tool_checks[complete.cases(tool_checks$vote1_left),]
+availPlots_left_vote1 <- oneway_anova_test2 (
+  data = tool_checks_vote1_left, key.var="vote1_left", group.var="left_framing")
+
+tool_checks_finalvote_left <- tool_checks[complete.cases(tool_checks$finalvote_left),]
+availPlots_left_final <- oneway_anova_test2 (
+  data = tool_checks_finalvote_left, key.var="finalvote_left", group.var="left_framing")
+
+tool_checks_vote1_right <- tool_checks[complete.cases(tool_checks$vote1_right),]
+availPlots_right_vote1 <- oneway_anova_test2 (
+  data = tool_checks_vote1_right, key.var="vote1_right", group.var="right_framing")
+
+tool_checks_finalvote_right <- tool_checks[complete.cases(tool_checks$finalvote_right),]
 availPlots_right_final <- oneway_anova_test2 (
-  data = tool_checks, key.var="finalvote_right", group.var="right_framing")
+  data = tool_checks_finalvote_right, key.var="finalvote_right", group.var="right_framing")
 
 availdf <- factorial %>% group_by(framing) %>% 
   summarise_at(c("inmot1", "inmot2", "innovation"), mean, na.rm = TRUE) %>% 

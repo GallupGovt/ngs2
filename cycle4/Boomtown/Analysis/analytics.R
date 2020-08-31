@@ -213,12 +213,33 @@ tool_checks[,"right_framing"] <- case_when(
   tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(6, 11, 12) ~ "3. Discouraged-passive",
   tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(13) ~ "2. Encouraged-passive")
 
+tool_checks[,"left_framing_simple"] <- case_when(
+  tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(2, 6, 8, 11, 12) ~ "2. Discouraged",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(3, 5, 9, 10, 13) ~ "1. Encouraged",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(3, 5, 9, 13) ~ "2. Discouraged",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(2, 6, 8, 10, 11, 12) ~ "1. Encouraged")
+
+tool_checks[,"right_framing_simple"] <- case_when(
+  tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(2, 6, 8, 11, 12) ~ "1. Encouraged",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(3, 5, 9, 10, 13) ~ "2. Discouraged",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(3, 5, 9, 13) ~ "1. Encouraged",
+  tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(2, 6, 8, 10, 11, 12) ~ "2. Discouraged")
+
+# Explore effect across multiple outcomes (though primary effect should be on vote 1)
+
 tool_checks$vote1_left <- as.integer(as.logical(tool_checks$vote1_left))
 tool_checks$finalvote_left <- as.integer(as.logical(tool_checks$finalvote_left))
 tool_checks$vote1_right <- as.integer(as.logical(tool_checks$vote1_right))
 tool_checks$finalvote_right <- as.integer(as.logical(tool_checks$finalvote_right))
 
+# Run charts for multiple outcomes
+
 tool_checks_vote1_left <- tool_checks[complete.cases(tool_checks$vote1_left),]
+availPlots_left_vote1_simple <- oneway_anova_test2 (
+  data = tool_checks_vote1_left, key.var="vote1_left", group.var="left_framing_simple")
+
 availPlots_left_vote1 <- oneway_anova_test2 (
   data = tool_checks_vote1_left, key.var="vote1_left", group.var="left_framing")
 
@@ -227,6 +248,9 @@ availPlots_left_final <- oneway_anova_test2 (
   data = tool_checks_finalvote_left, key.var="finalvote_left", group.var="left_framing")
 
 tool_checks_vote1_right <- tool_checks[complete.cases(tool_checks$vote1_right),]
+
+availPlots_right_vote1_simple <- oneway_anova_test2 (
+  data = tool_checks_vote1_left, key.var="vote1_right", group.var="right_framing_simple")
 availPlots_right_vote1 <- oneway_anova_test2 (
   data = tool_checks_vote1_right, key.var="vote1_right", group.var="right_framing")
 

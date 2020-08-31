@@ -1,7 +1,7 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 ## Bayesian hypothesis testing (Individual-level outcomes)
 
-# Number of valid games
+# Number of valid experiments
 factorial$group <- factorial$matchid
 nGames<-length(unique(factorial$group))
 
@@ -28,7 +28,7 @@ times$day <- strftime(times$date.time, format="%Y-%m-%d")
 
 hourly_plot <- ggplot(data=times, mapping=aes(x=hour2)) + geom_bar() + 
 facet_grid(facets = day ~ ., margins = FALSE) + theme_bw() + 
-labs(title="Number of games by hour and day", x="Hour of the Day", y="Number of Games Played")
+labs(title="Number of Experiments by Hour and Day", x="Hour of the Day", y="Number of Experiments Played")
 
 factorial.tools<-subset(factorial, tools!="9" & tools!="10" & tools!="11" & tools!="12")
 factorial.tools$innovation2<- as.numeric(factorial.tools$innovation)

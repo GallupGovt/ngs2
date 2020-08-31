@@ -195,12 +195,12 @@ tool_checks[,"left_framing"] <- case_when(
   tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",
   tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(2, 6, 8, 12) ~ "3. Discouraged-passive",
   tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(3, 9) ~ "2. Encouraged-passive",
-  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(5, 10) ~ "1. Encouraged-active",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(5, 10, 13) ~ "1. Encouraged-active",
+  tool_checks[,"settingsNum"] %% 2==1 & tool_checks[,"round"] %in% c(11) ~ "4. Discouraged-active",
   tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(3, 5, 9) ~ "3. Discouraged-passive",
   tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(2, 8, 10) ~ "2. Encouraged-passive",
   tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(6, 11, 12) ~ "1. Encouraged-active", 
   tool_checks[,"settingsNum"] %% 2==0 & tool_checks[,"round"] %in% c(13) ~ "4. Discouraged-active")
-
 
 tool_checks[,"right_framing"] <- case_when(
   tool_checks[,"round"] %in% c(1, 4, 7) ~ "0. No framing",

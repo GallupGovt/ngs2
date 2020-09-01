@@ -1,152 +1,165 @@
 version: '3'
 
 services:
+  
+  ngs2-toy:
+    image: gallupgovt/ngs2_witness:stable
+    volumes:
+      - ./:/app
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h15_TOY.rmd")'
+  
+  ngs2-fieldwork:
+    image: gallupgovt/ngs2_witness:stable
+    volumes:
+      - ./:/app
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_fieldwork.rmd")'
+
+  ngs2-tests:
+    image: gallupgovt/ngs2_witness:stable
+    volumes:
+      - ./:/app
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_tests.rmd")'
+    
   ngs2-c1:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h1.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h1.rmd")'
 
   ngs2-c2:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h2.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h2.rmd")'
 
   ngs2-c3:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h3.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h3.rmd")'
 
   ngs2-c4:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h4.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h4.rmd")'
 
   ngs2-c5:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h5.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h5.rmd")'
 
   ngs2-c6:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h6.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h6.rmd")'
 
   ngs2-c7:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h7.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h7.rmd")'
 
   ngs2-c8:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h8.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h8.rmd")'
 
   ngs2-c9:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h9.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h9.rmd")'
 
   ngs2-c10:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h10.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h10.rmd")'
 
   ngs2-c11:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h11.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h11.rmd")'
 
   ngs2-c12:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h12.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h12.rmd")'
 
   ngs2-c13:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h13.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h13.rmd")'
 
   ngs2-c14:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h14.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h14.rmd")'
 
   ngs2-c15:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h15.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h15.rmd")'
 
   ngs2-c16:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h16.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h16.rmd")'
 
   ngs2-c17:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h17.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h17.rmd")'
 
   ngs2-c18:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h18.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h18.rmd")'
 
   ngs2-c19:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h19.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h19.rmd")'
 
   ngs2-c20:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h20.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h20.rmd")'
 
   ngs2-c21:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h21.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h21.rmd")'
 
   ngs2-c22:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h22.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h22.rmd")'
 
   ngs2-c25:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h25.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h25.rmd")'
 
   ngs2-all:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_MODELS.rmd")'
-
-  ngs2-toy:
-    image: gallupgovt/ngs2_witness:stable
-    volumes:
-      - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_h15_TOY.rmd")'
+    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_Hyp.RMD")'

@@ -1,5 +1,5 @@
 ---
-title: "Group Innovation under Competition and Uncertanity - Cycle 4 Results"
+title: "Group Innovation under Competition and Uncertanity - Cycle 3 Results"
 author: "Pablo Diego-Rosell, PhD  - Gallup"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -18,10 +18,8 @@ output:
 library("RCurl")
 library("bridgesampling")
 library("rstanarm")
-
 source("functions.R")
 source("prep.R")
-
 nIter <- 100
 nChains <- 3
 options(mc.cores = parallel::detectCores())
@@ -33,31 +31,13 @@ summarize <- function (file_name) {
 }
 formula.h15.1<-as.formula("conformity~tolerance+competition+pressure+grmot1+framing+complexity+timeUncertainty+support+centralization+leaderWeight+density+(1|group)")
 fittedGlmer <- stan_glmer(formula.h15.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
-ndim<-length(fittedGlmer$covmat[1,])-2
-priorSD <- 0.05
-h15.0 <- normal(location = c(0.0, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
-h15.1 <- normal(location = c(-0.1, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
-bayesLmer<-function(formula, priors, dataset = factorial) {
-  set.seed(12345)
-  formulatext <- gsub("formula.", "",deparse(substitute(formula)))
-  priorstext <- deparse(substitute(priors))
-  label<-paste(formulatext, "_", priorstext, sep="")
-  diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
-  fittedLmer<- stan_glmer(formula,
-                           data=dataset,
-                           family = gaussian(link = "identity"),
-                           prior = priors,
-                           prior_intercept = normal(0, 2.5),
-                           chains = nChains, 
-                           iter = nIter,
-                           seed = 12345,
-                           diagnostic_file = diagnostic)
-  fittedLmer$call$diagnostic_file <- diagnostic
-  save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
-}
-bridge_15.0 <- bayesLmer(formula.h15.1, h15.0, factorialGroup)
-summarize ("bayesLmer_h15.1_h15.0")
 ```
+
+```{r results}
+summary(fittedGlmer)
+plot(fittedGlmer)
+```
+Test completed successfully! 
 
 <br />
 <br />

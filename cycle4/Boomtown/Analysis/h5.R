@@ -14,9 +14,9 @@ priorSD <- 0.15
 # h5.0 priors (null): Availability of positive or negative examples will not affect individual motivation to innovate (T1)
 h5.0 <- normal(location = c(0.0, 0.0, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
 # h5.1 priors: Availability of a positive example will increase individual motivation to innovate (T1), while availability of a negative example will decrease individual motivation to innovate (T1)
-h5.1 <- normal(location = c(0.3, 0.3, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
+h5.1 <- normal(location = c(-0.3, 0.3, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
 # h5.2 priors: Availability of a negative example will decrease individual motivation to innovate (T1)
-h5.2 <- normal(location = c(0.3, 0.0, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
+h5.2 <- normal(location = c(-0.3, 0.0, rep(0, ndim)), scale = c(priorSD, priorSD, rep(2.5,ndim)), autoscale=FALSE)
 
 # Run models 
 

@@ -37,7 +37,6 @@ fittedGlmer <- stan_glmer(formula.h15.1, data=factorialGroup, family=gaussian(li
 fittedGlmer
 plot(fittedGlmer,  pars = c("alpha", "beta"))
 ```
-Test completed successfully! 
-
 <br />
+Test completed successfully! 
 <br />

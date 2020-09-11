@@ -48,9 +48,9 @@ lapply(c(setup, hypotheses, data), dlScripts)
 # Prepare data
 source("functions.R")
 source("prep.R")
+source("h25.R")
 summarize_delete ("bayesLmer_h25_h25.0")
 summarize_delete ("bayesLmer_h25_h25.1")
-source("h25.R")
 print ("h25.R complete!")
 ```
 

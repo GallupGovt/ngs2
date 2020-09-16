@@ -27,7 +27,7 @@ library("rstanarm")
 
 options(mc.cores = parallel::detectCores())
 nChains <- 3
-nIter <- 100
+nIter <- 100000
 
 # download scripts and data
 dlScripts <- function (scriptNames) {
@@ -40,7 +40,7 @@ githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/B
 setup <- c("functions.R", "prep.R")
 hypotheses <- c("h11.R")
 data <- c("game_data.csv", "game_data_group.csv")
-#lapply(c(setup, hypotheses, data), dlScripts)
+lapply(c(setup, hypotheses, data), dlScripts)
 
 # Prepare data
 source("functions.R")

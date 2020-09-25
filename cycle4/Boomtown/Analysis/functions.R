@@ -184,7 +184,7 @@ bayesPlotter3 <- function (model, priorList, priors1, priors2, priors3, priorSca
 # Function to summarize models and delete files to release memory
 
 summarize_delete <- function (file_name) {
-  closeAllConnections()
+  #closeAllConnections()
   load (file=file_name)
   if (grepl("bayesGlmer_", file_name)){
     file_root <- gsub ("bayesGlmer_", "", file_name)
@@ -207,7 +207,7 @@ summarize_delete <- function (file_name) {
     summary <- summary(fittedLmer, pars="beta", digits = 3)
   }
   summary_name <- paste (file_name, "_summary", ".csv", sep = "")
-  closeAllConnections()
+  #closeAllConnections()
   lapply(list.files(pattern = file_root), file.remove)
   write.csv(summary, summary_name)
   sink(paste (file_name, "_summary", ".txt", sep = ""))
@@ -229,7 +229,7 @@ summarize_delete <- function (file_name) {
     print(plot(fittedLmer, "trace", pars="beta"))
   }
   dev.off()
-  closeAllConnections()
+  #closeAllConnections()
 }
 
 dlScripts <- function (scriptNames) {

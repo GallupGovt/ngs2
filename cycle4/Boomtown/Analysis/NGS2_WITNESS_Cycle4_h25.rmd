@@ -50,8 +50,6 @@ lapply(c(setup, hypotheses, data), dlScripts)
 source("functions.R")
 source("prep.R")
 source("h25.R")
-summarize_delete ("bayesLmer_h25_h25.0")
-summarize_delete ("bayesLmer_h25_h25.1")
 print ("h25.R complete!")
 ```
 
@@ -60,6 +58,8 @@ print ("h25.R complete!")
 - Null: Group Aggregate motivation to innovate (T2) will not increase Group Motivation to Innovate.
 
 ```{r comment=''}
+summarize_delete ("bayesLmer_h25_h25.0")
+summarize_delete ("bayesLmer_h25_h25.1")
 cat(readLines("bayesLmer_h25_h25.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Group Aggregate motivation to innovate (T2) will increase Group Motivation to Innovate.

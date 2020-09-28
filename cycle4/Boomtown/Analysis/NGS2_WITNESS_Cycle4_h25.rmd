@@ -19,7 +19,7 @@ output:
 rm(list = ls(all = TRUE))
 dd <- getwd()
 od <- getwd()
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
+knitr::opts_chunk$set(echo=FALSE, warning=TRUE, strip.white=TRUE, tidy=TRUE, message=TRUE)
 
 # load libraries
 library("RCurl")

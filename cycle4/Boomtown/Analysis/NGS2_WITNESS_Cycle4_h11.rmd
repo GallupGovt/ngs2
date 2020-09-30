@@ -46,8 +46,8 @@ lapply(c(setup, hypotheses, data), dlScripts)
 source("functions.R")
 source("prep.R")
 source ("h11.R")
-summarize_delete ("bayesGlm_h11_h11.0")
-summarize_delete ("bayesGlm_h11_h11.1")
+summarize_delete ("bayesGlmer_h11_h11.0")
+summarize_delete ("bayesGlmer_h11_h11.1")
 print ("h11.R complete!")
 ```
 ### Hypothesis 11. Complexity of Innovation and Heuristic Reasoning

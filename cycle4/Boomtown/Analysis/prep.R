@@ -74,8 +74,7 @@ factorial2[,"framing"] <- case_when(
        factorial2$toolsLabel == "BlackPowder,RDX" |
        factorial2$toolsLabel == "Mine1,Mine2" |
        factorial2$toolsLabel == "Mine3,Mine4") ~ 1) 
-
-
+factorial2$framing <-  as.factor(factorial2$framing)
 factorial <- factorial2
 
 # Group-level data

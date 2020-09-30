@@ -55,13 +55,14 @@ print ("h6.R complete!")
 ### Hypothesis 6. Exogenous Uncertainty and Individual Motivation (T1)
 
 - Null: Increased exogenous uncertainty (ignorance) will not affect individual motivation to innovate (T1)
-
-```{r}
-cat(readLines("bayesGlmer_h6.1_h6.0_summary.txt"), sep = '\n')
-```
 - Prediction 1: Increased exogenous uncertainty (ignorance) will increase individual motivation to innovate (T1).
+```{r}
+cat(readLines("bayesGlmer_h6.1_h6.1null_summary.txt"), sep = '\n')
+```
 - Prediction 2: Exogenous uncertainty (ignorance) will decrease individual motivation to innovate (T1) in the early stages of the game.
-
+```{r}
+cat(readLines("bayesGlmer_h6.2_h6.2null_summary.txt"), sep = '\n')
+```
 ```{r, fig.hold='hold', out.width = "50%"}
 Bf_plotter("BFs6.csv")
 ```

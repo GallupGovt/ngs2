@@ -24,7 +24,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
   bridge_priors <- bridge_sampler(fittedGlmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
   sink()
-  closeAllConnections()
+  #closeAllConnections()
   return(bridge_priors)
 }
 
@@ -51,7 +51,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
   sink()
-  closeAllConnections()
+  #closeAllConnections()
   return(bridge_priors)
 }
 
@@ -78,7 +78,7 @@ bayesGlm<-function(formula, priors, dataset = factorial) {
   bridge_priors <- bridge_sampler(fittedGlm, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
   sink()
-  closeAllConnections()
+  #closeAllConnections()
   return(bridge_priors)
 }
 
@@ -105,7 +105,7 @@ bayesLm<-function(formula, priors, dataset = factorial) {
   bridge_priors <- bridge_sampler(fittedGlm, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
   sink()
-  closeAllConnections()
+  #closeAllConnections()
   return(bridge_priors)
 }
 

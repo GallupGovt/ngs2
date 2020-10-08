@@ -13,67 +13,7 @@ factorial2$grmot2 <- as.numeric(factorial$grmot2)
 factorial2$risk <- as.numeric(factorial$risk)
 factorial2$prb <- as.numeric(factorial$prb)
 factorial2$density <- as.numeric(factorial$density)
-
-library (dplyr)
 factorial2$settings <- as.numeric(levels(factorial2$settingsNum))[factorial2$settingsNum]
-factorial2[,"framing"] <- case_when(
-  factorial2[,"round"] %in% c(1, 4, 7) ~ 0,
-  factorial2[,"settings"] %% 2==1 & 
-    factorial2[,"round"] %in% c(2, 6, 8, 11, 12) & 
-    (factorial2$toolsLabel == "RDX,Dynamite" |
-       factorial2$toolsLabel == "Mine1,BlackPowder" |
-       factorial2$toolsLabel == "Mine2,BlackPowder" |
-       factorial2$toolsLabel == "Mine3,BlackPowder" |
-       factorial2$toolsLabel == "Mine4,BlackPowder") ~ 1, 
-  factorial2[,"settings"] %% 2==1 & 
-    factorial2[,"round"] %in% c(2, 6, 8, 11, 12) & 
-    (factorial2$toolsLabel == "TNTbarrel,SatchelCharge" |
-       factorial2$toolsLabel == "BlackPowder,Dynamite" |
-       factorial2$toolsLabel == "BlackPowder,RDX" |
-       factorial2$toolsLabel == "Mine1,Mine2" |
-       factorial2$toolsLabel == "Mine3,Mine4") ~ 2, 
-  factorial2[,"settings"] %% 2==1 & 
-    factorial2[,"round"] %in% c(3, 5, 9, 10, 13) & 
-    (factorial2$toolsLabel == "RDX,Dynamite" |
-       factorial2$toolsLabel == "Mine1,BlackPowder" |
-       factorial2$toolsLabel == "Mine2,BlackPowder" |
-       factorial2$toolsLabel == "Mine3,BlackPowder" |
-       factorial2$toolsLabel == "Mine4,BlackPowder") ~ 2, 
-  factorial2[,"settings"] %% 2==1 & 
-    factorial2[,"round"] %in% c(3, 5, 9, 10, 13) & 
-    (factorial2$toolsLabel == "TNTbarrel,SatchelCharge" |
-       factorial2$toolsLabel == "BlackPowder,Dynamite" |
-       factorial2$toolsLabel == "BlackPowder,RDX" |
-       factorial2$toolsLabel == "Mine1,Mine2" |
-       factorial2$toolsLabel == "Mine3,Mine4") ~ 1, 
-  factorial2[,"settings"] %% 2==0 & 
-    factorial2[,"round"] %in% c(3, 5, 9, 13) & 
-    (factorial2$toolsLabel == "RDX,Dynamite" |
-       factorial2$toolsLabel == "Mine1,BlackPowder" |
-       factorial2$toolsLabel == "Mine2,BlackPowder" |
-       factorial2$toolsLabel == "Mine3,BlackPowder" |
-       factorial2$toolsLabel == "Mine4,BlackPowder") ~ 1, 
-  factorial2[,"settings"] %% 2==0 & 
-    factorial2[,"round"] %in% c(3, 5, 9, 13) & 
-    (factorial2$toolsLabel == "TNTbarrel,SatchelCharge" |
-       factorial2$toolsLabel == "BlackPowder,Dynamite" |
-       factorial2$toolsLabel == "BlackPowder,RDX" |
-       factorial2$toolsLabel == "Mine1,Mine2" |
-       factorial2$toolsLabel == "Mine3,Mine4") ~ 2, 
-  factorial2[,"settings"] %% 2==0 & 
-    factorial2[,"round"] %in% c(2, 6, 8, 10, 11, 12) & 
-    (factorial2$toolsLabel == "RDX,Dynamite" |
-       factorial2$toolsLabel == "Mine1,BlackPowder" |
-       factorial2$toolsLabel == "Mine2,BlackPowder" |
-       factorial2$toolsLabel == "Mine3,BlackPowder" |
-       factorial2$toolsLabel == "Mine4,BlackPowder") ~ 2, 
-  factorial2[,"settings"] %% 2==0 & 
-    factorial2[,"round"] %in% c(2, 6, 8, 10, 11, 12) & 
-    (factorial2$toolsLabel == "TNTbarrel,SatchelCharge" |
-       factorial2$toolsLabel == "BlackPowder,Dynamite" |
-       factorial2$toolsLabel == "BlackPowder,RDX" |
-       factorial2$toolsLabel == "Mine1,Mine2" |
-       factorial2$toolsLabel == "Mine3,Mine4") ~ 1) 
 factorial2$framing <-  as.factor(factorial2$framing)
 factorial <- factorial2
 

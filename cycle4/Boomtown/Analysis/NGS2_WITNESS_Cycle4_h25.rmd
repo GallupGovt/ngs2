@@ -25,7 +25,6 @@ knitr::opts_chunk$set(echo=FALSE, warning=TRUE, strip.white=TRUE, tidy=TRUE, mes
 library("RCurl")
 library("bridgesampling")
 library("rstanarm")
-library("shinystan")
 
 # Setup Stan parameters
 

@@ -23,7 +23,7 @@ dd_input  <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling
 dd_output <- "//gallup/dod_clients/DARPA_NGS2/CONSULTING/Ying_Han/Data_Wrangling_Cycle_4" 
 
 # fieldwork start date
-field_start <- "08-01-2020"
+field_start <- "01-01-2020"
 
 # game events of interest
 events <- c("SetupMatch", 
@@ -222,11 +222,21 @@ gamelog_process <- function(data){
         (df$toolsLabel == "Mine2,BlackPowder" & df$FinalItemSelected == "Mine2") |
         (df$toolsLabel == "Mine3,BlackPowder" & df$FinalItemSelected == "Mine3") |
         (df$toolsLabel == "Mine4,BlackPowder" & df$FinalItemSelected == "Mine4") ~ 1,
+      (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$FinalItemSelected == "TNTbarrel") | 
+        (df$toolsLabel == "BlackPowder,Dynamite" & df$FinalItemSelected == "BlackPowder") |
+        (df$toolsLabel == "BlackPowder,RDX" & df$FinalItemSelected == "BlackPowder") |
+        (df$toolsLabel == "RDX,Dynamite" & df$FinalItemSelected == "Dynamite") |
+        (df$toolsLabel == "Mine1,Mine2" & df$FinalItemSelected == "Mine1") |
+        (df$toolsLabel == "Mine3,Mine4" & df$FinalItemSelected == "Mine3") |
+        (df$toolsLabel == "Mine1,BlackPowder" & df$FinalItemSelected == "BlackPowder") |
+        (df$toolsLabel == "Mine2,BlackPowder" & df$FinalItemSelected == "BlackPowder") |
+        (df$toolsLabel == "Mine3,BlackPowder" & df$FinalItemSelected == "BlackPowder") |
+        (df$toolsLabel == "Mine4,BlackPowder" & df$FinalItemSelected == "BlackPowder") ~ 0,
       (df$toolsLabel == "TNTbarrel,Dynamite") |
         (df$toolsLabel == "BlackPowder,SatchelCharge") |
         (df$toolsLabel == "SatchelCharge,RDX") |
         (df$toolsLabel == "Dynamite,SatchelCharge") ~ NA_real_,
-      TRUE ~ 0
+      TRUE ~ NA_real_
     )
     
     # Player Vote 1
@@ -241,12 +251,22 @@ gamelog_process <- function(data){
         (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote1 == "Mine2") |
         (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote1 == "Mine3") |
         (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote1 == "Mine4") ~ 1,
+      (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$PlayerVote1 == "TNTbarrel") | 
+        (df$toolsLabel == "BlackPowder,Dynamite" & df$PlayerVote1 == "BlackPowder") |
+        (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote1 == "BlackPowder") |
+        (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote1 == "Dynamite") |
+        (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote1 == "Mine1") |
+        (df$toolsLabel == "Mine3,Mine4" & df$PlayerVote1 == "Mine3") |
+        (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote1 == "BlackPowder") |
+        (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote1 == "BlackPowder") |
+        (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote1 == "BlackPowder") |
+        (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote1 == "BlackPowder") ~ 0,
       (df$toolsLabel == "TNTbarrel,Dynamite") |
         (df$toolsLabel == "BlackPowder,SatchelCharge") |
         (df$toolsLabel == "SatchelCharge,RDX") |
         (df$toolsLabel == "Dynamite,SatchelCharge") ~ NA_real_,
-      TRUE ~ 0
-    )
+      TRUE ~ NA_real_
+      )
     
     # Player Vote 2
     
@@ -261,11 +281,21 @@ gamelog_process <- function(data){
         (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote2 == "Mine2") |
         (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote2 == "Mine3") |
         (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote2 == "Mine4") ~ 1,
+      (df$toolsLabel == "TNTbarrel,SatchelCharge" & df$PlayerVote2 == "TNTbarrel") | 
+        (df$toolsLabel == "BlackPowder,Dynamite" & df$PlayerVote2 == "BlackPowder") |
+        (df$toolsLabel == "BlackPowder,RDX" & df$PlayerVote2 == "BlackPowder") |
+        (df$toolsLabel == "RDX,Dynamite" & df$PlayerVote2 == "Dynamite") |
+        (df$toolsLabel == "Mine1,Mine2" & df$PlayerVote2 == "Mine1") |
+        (df$toolsLabel == "Mine3,Mine4" & df$PlayerVote2 == "Mine3") |
+        (df$toolsLabel == "Mine1,BlackPowder" & df$PlayerVote2 == "BlackPowder") |
+        (df$toolsLabel == "Mine2,BlackPowder" & df$PlayerVote2 == "BlackPowder") |
+        (df$toolsLabel == "Mine3,BlackPowder" & df$PlayerVote2 == "BlackPowder") |
+        (df$toolsLabel == "Mine4,BlackPowder" & df$PlayerVote2 == "BlackPowder") ~ 0,
       (df$toolsLabel == "TNTbarrel,Dynamite") |
         (df$toolsLabel == "BlackPowder,SatchelCharge") |
         (df$toolsLabel == "SatchelCharge,RDX") |
         (df$toolsLabel == "Dynamite,SatchelCharge") ~ NA_real_,
-      TRUE ~ 0
+      TRUE ~ NA_real_
     )
     
     # eligible: at least one round before game suspend
@@ -329,18 +359,66 @@ game_data <- merge(game_data,
                    metadata[,!grepl("group", names(metadata))], 
                    by.x="matchid", by.y="matchID", all.x = TRUE)
 
-# framing
-# 1. when settingsNum is even: framing is 0 for rounds 1, 4, 7; 1 for rounds 2, 6, 8, 10, 12, 13; 2 for rounds 3, 5, 9, 11.
-# 2. when settingsNum is odd : framing is 0 for rounds 1, 4, 7; 1 for rounds 3, 5, 6, 9, 10, 13; 2 for rounds 2, 6, 8, 11, 12.
+# framing: Depends on settingsNum (odd vs. even), roundid_short and tool being presented.  
+
 game_data[,"framing"] <- case_when(
-  game_data[,"settingsNum"] %% 2 == 0 & game_data[,"roundid_short"] %in% c(1, 4, 7) ~ 0,
-  game_data[,"settingsNum"]  %% 2 == 0 & game_data[,"roundid_short"] %in% c(2, 6, 8, 10, 12, 13) ~ 1,
-  game_data[,"settingsNum"]  %% 2 == 0 & game_data[,"roundid_short"] %in% c(3, 5, 9, 11) ~ 2,
-  game_data[,"settingsNum"]  %% 2 == 1 & game_data[,"roundid_short"] %in% c(1, 4, 7) ~ 0,
-  game_data[,"settingsNum"]  %% 2 == 1 & game_data[,"roundid_short"] %in% c(3, 5, 9, 10, 13) ~ 1,
-  game_data[,"settingsNum"]  %% 2 == 1 & game_data[,"roundid_short"] %in% c(2, 6, 8, 11, 12) ~ 2,
-  TRUE ~ NA_real_
-)
+  game_data[,"roundid_short"] %in% c(1, 4, 7) ~ 0,
+  game_data[,"settingsNum"] %% 2==1 & 
+    game_data[,"roundid_short"] %in% c(2, 6, 8, 11, 12) & 
+    (game_data$toolsLabel == "RDX,Dynamite" |
+       game_data$toolsLabel == "Mine1,BlackPowder" |
+       game_data$toolsLabel == "Mine2,BlackPowder" |
+       game_data$toolsLabel == "Mine3,BlackPowder" |
+       game_data$toolsLabel == "Mine4,BlackPowder") ~ 1, 
+  game_data[,"settingsNum"] %% 2==1 & 
+    game_data[,"roundid_short"] %in% c(2, 6, 8, 11, 12) & 
+    (game_data$toolsLabel == "TNTbarrel,SatchelCharge" |
+       game_data$toolsLabel == "BlackPowder,Dynamite" |
+       game_data$toolsLabel == "BlackPowder,RDX" |
+       game_data$toolsLabel == "Mine1,Mine2" |
+       game_data$toolsLabel == "Mine3,Mine4") ~ 2, 
+  game_data[,"settingsNum"] %% 2==1 & 
+    game_data[,"roundid_short"] %in% c(3, 5, 9, 10, 13) & 
+    (game_data$toolsLabel == "RDX,Dynamite" |
+       game_data$toolsLabel == "Mine1,BlackPowder" |
+       game_data$toolsLabel == "Mine2,BlackPowder" |
+       game_data$toolsLabel == "Mine3,BlackPowder" |
+       game_data$toolsLabel == "Mine4,BlackPowder") ~ 2, 
+  game_data[,"settingsNum"] %% 2==1 & 
+    game_data[,"roundid_short"] %in% c(3, 5, 9, 10, 13) & 
+    (game_data$toolsLabel == "TNTbarrel,SatchelCharge" |
+       game_data$toolsLabel == "BlackPowder,Dynamite" |
+       game_data$toolsLabel == "BlackPowder,RDX" |
+       game_data$toolsLabel == "Mine1,Mine2" |
+       game_data$toolsLabel == "Mine3,Mine4") ~ 1, 
+  game_data[,"settingsNum"] %% 2==0 & 
+    game_data[,"roundid_short"] %in% c(3, 5, 9, 13) & 
+    (game_data$toolsLabel == "RDX,Dynamite" |
+       game_data$toolsLabel == "Mine1,BlackPowder" |
+       game_data$toolsLabel == "Mine2,BlackPowder" |
+       game_data$toolsLabel == "Mine3,BlackPowder" |
+       game_data$toolsLabel == "Mine4,BlackPowder") ~ 1, 
+  game_data[,"settingsNum"] %% 2==0 & 
+    game_data[,"roundid_short"] %in% c(3, 5, 9, 13) & 
+    (game_data$toolsLabel == "TNTbarrel,SatchelCharge" |
+       game_data$toolsLabel == "BlackPowder,Dynamite" |
+       game_data$toolsLabel == "BlackPowder,RDX" |
+       game_data$toolsLabel == "Mine1,Mine2" |
+       game_data$toolsLabel == "Mine3,Mine4") ~ 2, 
+  game_data[,"settingsNum"] %% 2==0 & 
+    game_data[,"roundid_short"] %in% c(2, 6, 8, 10, 11, 12) & 
+    (game_data$toolsLabel == "RDX,Dynamite" |
+       game_data$toolsLabel == "Mine1,BlackPowder" |
+       game_data$toolsLabel == "Mine2,BlackPowder" |
+       game_data$toolsLabel == "Mine3,BlackPowder" |
+       game_data$toolsLabel == "Mine4,BlackPowder") ~ 2, 
+  game_data[,"settingsNum"] %% 2==0 & 
+    game_data[,"roundid_short"] %in% c(2, 6, 8, 10, 11, 12) & 
+    (game_data$toolsLabel == "TNTbarrel,SatchelCharge" |
+       game_data$toolsLabel == "BlackPowder,Dynamite" |
+       game_data$toolsLabel == "BlackPowder,RDX" |
+       game_data$toolsLabel == "Mine1,Mine2" |
+       game_data$toolsLabel == "Mine3,Mine4") ~ 1) 
 
 # group vote
 group_vote <- aggregate(x = game_data[, c("PlayerVote1","PlayerVote2")], 
@@ -507,8 +585,9 @@ game_data$playernum <- as.integer(factor(game_data$player))
 
 game_dataNum <- game_data
 game_dataNum[] <- lapply(game_dataNum, as.numeric)
-game_dataNum$grmot1 <- ave(game_dataNum$inmot1, game_data$groupRound)
-game_dataNum$grmot2 <- ave(game_dataNum$inmot2, game_data$groupRound)
+game_dataNum$grmot1 <- ave(game_dataNum$inmot1, game_data$groupRound, FUN=function(x) mean(x, na.rm=T))
+summary(game_dataNum$grmot1)
+game_dataNum$grmot2 <- ave(game_dataNum$inmot2, game_data$groupRound, FUN=function(x) mean(x, na.rm=T))
 game_dataNum$conformity<-ifelse(
   game_dataNum$grmot1>0.5 & game_dataNum$inmot1==0 & game_dataNum$inmot2==1,1,
   ifelse(
@@ -529,7 +608,7 @@ game_dataGroup2$conformity <- as.numeric(game_dataGroup$conformity)
 game_dataGroup2$grmot1 <- as.numeric(game_dataGroup$grmot1)
 game_dataGroup2$grmot2 <- as.numeric(game_dataGroup$grmot2)
 game_dataGroup2$risk <- as.numeric(game_dataGroup$risk)
-game_dataGroup2$innovation <- as.numeric(game_dataGroup$innovation)-1
+game_dataGroup2$innovation <- as.numeric(game_dataGroup$innovation)
 game_dataGroup <- game_dataGroup2
 
 # Merge conformity and group motivation vars back with individual level data
@@ -581,12 +660,29 @@ game_data_aggr <- aggregate(game_data[,!grepl(paste(vars, collapse = "|"), names
                             FUN = unique)
 game_data_aggr <- game_data_aggr %>% mutate(matchid_playerid = paste(matchid, playerid, sep = "-"))
 
-# merge game_data_aggr with survey_1 using palyer id first, and then merge with survey_2 using matchid_playerid
+# merge game_data_aggr with survey_1 using player id first, and then merge with survey_2 using matchid_playerid
 game_survey_data <- merge(game_data_aggr, survey_1, by.x = "playerid", by.y = "PlayerId", all.x = T)
 game_survey_data <- merge(game_survey_data, survey_2, by.x = "matchid_playerid", by.y = "MatchId_PlayerId", all.x = T)
 
 # check value ranges for each variable
 check_range(data = game_survey_data)
+
+# Split tool checks into separate datafile
+
+keepvars <- c("matchid",
+              "player",
+              "playernum",
+              "tools",
+              "framing",
+              "toolsLabel",
+              "PlayerVote1",
+              "PlayerVote2",
+              "FinalItemSelected",
+              "date.time",
+              "round",
+              "settingsNum")
+
+tool_checks <- game_data[ , which(names(game_data) %in% keepvars)]
 
 # Drop scrap variables
 
@@ -596,13 +692,35 @@ dropvars <- c("groupRound",
               "roundid_short", 
               "playerid", 
               "competitive.level", 
-              "consumableKey")
+              "consumableKey", 
+              "matchSetting3Label",
+              "competitionLabel",
+              "supportLabel",
+              "FinalItemSelected",
+              "eligible",
+              "date.time",
+              "replay",
+              "port",
+              "testID",
+              "votationType",
+              "toleranceLabel",
+              "GroupVote1",
+              "GroupVote2",
+              "playernum",
+              "PlayerVote1",
+              "PlayerVote2", 
+              "structure")
 
 game_data <- game_data[ , -which(names(game_data) %in% dropvars)]
-game_dataGroup <- game_dataGroup[ , -which(names(game_dataGroup) %in% dropvars)]
+
+dropvars2 <- c(dropvars, "inmot1", "inmot2", "timeUncertaintyLabel", "unanimity",
+               "toolsLabel", "organizationalStructure", "player")
+game_dataGroup <- game_dataGroup[ , -which(names(game_dataGroup) %in% dropvars2)]
 
 # output all data (individual and group level)
 
+write.csv(tool_checks, paste(dd_output, 'tool_checks.csv', sep = '/'), row.names = FALSE)
 write.csv(game_data, paste(dd_output, 'game_data.csv', sep = '/'), row.names = FALSE)
 write.csv(game_dataGroup, paste(dd_output, 'game_data_group.csv', sep = '/'), row.names = FALSE)
 write.csv(game_survey_data, paste(dd_output, "game_survey_data.csv", sep="/"), row.names = F)
+

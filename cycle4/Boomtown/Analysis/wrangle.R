@@ -709,10 +709,9 @@ dropvars <- c("groupRound",
               "playernum",
               "PlayerVote1",
               "PlayerVote2", 
-              "structure")
+              "matchDate")
 
 game_data <- game_data[ , -which(names(game_data) %in% dropvars)]
-
 dropvars2 <- c(dropvars, "inmot1", "inmot2", "timeUncertaintyLabel", "unanimity",
                "toolsLabel", "organizationalStructure", "player")
 game_dataGroup <- game_dataGroup[ , -which(names(game_dataGroup) %in% dropvars2)]

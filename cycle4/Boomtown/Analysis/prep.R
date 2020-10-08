@@ -30,3 +30,4 @@ factorialGroup2$density <- as.numeric(factorialGroup$density)
 factorialGroup2$centralization <- as.numeric(factorialGroup$centralization)
 factorialGroup2$leaderWeight <- as.numeric(factorialGroup$leaderWeight)
 factorialGroup <- factorialGroup2
+factorialGroup$innovation <- factorialGroup$innovation-1

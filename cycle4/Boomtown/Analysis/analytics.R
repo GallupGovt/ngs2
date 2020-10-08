@@ -14,8 +14,8 @@ setting_counts<- merge(df, agg, by="settingsNum", all=TRUE)
 setting_counts[is.na(setting_counts)] <- 0
 
 # Game dates
-factorial$matchDate <- as.POSIXct(factorial$matchDate,format="%d/%m/%Y")
-dates<-aggregate(matchDate ~ matchid, data=factorial, mean)
+tool_checks$matchDate <- as.POSIXct(tool_checks$date.time,format="%d/%m/%Y")
+dates<-aggregate(matchDate ~ matchid, data=tool_checks, mean)
 
 # Game times (date.time deprecated in Cycle 4)
 tool_checks$date.time <- as.POSIXct(tool_checks$date.time,format="%d/%m/%Y %H:%M")

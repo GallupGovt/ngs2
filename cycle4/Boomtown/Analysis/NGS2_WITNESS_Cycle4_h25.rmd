@@ -23,6 +23,7 @@ cat(readLines("bayesLmer_h25_h25.0_summary.txt"), sep = '\n')
 - Prediction 1: Group Aggregate motivation to innovate (T2) will increase Group Motivation to Innovate.
 
 ```{r, fig.hold='hold', out.width = "50%"}
+source("functions.R")
 Bf_plotter("BFs25.csv")
 ```
 

@@ -1,11 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
-# Formula
+# Iterations
+nIter <- 50000
 
+# Formula
 formula.h25<-as.formula("innovation~grmot2+leaderWeight+centralization+density+conformity+grmot1+support+framing+complexity+timeUncertainty+pressure+tolerance+competition+(1|group)")
 
 # Extract number of prior parameters ('ndim') to be declared
-
 fittedGlmer <- stan_glmer(formula.h25, data=factorialGroup, family=binomial(link = "logit"), iter=3, chains=1)
 ndim<-length(fittedGlmer$covmat[1,])-2
 
@@ -22,13 +23,17 @@ h25.1 <- normal(location = c(1.45, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndi
 bridge_25.0 <- bayesLmer(formula.h25, h25.0, factorialGroup)
 bridge_25.1 <- bayesLmer(formula.h25, h25.1, factorialGroup)
 
-# Calculate BFs for all comparisons
-
+# Calculate and save BFs for all comparisons
 test_1_0<-bf(bridge_25.1, bridge_25.0)$bf
-
-# Save BFs
-
 BFs <- data.frame(25, test_1_0)
 colnames(BFs) <- c("Hypothesis",
                     "Prediction 1 vs. Null")
 write.csv(BFs, paste(od, "BFs25.csv", sep = '/'))                      
+
+# Summarize/delete models
+summarize_delete ("bayesLmer_h25_h25.0")
+summarize_delete ("bayesLmer_h25_h25.1")
+
+# Render results in notebook
+
+rmarkdown::render("NGS2_WITNESS_Cycle4_h25.rmd")

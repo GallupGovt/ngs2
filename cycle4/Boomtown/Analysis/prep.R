@@ -1,3 +1,20 @@
+rm(list = ls(all = TRUE))
+dd <- getwd()
+od <- getwd()
+knitr::opts_chunk$set(echo=FALSE, warning=TRUE, strip.white=TRUE, tidy=TRUE, message=TRUE)
+
+# load libraries
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
+# Setup Stan parameters and helper functions
+
+options(mc.cores = parallel::detectCores())
+nChains <- 3
+source("functions.R")
+
+# Prepare data
 # Individual-level data
 
 factorial <- read.csv(file="game_data.csv")

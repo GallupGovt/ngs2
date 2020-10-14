@@ -163,3 +163,9 @@ services:
     volumes:
       - ./:/app
     command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_Hyp.RMD")'
+    
+  ngs2-h25:
+    image: gallupgovt/ngs2_witness:stable
+    volumes:
+      - ./:/app
+    command: Rscript -e 'source("h25.R")'

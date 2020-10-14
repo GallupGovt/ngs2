@@ -1,5 +1,9 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
 # Iterations
 nIter <- 50000
 

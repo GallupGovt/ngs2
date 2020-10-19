@@ -24,13 +24,13 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h1.rmd")'
+    command: Rscript -e 'source("h1.R")'
 
   ngs2-c2:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h2.rmd")'
+    command: Rscript -e 'source("h2.R")'
 
   ngs2-c3:
     image: gallupgovt/ngs2_witness:stable
@@ -54,7 +54,7 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h6.rmd")'
+    command: Rscript -e 'source("h6.R")'
 
   ngs2-c7:
     image: gallupgovt/ngs2_witness:stable
@@ -156,16 +156,5 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h25.rmd")'
-
-  ngs2-all:
-    image: gallupgovt/ngs2_witness:stable
-    volumes:
-      - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle3_Hyp.RMD")'
-    
-  ngs2-h25:
-    image: gallupgovt/ngs2_witness:stable
-    volumes:
-      - ./:/app
     command: Rscript -e 'source("h25.R")'
+

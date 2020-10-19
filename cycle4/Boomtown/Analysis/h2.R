@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 50000
+
 # Formula
 formula.h2.1<-as.formula("inmot1~toolsCPT+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)")
 formula.h2.2<-as.formula("inmot1~toolsEUT+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)")
@@ -60,5 +67,13 @@ colnames(BFs) <- c("Hypothesis",
                      "Prediction 2 vs. Null", 
                      "Prediction 3 vs. Null",
                      "Prediction 4 vs. Null")
-write.csv(BFs, paste(od, "BFs2.csv", sep = '/'))                      
+write.csv(BFs, paste(od, "BFs2.csv", sep = '/'))
 
+summarize_delete ("bayesGlmer_h2.1_h2.0")
+summarize_delete ("bayesGlmer_h2.1_h2.1")
+summarize_delete ("bayesGlmer_h2.2_h2.0")
+summarize_delete ("bayesGlmer_h2.2_h2.2")
+summarize_delete ("bayesGlmer_h2.3_h2.0")
+summarize_delete ("bayesGlmer_h2.3_h2.3")
+summarize_delete ("bayesGlmer_h2.4_h2.0")
+summarize_delete ("bayesGlmer_h2.4_h2.4")

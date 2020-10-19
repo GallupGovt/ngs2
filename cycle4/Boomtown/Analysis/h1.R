@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 100000
+
 # Formula
 formula.h1<-as.formula("inmot1~competition+tools+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)") #Formula h1.null
 
@@ -46,4 +53,13 @@ colnames(BFs) <- c("Hypothesis",
                       "Prediction 1 vs. Null", 
                       "Prediction 2 vs. Null", 
                       "Prediction 3 vs. Null")
-write.csv(BFs, paste(od, "BFs1.csv", sep = '/'))                      
+write.csv(BFs, paste(od, "BFs1.csv", sep = '/'))          
+
+# Summarize/delete models
+summarize_delete ("bayesGlmer_h1_h1.0")
+summarize_delete ("bayesGlmer_h1_h1.1")
+summarize_delete ("bayesGlmer_h1_h1.2")
+summarize_delete ("bayesGlmer_h1_h1.3")
+
+# Render results into notebook
+rmarkdown::render("NGS2_WITNESS_Cycle4_h1.rmd")

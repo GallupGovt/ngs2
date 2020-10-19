@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 100000
+
 # Turn 'round' into numeric for interaction testing purposes
 # then turn back into factorial at the end of the script
 
@@ -53,4 +60,9 @@ colnames(BFs) <- c("Hypothesis",
 write.csv(BFs, paste(od, "BFs6.csv", sep = '/'))                      
 
 factorial$round <- factor(factorial$round)
+
+summarize_delete ("bayesGlmer_h6.1_h6.1null")
+summarize_delete ("bayesGlmer_h6.1_h6.1")
+summarize_delete ("bayesGlmer_h6.2_h6.2null")
+summarize_delete ("bayesGlmer_h6.2_h6.2")
 

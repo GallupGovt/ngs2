@@ -13,45 +13,6 @@ output:
     toc: yes
 ---
 
-```{r setup, include=FALSE}
-rm(list = ls(all = TRUE))
-dd <- getwd()
-od <- getwd()
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
-# load libraries
-library("RCurl")
-library("bridgesampling")
-library("rstanarm")
-
-# Setup Stan parameters
-
-options(mc.cores = parallel::detectCores())
-nChains <- 3
-nIter <- 100000
-
-# download scripts and data
-dlScripts <- function (scriptNames) {
-  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
-  fileConn<-file(scriptNames)
-  writeLines(fileHolder, fileConn)
-  close(fileConn)
-}
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
-setup <- c("functions.R", "prep.R")
-hypotheses <- c("h1.R")
-data <- c("game_data.csv", "game_data_group.csv")
-lapply(c(setup, hypotheses, data), dlScripts)
-
-# Prepare data
-source("functions.R")
-source("prep.R")
-source ("h1.R")
-summarize_delete ("bayesGlmer_h1_h1.0")
-summarize_delete ("bayesGlmer_h1_h1.1")
-summarize_delete ("bayesGlmer_h1_h1.2")
-summarize_delete ("bayesGlmer_h1_h1.3")
-print ("h1.R complete!")
-```
 ### Hypothesis 1. Intergroup Competition and Individual Motivation to Innovate (T1)
 
 - Null: Intergroup competition has no effect on individual motivation to innovate (T1).
@@ -65,6 +26,7 @@ cat(readLines("bayesGlmer_h1_h1.0_summary.txt"), sep = '\n')
 - Prediction 3: Low intergroup competition decreases Individual Motivation to Innovate (T1).
 
 ```{r, fig.hold='hold', out.width = "50%"}
+source("functions.R")
 Bf_plotter("BFs1.csv")
 ```
 

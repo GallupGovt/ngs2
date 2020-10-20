@@ -13,44 +13,6 @@ output:
     toc: yes
 ---
 
-```{r setup, include=FALSE}
-rm(list = ls(all = TRUE))
-dd <- getwd()
-od <- getwd()
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
-# load libraries
-library("RCurl")
-library("bridgesampling")
-library("rstanarm")
-
-# Setup Stan parameters
-
-options(mc.cores = parallel::detectCores())
-nChains <- 3
-nIter <- 50000
-
-# download scripts and data
-dlScripts <- function (scriptNames) {
-  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
-  fileConn<-file(scriptNames)
-  writeLines(fileHolder, fileConn)
-  close(fileConn)
-}
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
-setup <- c("functions.R", "prep.R")
-hypotheses <- c("h5.R")
-data <- c("game_data.csv", "game_data_group.csv")
-lapply(c(setup, hypotheses, data), dlScripts)
-
-# Prepare data
-source("functions.R")
-source("prep.R")
-source ("h5.R")
-summarize_delete ("bayesGlmer_h5_h5.0")
-summarize_delete ("bayesGlmer_h5_h5.1")
-summarize_delete ("bayesGlmer_h5_h5.2")
-print ("h5.R complete!")
-```
 ### Hypothesis 5.  Availability Heuristic and Individual Motivation (T1)
 
 - Null: Availability of positive or negative examples will not affect individual motivation to innovate (T1).
@@ -62,6 +24,7 @@ cat(readLines("bayesGlmer_h5_h5.0_summary.txt"), sep = '\n')
 - Prediction 2: Availability of a negative example will decrease individual motivation to innovate (T1).
 
 ```{r h5BFs}
+source("functions.R")
 Bf_plotter("BFs5.csv")
 ```
 End Time: `r format(Sys.time(), '%d %B, %Y')`

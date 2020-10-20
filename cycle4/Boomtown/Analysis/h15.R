@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 30000
+
 # Formula
 formula.h15.1<-as.formula("conformity~tolerance+competition+pressure+grmot1+framing+complexity+timeUncertainty+support+centralization+leaderWeight+density+(1|group)")
 
@@ -30,4 +37,7 @@ test_1_0<-bf(bridge_15.1, bridge_15.0)$bf
 BFs <- data.frame(15, test_1_0)
 colnames(BFs) <- c("Hypothesis", 
                    "Prediction 1 vs. Null")
-write.csv(BFs, paste(od, "BFs15.csv", sep = '/'))                      
+write.csv(BFs, paste(od, "BFs15.csv", sep = '/'))
+
+summarize_delete ("bayesLmer_h15.1_h15.0")
+summarize_delete ("bayesLmer_h15.1_h15.1")

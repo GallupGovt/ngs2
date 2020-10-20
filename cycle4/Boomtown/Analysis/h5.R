@@ -49,3 +49,6 @@ write.csv(BFs, paste(od, "BFs5.csv", sep = '/'))
 summarize_delete ("bayesGlmer_h5_h5.0")
 summarize_delete ("bayesGlmer_h5_h5.1")
 summarize_delete ("bayesGlmer_h5_h5.2")
+
+# Render results into notebook
+rmarkdown::render("NGS2_WITNESS_Cycle4_h5.rmd")

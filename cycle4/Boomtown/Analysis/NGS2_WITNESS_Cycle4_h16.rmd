@@ -13,44 +13,6 @@ output:
     toc: yes
 ---
 
-```{r setup, include=FALSE}
-rm(list = ls(all = TRUE))
-dd <- getwd()
-od <- getwd()
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, strip.white=TRUE, tidy=TRUE)
-# load libraries
-library("RCurl")
-library("bridgesampling")
-library("rstanarm")
-
-# Setup Stan parameters
-
-options(mc.cores = parallel::detectCores())
-nChains <- 3
-nIter <- 50000
-
-# download scripts and data
-dlScripts <- function (scriptNames) {
-  fileHolder <- getURL(paste(githubRepo, scriptNames, sep = "/"), ssl.verifypeer = FALSE)
-  fileConn<-file(scriptNames)
-  writeLines(fileHolder, fileConn)
-  close(fileConn)
-}
-githubRepo <- "https://raw.githubusercontent.com/GallupGovt/ngs2/master/cycle4/Boomtown/Analysis"
-setup <- c("functions.R", "prep.R")
-hypotheses <- c("h16.R")
-data <- c("game_data.csv", "game_data_group.csv")
-lapply(c(setup, hypotheses, data), dlScripts)
-
-# Prepare data
-source("functions.R")
-source("prep.R")
-source ("h16.R")
-summarize_delete ("bayesLmer_h16.1_h16.0")
-summarize_delete ("bayesLmer_h16.1_h16.1")
-print ("h16.R complete!")
-```
-
 ### Hypothesis 16. Innovation Complexity and Conformity
 
 - Null: Innovation Complexity does not decrease Conformity. 
@@ -61,6 +23,7 @@ cat(readLines("bayesLmer_h16.1_h16.0_summary.txt"), sep = '\n')
 - Prediction 1: Innovation Complexity increases Conformity.
 
 ```{r, fig.hold='hold', out.width = "50%"}
+source("functions.R")
 Bf_plotter("BFs16.csv")
 ```
 End Time: `r format(Sys.time(), '%d %B, %Y')`

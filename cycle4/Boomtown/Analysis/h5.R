@@ -12,7 +12,7 @@ formula.h5<-as.formula("inmot1~framing+competition+tools+tolerance+support+centr
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- suppressWarnings(stan_glmer(formula.h5, data=factorial, family=binomial(link="logit"), iter=3, chains=1))
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h5, data=factorial, family=binomial(link="logit"), iter=3, chains=1, refresh=0))
 ndim<-length(fittedGlmer$covmat[1,])-3
 
 # Declare priors

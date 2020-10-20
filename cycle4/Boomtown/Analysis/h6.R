@@ -65,4 +65,3 @@ summarize_delete ("bayesGlmer_h6.1_h6.1null")
 summarize_delete ("bayesGlmer_h6.1_h6.1")
 summarize_delete ("bayesGlmer_h6.2_h6.2null")
 summarize_delete ("bayesGlmer_h6.2_h6.2")
-

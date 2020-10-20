@@ -1,0 +1,44 @@
+---
+title: "Group Innovation under Competition and Uncertanity - Cycle 4 Results"
+author: "Pablo Diego-Rosell, PhD  - Gallup"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    number_sections: yes
+    theme: united
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r run_scripts, include=F}
+# run scripts in order
+library("RCurl")
+library("bridgesampling")
+library("rstanarm")
+
+source("functions.R")
+source("prep.R")
+
+nIter <- 100
+nChains <- 3
+options(mc.cores = parallel::detectCores())
+summarize <- function (file_name) {
+  load (file=file_name)
+  print(summary(fittedLmer, pars="beta", digits = 3))
+  print(plot(fittedLmer, pars="beta"))
+  print(plot(fittedLmer, "trace", pars="beta"))
+}
+formula.h15.1<-as.formula("conformity~tolerance+competition+pressure+grmot1+framing+complexity+timeUncertainty+support+centralization+leaderWeight+density+(1|group)")
+fittedGlmer <- stan_glmer(formula.h15.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1)
+```
+
+```{r results}
+fittedGlmer
+plot(fittedGlmer,  pars = c("alpha", "beta"))
+```
+<br />
+Test completed successfully! 
+<br />

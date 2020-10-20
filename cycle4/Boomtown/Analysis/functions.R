@@ -179,8 +179,6 @@ summarize_delete <- function (file_name) {
   } else  {
     file_root <- gsub ("bayesLmer_", "", file_name)
   }
-  tryCatch(errors <-  read.delim(paste ("errors_", file_root, ".txt", sep = "")), 
-           error=function(e) NULL)
   if (grepl("bayesGlmer_", file_name)){
     summary <- summary(fittedGlmer, pars="beta", digits = 3)
   } else if (grepl("bayesGlm_", file_name)) {
@@ -196,7 +194,6 @@ summarize_delete <- function (file_name) {
   write.csv(summary, summary_name)
   sink(paste (file_name, "_summary", ".txt", sep = ""))
   print (summary)
-  tryCatch(print (errors), error=function(e) NULL) 
   sink()
   pdf(paste (file_name, "_summary", ".pdf", sep = ""))
   if (grepl("bayesGlmer_", file_name)){

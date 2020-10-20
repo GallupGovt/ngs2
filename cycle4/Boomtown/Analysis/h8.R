@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 50000
+
 # Formula
 formula.h8<-as.formula("inmot1~framing*tolerance+competition+timeUncertainty+tools+support+centralization+leaderWeight+pressure+density+(1|player)")
 
@@ -37,4 +44,8 @@ colnames(BFs) <- c("Hypothesis",
                     "Prediction 1 vs. Prediction 2", 
                     "Prediction 1 vs. Null", 
                     "Prediction 2 vs. Null")
-write.csv(BFs, paste(od, "BFs8.csv", sep = '/'))                      
+write.csv(BFs, paste(od, "BFs8.csv", sep = '/'))
+
+summarize_delete ("bayesGlmer_h8_h8.0")
+summarize_delete ("bayesGlmer_h8_h8.1")
+summarize_delete ("bayesGlmer_h8_h8.2")

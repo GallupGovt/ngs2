@@ -36,19 +36,19 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h3.rmd")'
+    command: Rscript -e 'source("h3.R")'
 
   ngs2-c4:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h4.rmd")'
+    command: Rscript -e 'source("h4.R")'
 
   ngs2-c5:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h5.rmd")'
+    command: Rscript -e 'source("h5.R")'
 
   ngs2-c6:
     image: gallupgovt/ngs2_witness:stable
@@ -60,97 +60,97 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h7.rmd")'
+    command: Rscript -e 'source("h7.R")'
 
   ngs2-c8:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h8.rmd")'
+    command: Rscript -e 'source("h8.R")'
 
   ngs2-c9:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h9.rmd")'
+    command: Rscript -e 'source("h9.R")'
 
   ngs2-c10:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h10.rmd")'
+    command: Rscript -e 'source("h10.R")'
 
   ngs2-c11:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h11.rmd")'
+    command: Rscript -e 'source("h11.R")'
 
   ngs2-c12:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h12.rmd")'
+    command: Rscript -e 'source("h12.R")'
 
   ngs2-c13:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h13.rmd")'
+    command: Rscript -e 'source("h13.R")'
 
   ngs2-c14:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h14.rmd")'
+    command: Rscript -e 'source("h14.R")'
 
   ngs2-c15:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h15.rmd")'
+    command: Rscript -e 'source("h15.R")'
 
   ngs2-c16:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h16.rmd")'
+    command: Rscript -e 'source("h16.R")'
 
   ngs2-c17:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h17.rmd")'
+    command: Rscript -e 'source("h17.R")'
 
   ngs2-c18:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h18.rmd")'
+    command: Rscript -e 'source("h18.R")'
 
   ngs2-c19:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h19.rmd")'
+    command: Rscript -e 'source("h19.R")'
 
   ngs2-c20:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h20.rmd")'
+    command: Rscript -e 'source("h20.R")'
 
   ngs2-c21:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h21.rmd")'
+    command: Rscript -e 'source("h21.R")'
 
   ngs2-c22:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'rmarkdown::render("./NGS2_WITNESS_Cycle4_h22.rmd")'
+    command: Rscript -e 'source("h22.R")'
 
   ngs2-c25:
     image: gallupgovt/ngs2_witness:stable

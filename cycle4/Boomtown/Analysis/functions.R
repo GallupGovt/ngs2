@@ -15,6 +15,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
                            chains = nChains, 
                            iter = nIter, 
                            seed = 12345,
+                           refresh = 10000,
                            diagnostic_file = diagnostic)
   fittedGlmer$call$diagnostic_file <- diagnostic
   save (fittedGlmer, file = paste("bayesGlmer_",label, sep=""))
@@ -38,6 +39,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
                            chains = nChains, 
                            iter = nIter,
                            seed = 12345,
+                           refresh = 10000,
                            diagnostic_file = diagnostic)
   fittedLmer$call$diagnostic_file <- diagnostic
   save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
@@ -61,6 +63,7 @@ bayesGlm<-function(formula, priors, dataset = factorial) {
                            chains = nChains, 
                            iter = nIter, 
                            seed = 12345,
+                           refresh = 10000,
                            diagnostic_file = diagnostic)
   fittedGlm$call$diagnostic_file <- diagnostic
   save (fittedGlm, file = paste("bayesGlm_",label, sep=""))
@@ -84,6 +87,7 @@ bayesLm<-function(formula, priors, dataset = factorial) {
                            chains = nChains, 
                            iter = nIter, 
                            seed = 12345,
+                           refresh = 10000,
                            diagnostic_file = diagnostic)
   fittedGlm$call$diagnostic_file <- diagnostic
   save (fittedGlm, file = paste("bayesGlm_",label, sep=""))

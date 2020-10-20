@@ -12,7 +12,7 @@ formula.h13.1<-as.formula("conformity~pressure+grmot1+framing+complexity+timeUnc
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- suppressWarnings(stan_glmer(formula.h13.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1))
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h13.1, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1, refresh=0))
 ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors

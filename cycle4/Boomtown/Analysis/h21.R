@@ -1,6 +1,13 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
-# Formula
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 50000
+
+# Formula
 formula.h21<-as.formula("innovation~leaderWeight+grmot2+centralization+density+conformity+grmot1+support+framing+complexity+timeUncertainty+pressure+tolerance+competition+(1|group)")
 
 # Extract number of prior parameters ('ndim') to be declared
@@ -31,3 +38,6 @@ BFs <- data.frame(21, test_1_0)
 colnames(BFs) <- c("Hypothesis",
                     "Prediction 1 vs. Null")
 write.csv(BFs, paste(od, "BFs21.csv", sep = '/'))                      
+
+summarize_delete ("bayesLmer_h21_h21.0")
+summarize_delete ("bayesLmer_h21_h21.1")

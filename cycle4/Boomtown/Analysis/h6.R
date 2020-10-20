@@ -65,3 +65,6 @@ summarize_delete ("bayesGlmer_h6.1_h6.1null")
 summarize_delete ("bayesGlmer_h6.1_h6.1")
 summarize_delete ("bayesGlmer_h6.2_h6.2null")
 summarize_delete ("bayesGlmer_h6.2_h6.2")
+
+# Render results into notebook
+rmarkdown::render("NGS2_WITNESS_Cycle4_h6.rmd")

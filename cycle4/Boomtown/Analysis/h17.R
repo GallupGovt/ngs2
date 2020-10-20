@@ -11,7 +11,7 @@ nIter <- 50000
 formula.h17<-as.formula("inmot2~support+framing+complexity+timeUncertainty+pressure+tolerance+competition+centralization+leaderWeight+density+(1|player)")
 
 # Extract number of prior parameters ('ndim') to be declared
-fittedGlmer <- stan_glmer(formula.h17, data=factorial, family=binomial(link="logit"), iter=3, chains=1)
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h17, data=factorial, family=binomial(link="logit"), iter=3, chains=1))
 ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors

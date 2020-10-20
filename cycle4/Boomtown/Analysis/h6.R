@@ -18,9 +18,9 @@ formula.h6.2<-as.formula("inmot1~timeUncertainty*round+framing+competition+tools
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- stan_glmer(formula.h6.1, data=factorial, family=binomial(link="logit"), iter=3, chains=1)
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h6.1, data=factorial, family=binomial(link="logit"), iter=3, chains=1))
 ndim<-length(fittedGlmer$covmat[1,])-2
-fittedGlmer <- stan_glmer(formula.h6.2, data=factorial, family=binomial(link="logit"), iter=3, chains=1)
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h6.2, data=factorial, family=binomial(link="logit"), iter=3, chains=1))
 ndim2<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors

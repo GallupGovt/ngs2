@@ -6,10 +6,6 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
-  con <- file(paste("errors_",label, ".txt", sep=""))
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
-  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlmer<- stan_glmer(formula,
                            data=dataset,
@@ -24,7 +20,6 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
   save (fittedGlmer, file = paste("bayesGlmer_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedGlmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
-  sink()
   closeAllConnections()
   return(bridge_priors)
 }
@@ -34,11 +29,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
-  con <- file(paste("errors_",label, ".txt", sep=""))
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
-  sink(con, append=TRUE, type="output")
-  diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
+   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedLmer<- stan_glmer(formula,
                            data=dataset,
                            family = gaussian(link = "identity"),
@@ -52,7 +43,6 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   save (fittedLmer, file = paste("bayesLmer_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedLmer, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
-  sink()
   closeAllConnections()
   return(bridge_priors)
 }
@@ -62,10 +52,6 @@ bayesGlm<-function(formula, priors, dataset = factorial) {
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
-  con <- file(paste("errors_",label, ".txt", sep=""))
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
-  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlm<- stan_glm(formula,
                            data=dataset,
@@ -80,7 +66,6 @@ bayesGlm<-function(formula, priors, dataset = factorial) {
   save (fittedGlm, file = paste("bayesGlm_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedGlm, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
-  sink()
   closeAllConnections()
   return(bridge_priors)
 }
@@ -90,10 +75,6 @@ bayesLm<-function(formula, priors, dataset = factorial) {
   formulatext <- gsub("formula.", "",deparse(substitute(formula)))
   priorstext <- deparse(substitute(priors))
   label<-paste(formulatext, "_", priorstext, sep="")
-  con <- file(paste("errors_",label, ".txt", sep=""))
-  sink(con, append=TRUE)
-  sink(con, append=TRUE, type="message")
-  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlm<- stan_glm(formula,
                            data=dataset,
@@ -108,7 +89,6 @@ bayesLm<-function(formula, priors, dataset = factorial) {
   save (fittedGlm, file = paste("bayesGlm_",label, sep=""))
   bridge_priors <- bridge_sampler(fittedGlm, silent=TRUE)
   save (bridge_priors, file = paste("bridge_",label, sep=""))
-  sink()
   closeAllConnections()
   return(bridge_priors)
 }
@@ -212,7 +192,7 @@ summarize_delete <- function (file_name) {
   }
   summary_name <- paste (file_name, "_summary", ".csv", sep = "")
   closeAllConnections()
-  #lapply(list.files(pattern = file_root), file.remove)
+  lapply(list.files(pattern = file_root), file.remove)
   write.csv(summary, summary_name)
   sink(paste (file_name, "_summary", ".txt", sep = ""))
   print (summary)

@@ -77,3 +77,6 @@ summarize_delete ("bayesGlmer_h2.3_h2.0")
 summarize_delete ("bayesGlmer_h2.3_h2.3")
 summarize_delete ("bayesGlmer_h2.4_h2.0")
 summarize_delete ("bayesGlmer_h2.4_h2.4")
+
+# Render results into notebook
+rmarkdown::render("NGS2_WITNESS_Cycle4_h2.rmd")

@@ -9,6 +9,7 @@ bayesGlmer<-function(formula, priors, dataset = factorial) {
   con <- file(paste("errors_",label, ".txt", sep=""))
   sink(con, append=TRUE)
   sink(con, append=TRUE, type="message")
+  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlmer<- stan_glmer(formula,
                            data=dataset,
@@ -36,6 +37,7 @@ bayesLmer<-function(formula, priors, dataset = factorial) {
   con <- file(paste("errors_",label, ".txt", sep=""))
   sink(con, append=TRUE)
   sink(con, append=TRUE, type="message")
+  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedLmer<- stan_glmer(formula,
                            data=dataset,
@@ -63,6 +65,7 @@ bayesGlm<-function(formula, priors, dataset = factorial) {
   con <- file(paste("errors_",label, ".txt", sep=""))
   sink(con, append=TRUE)
   sink(con, append=TRUE, type="message")
+  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlm<- stan_glm(formula,
                            data=dataset,
@@ -90,6 +93,7 @@ bayesLm<-function(formula, priors, dataset = factorial) {
   con <- file(paste("errors_",label, ".txt", sep=""))
   sink(con, append=TRUE)
   sink(con, append=TRUE, type="message")
+  sink(con, append=TRUE, type="output")
   diagnostic<-paste("diagnostic_",formulatext, "_", priorstext, ".csv", sep="")
   fittedGlm<- stan_glm(formula,
                            data=dataset,

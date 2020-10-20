@@ -52,3 +52,6 @@ summarize_delete ("bayesLmer_h12.1_h12.0")
 summarize_delete ("bayesLmer_h12.1_h12.1")
 summarize_delete ("bayesLmer_h12.2_h12.0")
 summarize_delete ("bayesLmer_h12.2_h12.2")
+
+# Render results into notebook
+rmarkdown::render("NGS2_WITNESS_Cycle4_h12.rmd")

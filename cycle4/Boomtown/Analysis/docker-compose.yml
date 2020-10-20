@@ -24,137 +24,137 @@ services:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h1.R")'
+    command: R CMD BATCH h1.R
 
   ngs2-c2:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h2.R")'
+    command: R CMD BATCH h2.R
 
   ngs2-c3:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h3.R")'
+    command: R CMD BATCH h3.R
 
   ngs2-c4:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h4.R")'
+    command: R CMD BATCH h4.R
 
   ngs2-c5:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h5.R")'
+    command: R CMD BATCH h5.R
 
   ngs2-c6:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h6.R")'
+    command: R CMD BATCH h6.R
 
   ngs2-c7:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h7.R")'
+    command: R CMD BATCH h7.R
 
   ngs2-c8:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h8.R")'
+    command: R CMD BATCH h8.R
 
   ngs2-c9:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h9.R")'
+    command: R CMD BATCH h9.R
 
   ngs2-c10:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h10.R")'
+    command: R CMD BATCH h10.R
 
   ngs2-c11:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h11.R")'
+    command: R CMD BATCH h11.R
 
   ngs2-c12:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h12.R")'
+    command: R CMD BATCH h12.R
 
   ngs2-c13:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h13.R")'
+    command: R CMD BATCH h13.R
 
   ngs2-c14:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h14.R")'
+    command: R CMD BATCH h14.R
 
   ngs2-c15:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h15.R")'
+    command: R CMD BATCH h15.R
 
   ngs2-c16:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h16.R")'
+    command: R CMD BATCH h16.R
 
   ngs2-c17:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h17.R")'
+    command: R CMD BATCH h17.R
 
   ngs2-c18:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h18.R")'
+    command: R CMD BATCH h18.R
 
   ngs2-c19:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h19.R")'
+    command: R CMD BATCH h19.R
 
   ngs2-c20:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h20.R")'
+    command: R CMD BATCH h20.R
 
   ngs2-c21:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h21.R")'
+    command: R CMD BATCH h21.R
 
   ngs2-c22:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h22.R")'
+    command: R CMD BATCH h22.R
 
   ngs2-c25:
     image: gallupgovt/ngs2_witness:stable
     volumes:
       - ./:/app
-    command: Rscript -e 'source("h25.R")'
+    command: R CMD BATCH h25.R
 

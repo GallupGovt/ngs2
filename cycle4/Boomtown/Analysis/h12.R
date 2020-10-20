@@ -13,7 +13,7 @@ formula.h12.2<-as.formula("conformity~unanimous+framing+complexity+timeUncertain
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- suppressWarnings(stan_glmer(formula.h12.2, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1))
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h12.2, data=factorialGroup, family=gaussian(link = "identity"), iter=3, chains=1, refresh=0))
 ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors

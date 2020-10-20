@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 50000
+
 # Formula
 formula.h17<-as.formula("inmot2~support+framing+complexity+timeUncertainty+pressure+tolerance+competition+centralization+leaderWeight+density+(1|player)")
 
@@ -27,3 +34,6 @@ BFs <- data.frame(17, test_1_0)
 colnames(BFs) <- c("Hypothesis",
                     "Prediction 1 vs. Null")
 write.csv(BFs, paste(od, "BFs17.csv", sep = '/'))                      
+
+summarize_delete ("bayesGlmer_h17_h17.0")
+summarize_delete ("bayesGlmer_h17_h17.1")

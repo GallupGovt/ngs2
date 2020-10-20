@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 30000
+
 # Formula
 formula.h12.1<-as.formula("conformity~grmot1+framing+complexity+timeUncertainty+pressure+tolerance+competition+support+centralization+leaderWeight+density+(1|group)")
 formula.h12.2<-as.formula("conformity~unanimous+framing+complexity+timeUncertainty+pressure+tolerance+competition+support+centralization+leaderWeight+density+(1|group)")
@@ -40,3 +47,8 @@ colnames(BFs) <- c("Hypothesis",
                    "Prediction 1 vs. Null", 
                    "Prediction 2 vs. Null")
 write.csv(BFs, paste(od, "BFs12.csv", sep = '/'))                      
+
+summarize_delete ("bayesLmer_h12.1_h12.0")
+summarize_delete ("bayesLmer_h12.1_h12.1")
+summarize_delete ("bayesLmer_h12.2_h12.0")
+summarize_delete ("bayesLmer_h12.2_h12.2")

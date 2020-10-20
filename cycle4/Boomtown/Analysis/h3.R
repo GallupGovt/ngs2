@@ -1,5 +1,12 @@
 ## Created by Pablo Diego Rosell, PhD, for Gallup inc. in September 2019
 
+# Environment
+source("functions.R")
+source("prep.R")
+
+# Iterations
+nIter <- 50000
+
 # Formula
 formula.h3<-as.formula("inmot1~risk+prb+competition+tolerance+support+structure+pressure+framing+density+timeUncertainty+(1|player)") #Formula h1.null
 
@@ -29,3 +36,5 @@ colnames(BFs) <- c("Hypothesis",
                      "Prediction 1 vs. Null")
 write.csv(BFs, paste(od, "BFs3.csv", sep = '/'))                      
 
+summarize_delete ("bayesGlmer_h3_h3.0")
+summarize_delete ("bayesGlmer_h3_h3.1")

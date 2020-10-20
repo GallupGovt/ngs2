@@ -12,7 +12,7 @@ formula.h21<-as.formula("innovation~leaderWeight+grmot2+centralization+density+c
 
 # Extract number of prior parameters ('ndim') to be declared
 
-fittedGlmer <- suppressWarnings(stan_glmer(formula.h21, data=factorialGroup, family=binomial(link = "logit"), iter=3, chains=1))
+fittedGlmer <- suppressWarnings(stan_glmer(formula.h21, data=factorialGroup, family=binomial(link = "logit"), iter=3, chains=1, refresh=0))
 ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors

@@ -13,15 +13,15 @@ formula.h11<-as.formula("inmot1~framing*complexity+timeUncertainty+pressure+tole
 # Extract number of prior parameters ('ndim') to be declared
 
 fittedGlmer <- suppressWarnings(stan_glmer(formula.h11, data=factorial, family=binomial(link="logit"), iter=3, chains=1, refresh=0))
-ndim<-length(fittedGlmer$covmat[1,])-3
+ndim<-length(fittedGlmer$covmat[1,])-2
 
 # Declare priors
 # Baseline priors based on DESIM: log-odds = -0.5, 0.5, SD = 0.25
 priorSD <- 0.25
 # h11.0 priors (null): Innovation complexity does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will not have a greater effect on individual motivation to innovate under high complexity than under low complexity
-h11.0 <- normal(location = c(rep(0, ndim), 0), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
+h11.0 <- normal(location = c(rep(0, ndim), 0), scale = c(rep(2.5,ndim), priorSD), autoscale=FALSE)
 # h11.1 priors: Innovation complexity moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individual motivation to innovate under high complexity than under low complexity
-h11.1 <- normal(location = c(rep(0, ndim), -0.5), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
+h11.1 <- normal(location = c(rep(0, ndim), -0.5), scale = c(rep(2.5,ndim), priorSD), autoscale=FALSE)
 
 # Run models 
 

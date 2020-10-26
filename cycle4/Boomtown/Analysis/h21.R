@@ -5,7 +5,7 @@ source("functions.R")
 source("prep.R")
 
 # Iterations
-nIter <- 50000
+nIter <- 100000
 
 # Formula
 formula.h21<-as.formula("innovation~leaderWeight+grmot2+centralization+density+conformity+grmot1+support+framing+complexity+timeUncertainty+pressure+tolerance+competition+(1|group)")

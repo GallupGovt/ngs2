@@ -5,7 +5,7 @@ source("functions.R")
 source("prep.R")
 
 # Iterations
-nIter <- 50000
+nIter <- 100000
 
 # Formula
 formula.h7<-as.formula("inmot1~framing*compStrong+timeUncertainty+tools+tolerance+support+centralization+leaderWeight+pressure+density+(1|player)")

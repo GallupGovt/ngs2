@@ -20,7 +20,8 @@ ndim<-length(fittedGlmer$covmat[1,])-4
 priorSD <- 0.25
 # h4.0 priors (null): Innovation uncertainty will not -affect individual motivation to innovate
 h4.0 <- normal(location = c(-1.90, 0.10, rep(0, ndim), 0.00), scale = c(2.5, 2.5, rep(2.5,ndim), priorSD), autoscale=FALSE)
-# h4.1 priors: Prospect value, calculated according to Cumulative Prospect Theory, will determine an individual's motivation to innovate. 
+# h4.1 priors: TA will moderate the effect of Innovation Uncertainty on Innovative Prospect Value. 
+# Individuals high in TA will show a lower certainty effect than individuals low in TA.
 h4.1 <- normal(location = c(-1.90, 0.10, rep(0, ndim), 0.40), scale = c(2.5, 2.5, rep(2.5,ndim), priorSD), autoscale=FALSE)
 
 # Run models 

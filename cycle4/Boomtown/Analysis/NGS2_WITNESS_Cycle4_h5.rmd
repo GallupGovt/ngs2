@@ -21,7 +21,13 @@ output:
 cat(readLines("bayesGlmer_h5_h5.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: Availability of a positive example will increase individual motivation to innovate (T1), while availability of a negative example will decrease individual motivation to innovate (T1).
+```{r}
+cat(readLines("bayesGlmer_h5_h5.1_summary.txt"), sep = '\n')
+```
 - Prediction 2: Availability of a negative example will decrease individual motivation to innovate (T1).
+```{r}
+cat(readLines("bayesGlmer_h5_h5.2_summary.txt"), sep = '\n')
+```
 
 ```{r h5BFs}
 source("functions.R")

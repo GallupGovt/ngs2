@@ -21,7 +21,13 @@ output:
 cat(readLines("bayesGlmer_h8_h8.0_summary.txt"), sep = '\n')
 ```
 - Prediction 1: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
+```{r comment=''}
+cat(readLines("bayesGlmer_h8_h8.1_summary.txt"), sep = '\n')
+```
 - Prediction 2: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
+```{r comment=''}
+cat(readLines("bayesGlmer_h8_h8.2_summary.txt"), sep = '\n')
+```
 
 ```{r, fig.hold='hold', out.width = "50%"}
 source("functions.R")

@@ -5,7 +5,7 @@ source("functions.R")
 source("prep.R")
 
 # Iterations
-nIter <- 30000
+nIter <- 100000
 
 # Formula
 formula.h14.1<-as.formula("conformity~competition+pressure+grmot1+framing+complexity+timeUncertainty+tolerance+support+centralization+leaderWeight+density+(1|group)")

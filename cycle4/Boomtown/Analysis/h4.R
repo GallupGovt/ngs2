@@ -5,7 +5,7 @@ source("functions.R")
 source("prep.R")
 
 # Iterations
-Iter <- 100000
+nIter <- 100000
 
 # Formula
 formula.h4<-as.formula("inmot1~risk*tolerance+prb+competition+support+centralization+leaderWeight+pressure+framing+density+timeUncertainty+(1|player)") #Formula h1.null

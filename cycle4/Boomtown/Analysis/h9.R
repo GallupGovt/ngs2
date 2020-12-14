@@ -18,11 +18,11 @@ ndim<-length(fittedGlmer$covmat[1,])-3
 # Declare priors
 # Baseline priors based on Cycle 2 data: log-odds = 0.6, SD = 0.3
 priorSD <- 0.3
-# h9.0 priors (null): TA does not moderate the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals with high TA than those with low TA. 
+# h9.0 priors (null): Time Pressure moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have the same effect on individuals under high time pressure and those under low time pressure.
 h9.0 <- normal(location = c(rep(0, ndim), 0, 0), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
-# h9.1 priors: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals with high TA than those with low TA. 
+# h9.1 priors: Time Pressure moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals under high time pressure than those under low time pressure.
 h9.1 <- normal(location = c(rep(0, ndim), -0.6, 0.6), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
-# h9.2 priors: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
+# h9.2 priors: Time Pressure moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals under high time pressure than those under low time pressure.
 h9.2 <- normal(location = c(rep(0, ndim), 0.6, -0.6), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
 
 # Run models 

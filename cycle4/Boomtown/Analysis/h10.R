@@ -22,7 +22,7 @@ priorSD <- 0.1
 h10.0 <- normal(location = c(rep(0, ndim), 0, 0), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
 # h10.1 priors: Uncertainty moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a greater effect on individuals for high uncertainty prospects than low uncertainty prospects. 
 h10.1 <- normal(location = c(rep(0, ndim), -0.3, 0.1), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
-# h10.2 priors: TA moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals with high TA than those with low TA.
+# h10.2 priors: Uncertainty moderates the effect of heuristic reasoning on individual motivation to innovate (T1): The availability heuristic will have a smaller effect on individuals for high uncertainty prospects than low uncertainty prospects.
 h10.2 <- normal(location = c(rep(0, ndim), 0.3, -0.1), scale = c(rep(2.5,ndim), priorSD, priorSD), autoscale=FALSE)
 
 # Run models 

@@ -23,20 +23,19 @@ h25.0 <- normal(location = c(0.0, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim
 h25.1 <- normal(location = c(1.45, rep(0, ndim)), scale = c(priorSD, rep(2.5,ndim)), autoscale=FALSE)
 
 # Run models 
-
-bridge_25.0 <- bayesLmer(formula.h25, h25.0, factorialGroup)
-bridge_25.1 <- bayesLmer(formula.h25, h25.1, factorialGroup)
+bridge_25.0 <- bayesGlmer(formula.h25, h25.0, factorialGroup)
+bridge_25.1 <- bayesGlmer(formula.h25, h25.1, factorialGroup)
 
 # Calculate and save BFs for all comparisons
 test_1_0<-bf(bridge_25.1, bridge_25.0)$bf
 BFs <- data.frame(25, test_1_0)
 colnames(BFs) <- c("Hypothesis",
-                    "Prediction 1 vs. Null")
+                   "Prediction 1 vs. Null")
 write.csv(BFs, paste(od, "BFs25.csv", sep = '/'))                      
 
 # Summarize/delete models
-summarize_delete ("bayesLmer_h25_h25.0")
-summarize_delete ("bayesLmer_h25_h25.1")
+summarize_delete ("bayesGlmer_h25_h25.0")
+summarize_delete ("bayesGlmer_h25_h25.1")
 
 # Render results into notebook
 rmarkdown::render("NGS2_WITNESS_Cycle4_h25.rmd")
